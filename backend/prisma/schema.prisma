@@ -1,0 +1,158 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Usuario {
+  id                    Int      @id @default(autoincrement())
+  nombre                String
+  apellido              String
+  email                 String   @unique
+  password              String
+  rol                   String   @default("alumno")
+  fechaRegistro         DateTime @default(now())
+  resetPasswordToken    String?
+  resetPasswordExpires  DateTime?
+  descripcion           String?
+  genero                String?
+  fotoPerfil            String?
+
+  cursosCreados  Curso[]        @relation("CursosCreadosPorAdmin")
+  inscripciones  Inscripcion[]
+  carritoItems   CarritoItem[]
+  favoritos      Favorito[]
+}
+
+model CarritoItem {
+  id             Int      @id @default(autoincrement())
+  idUsuario      Int
+  idCurso        Int
+  fechaAgregado  DateTime @default(now())
+
+  usuario  Usuario @relation(fields: [idUsuario], references: [id])
+  curso    Curso   @relation(fields: [idCurso], references: [id])
+
+  @@unique([idUsuario, idCurso])
+}
+
+model Favorito {
+  id             Int      @id @default(autoincrement())
+  idUsuario      Int
+  idCurso        Int
+  fechaAgregado  DateTime @default(now())
+
+  usuario  Usuario @relation(fields: [idUsuario], references: [id])
+  curso    Curso   @relation(fields: [idCurso], references: [id])
+
+  @@unique([idUsuario, idCurso])
+}
+
+model Curso {
+  id               Int      @id @default(autoincrement())
+  titulo           String
+  descripcion      String
+  precio           Decimal
+  categoria        String
+  imagenPortada    String?
+  idAdminCreador   Int
+
+  adminCreador   Usuario        @relation("CursosCreadosPorAdmin", fields: [idAdminCreador], references: [id])
+  modulos        Modulo[]
+  inscripciones  Inscripcion[]
+  carritoItems   CarritoItem[]
+  favoritos      Favorito[]
+}
+
+model Modulo {
+  id        Int    @id @default(autoincrement())
+  idCurso   Int
+  titulo    String
+  orden     Int
+
+  curso       Curso        @relation(fields: [idCurso], references: [id])
+  contenidos  Contenido[]
+}
+
+model Contenido {
+  id                  Int     @id @default(autoincrement())
+  idModulo            Int
+  titulo              String
+  orden               Int
+  tipo                String
+  contenidoTexto      String?
+  urlVideo            String?
+  archivoDescargable  String?
+
+  modulo     Modulo     @relation(fields: [idModulo], references: [id])
+  progresos  Progreso[]
+  preguntas  Pregunta[]
+}
+
+model Inscripcion {
+  id                Int      @id @default(autoincrement())
+  idUsuario         Int
+  idCurso           Int
+  fechaInscripcion  DateTime @default(now())
+  completado        Boolean  @default(false)
+
+  usuario      Usuario      @relation(fields: [idUsuario], references: [id])
+  curso        Curso        @relation(fields: [idCurso], references: [id])
+  pago         Pago?
+  progresos    Progreso[]
+  certificado  Certificado?
+}
+
+model Pago {
+  id                     Int      @id @default(autoincrement())
+  idInscripcion          Int      @unique
+  monto                  Decimal
+  estado                 String
+  fechaPago              DateTime @default(now())
+  metodo                 String
+  idTransaccionExterna   String?
+
+  inscripcion  Inscripcion @relation(fields: [idInscripcion], references: [id])
+}
+
+model Progreso {
+  id             Int      @id @default(autoincrement())
+  idInscripcion  Int
+  idContenido    Int
+  completado     Boolean  @default(false)
+  fecha          DateTime @default(now())
+
+  inscripcion  Inscripcion @relation(fields: [idInscripcion], references: [id])
+  contenido    Contenido   @relation(fields: [idContenido], references: [id])
+  @@unique([idInscripcion, idContenido])
+}
+
+model Pregunta {
+  id                  Int     @id @default(autoincrement())
+  idContenido         Int
+  enunciado           String
+  opcionA             String
+  opcionB             String
+  opcionC             String
+  opcionD             String
+  respuestaCorrecta   String
+  explicacionA        String?
+  explicacionB        String?
+  explicacionC        String?
+  explicacionD        String?
+
+  contenido  Contenido @relation(fields: [idContenido], references: [id])
+}
+
+model Certificado {
+  id                   Int      @id @default(autoincrement())
+  idInscripcion        Int      @unique
+  fechaEmision         DateTime @default(now())
+  codigoVerificacion   String   @unique
+  urlPdf               String?
+
+  inscripcion  Inscripcion @relation(fields: [idInscripcion], references: [id])
+}
