@@ -1529,3 +1529,33 @@ section[id],
   font-size: 16px;
   color: var(--color-text-muted, #6b6b73);
 }
+
+/* ---------- Hero en celular ----------
+ * Con el texto y las fotos apilados, la profundidad al scrollear los acercaba hasta que
+ * el marco de las fotos tapaba los botones: en pantallas angostas se quedan quietos.
+ * Los dos botones van uno al lado del otro, un poco más chicos y redondeados. */
+@media (max-width: 1023px) {
+  .hero-inner > div:first-child,
+  .hero-media-frame { translate: none; }
+}
+
+@media (max-width: 640px) {
+  .hero-actions {
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .hero-actions .hero-btn-primary { border: 1px solid transparent; }
+  .hero-actions .hero-btn-primary,
+  .hero-actions .hero-btn-secondary {
+    flex: 1 1 0;
+    min-width: 0;
+    justify-content: center;
+    gap: 6px;
+    padding: 13px 10px;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    border-radius: 16px;
+    white-space: nowrap;
+  }
+}

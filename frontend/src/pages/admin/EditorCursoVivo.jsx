@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
-  DndContext, DragOverlay, closestCenter, closestCorners, PointerSensor, KeyboardSensor, useSensor, useSensors,
+  DndContext, DragOverlay, closestCenter, closestCorners, MouseSensor, TouchSensor, KeyboardSensor, useSensor, useSensors,
 } from '@dnd-kit/core';
 import {
   SortableContext, verticalListSortingStrategy, arrayMove, useSortable, sortableKeyboardCoordinates,
@@ -399,6 +399,14 @@ function EditorCursoVivo() {
     abrirClaseLocal(contenido);
   }
 
+  // En el celular la clase queda debajo de la lista: al elegir una, la pantalla baja hasta ella
+  const centroRef = useRef(null);
+  async function abrirClaseYMostrar(contenido) {
+    await abrirClase(contenido);
+    if (!window.matchMedia('(max-width: 1000px)').matches) return;
+    requestAnimationFrame(() => centroRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+  }
+
   // ---------- Edición ----------
   function cambiarClase(cambios) {
     setClase((previa) => {
@@ -770,7 +778,7 @@ function EditorCursoVivo() {
             titulo={general.titulo}
             modulos={modulos}
             claseAbiertaId={clase?.id}
-            onAbrir={abrirClase}
+            onAbrir={abrirClaseYMostrar}
             onAgregarModulo={agregarModulo}
             onRenombrarModulo={renombrarModulo}
             onRenombrarClase={renombrarClase}
@@ -782,7 +790,7 @@ function EditorCursoVivo() {
             siguiente={siguiente}
           />
 
-          <main className="vivo-centro">
+          <main className="vivo-centro" ref={centroRef}>
             {!clase || !claseActual ? (
               <div className="vivo-vacio">
                 <p className="vivo-vacio-titulo">{modulos.length === 0 ? 'Empezá creando el primer módulo' : 'Agregá la primera clase'}</p>
@@ -814,6 +822,11 @@ function EditorCursoVivo() {
                 onRecargarPreguntas={recargarPreguntas}
                 onEliminarPregunta={(idBloque, idPregunta) => pedirConfirmacion('¿Eliminar esta pregunta?', async () => { await eliminarPreguntaRequest(idPregunta); await recargarPreguntas(idBloque); })}
               />
+            )}
+            {clase && claseActual && (
+              <button type="button" className="vivo-volver-arriba" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+                <IconoArriba /> Volver arriba
+              </button>
             )}
           </main>
         </div>
@@ -1050,7 +1063,8 @@ function PanelEstructura({
   const totalClases = modulos.reduce((n, m) => n + m.contenidos.length, 0);
 
   const sensores = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
+    useSensor(MouseSensor, { activationConstraint: { distance: 6 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 8 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
 
@@ -1162,7 +1176,8 @@ function PanelEstructura({
       <div className="vivo-lateral-scroll">
         <h2 className="vivo-lateral-curso">{titulo || 'Curso sin título'}</h2>
         <div className="vivo-lateral-fila">
-          <span>Arrastrá para ordenar</span>
+          <span className="vivo-ayuda-raton">Arrastrá para ordenar</span>
+          <span className="vivo-ayuda-tactil">Mantené apretado para ordenar</span>
           <span>{modulos.length} {modulos.length === 1 ? 'módulo' : 'módulos'} · {totalClases} {totalClases === 1 ? 'clase' : 'clases'}</span>
         </div>
 
@@ -2003,7 +2018,8 @@ function InstructoresCurso({ curso, setCurso, esAdmin, idUsuario, onSalir, onErr
   const [ocupado, setOcupado] = useState(false);
   const lista = curso.colaboradores || [];
   const sensores = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
+    useSensor(MouseSensor, { activationConstraint: { distance: 6 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 8 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
 

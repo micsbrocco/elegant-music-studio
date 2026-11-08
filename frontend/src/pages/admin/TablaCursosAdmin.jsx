@@ -20,7 +20,7 @@ function TablaCursosAdmin({
 
   return (
     <div className="admin-tabla-wrap">
-      <table className="admin-tabla-cursos">
+      <table className="admin-tabla-cursos admin-tabla-cursos--tarjetas">
         <thead>
           <tr>
             <th>Curso</th>
@@ -34,7 +34,7 @@ function TablaCursosAdmin({
         <tbody>
           {cursos.map((curso) => (
             <tr key={curso.id}>
-              <td>
+              <td className="celda-curso">
                 <div className="admin-tabla-curso-celda">
                   <PortadaCurso curso={curso} className="admin-tabla-curso-thumb" />
                   <div>
@@ -46,10 +46,10 @@ function TablaCursosAdmin({
                   </div>
                 </div>
               </td>
-              <td><span className="admin-tabla-pill">{curso.categoria}</span></td>
-              <td className="admin-tabla-monto">{formatearMoneda(curso.precio)}</td>
-              <td>{curso._count?.inscripciones ?? 0}</td>
-              <td>
+              <td className="celda-categoria"><span className="admin-tabla-pill">{curso.categoria}</span></td>
+              <td className="admin-tabla-monto celda-precio">{formatearMoneda(curso.precio)}</td>
+              <td className="celda-alumnos" data-etiqueta="alumnos">{curso._count?.inscripciones ?? 0}</td>
+              <td className="celda-estado">
                 {curso.estado === 'archivado' ? (
                   <span className="admin-tabla-pill admin-tabla-pill--archivado">Archivado</span>
                 ) : !onCambiarEstado ? (
@@ -80,7 +80,7 @@ function TablaCursosAdmin({
                   </div>
                 )}
               </td>
-              <td>
+              <td className="celda-acciones">
                 <div className="admin-tabla-acciones">
                   {curso.estado === 'archivado' ? (
                     onRestaurar && (

@@ -1681,6 +1681,7 @@
 .admin-boton-primario {
   background: var(--ui-btn-bg);
   color: var(--ui-btn-text);
+  border: none; /* sin el borde gris por defecto de los <button> */
 }
 .admin-boton-primario:hover {
   background: var(--ui-btn-bg-hover);
@@ -3198,4 +3199,67 @@
   .admin-sidebar-grupo { margin-bottom: var(--ui-s-3); }
   .admin-sidebar-link { padding-top: 8px; padding-bottom: 8px; }
   .admin-sidebar-footer { padding-top: var(--ui-s-2); padding-bottom: var(--ui-s-3); }
+}
+
+/* ---------- Cursos en el celular ----------
+ * La tabla pasa a tarjetas (curso arriba; categoría, precio y alumnos; estado y acciones),
+ * los filtros ocupan el ancho sin barra de scroll y el aviso de "Nuevo curso" va abajo. */
+@media (max-width: 640px) {
+  .admin-gestionar-cursos .admin-filtros-barra--card .admin-segmentado {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(max-content, 1fr);
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .admin-gestionar-cursos .admin-filtros-barra--card .admin-segmentado::-webkit-scrollbar { display: none; }
+  .admin-gestionar-cursos .admin-filtros-barra--card .admin-segmentado .portal-segmento {
+    justify-content: center;
+    padding: 7px 10px;
+  }
+
+  .admin-card.admin-gestionar-cursos { padding: 20px 18px; }
+  .admin-tabla-cursos--tarjetas,
+  .admin-tabla-cursos--tarjetas tbody { display: block; }
+  .admin-tabla-cursos--tarjetas thead { display: none; }
+  .admin-tabla-cursos--tarjetas tbody tr {
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    grid-template-areas:
+      "curso curso curso"
+      "categoria precio alumnos"
+      "estado acciones acciones";
+    align-items: center;
+    gap: 10px 12px;
+    padding: 16px 0;
+    box-shadow: inset 0 -1px 0 var(--ui-line);
+  }
+  .admin-tabla-cursos--tarjetas tbody tr:last-child { box-shadow: none; }
+  .admin-tabla-cursos--tarjetas tbody tr:hover { background: none; }
+  .admin-tabla-cursos.admin-tabla-cursos--tarjetas td { display: block; padding: 0; box-shadow: none !important; min-width: 0; }
+  .admin-tabla-cursos--tarjetas .celda-curso { grid-area: curso; }
+  .admin-tabla-cursos--tarjetas .celda-categoria { grid-area: categoria; }
+  .admin-tabla-cursos--tarjetas .celda-precio { grid-area: precio; font-weight: 600; }
+  .admin-tabla-cursos--tarjetas .celda-alumnos { grid-area: alumnos; justify-self: end; color: var(--ui-text-2); font-size: 13px; }
+  .admin-tabla-cursos--tarjetas .celda-alumnos::after { content: " " attr(data-etiqueta); }
+  .admin-tabla-cursos--tarjetas .celda-estado { grid-area: estado; }
+  .admin-tabla-cursos--tarjetas .celda-acciones { grid-area: acciones; justify-self: end; }
+  .admin-tabla-cursos--tarjetas .admin-tabla-acciones { flex-wrap: wrap; justify-content: flex-end; }
+  .admin-tabla-cursos--tarjetas .admin-tabla-curso-celda > div { min-width: 0; }
+  .admin-tabla-cursos--tarjetas .admin-tabla-pill { white-space: nowrap; }
+
+  .modal-nuevo-curso .admin-modal-acciones {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px;
+  }
+  .modal-nuevo-curso-nota {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    max-width: none;
+    margin: 0;
+    text-align: center;
+  }
 }
