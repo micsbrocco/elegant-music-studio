@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { loginRequest } from '../services/authService';
 import { useAuth } from '../context/AuthContext';
+import { useSitio } from '../context/SitioContext';
 import BotonGoogle from '../components/BotonGoogle';
 import { rutaInicioSegunRol } from '../utils/rutas';
 import logoElegant from '../assets/logo-elegant.png';
@@ -27,6 +28,9 @@ function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   const backgroundLocation = location.state && location.state.backgroundLocation;
+  // Si se llegó desde "Crear cuenta", la ventana ya estaba abierta: solo se desliza el contenido
+  const cambio = location.state && location.state.cambioAuth;
+  const { cursosCerrados } = useSitio();
 
   function cerrar() {
     if (backgroundLocation) {
@@ -69,7 +73,7 @@ function Login() {
 
   return (
     <div
-      className="auth-overlay"
+      className={`auth-overlay ${cambio ? 'auth-sin-entrada' : ''}`}
       onClick={(e) => {
         if (e.target === e.currentTarget) cerrar();
       }}
@@ -83,15 +87,18 @@ function Login() {
 
         <div className="auth-card-accent" />
 
-        <div className="auth-card-body">
+        <div className={`auth-card-body ${cambio ? 'auth-cambio-izq' : ''}`}>
           <div className="auth-brand">
             <img src={logoElegant} alt="Elegant Music Studio" className="auth-logo" />
           </div>
 
-          <div className="auth-tabs">
-            <span className="auth-tab auth-tab-activo">Iniciar sesión</span>
-            <Link to="/registro" state={{ backgroundLocation }} replace className="auth-tab">Crear cuenta</Link>
-          </div>
+          {/* En "Próximamente" no se pueden crear cuentas nuevas */}
+          {!cursosCerrados && (
+            <div className={`auth-tabs auth-tabs--login ${cambio ? 'auth-tabs--desliza' : ''}`}>
+              <span className="auth-tab auth-tab-activo">Iniciar sesión</span>
+              <Link to="/registro" state={{ backgroundLocation, cambioAuth: true }} replace className="auth-tab">Crear cuenta</Link>
+            </div>
+          )}
 
           <h2 className="font-display auth-titulo">
             Iniciar <em className="italic-gold">sesión</em>
@@ -180,9 +187,11 @@ function Login() {
 
           <BotonGoogle onError={setError} />
 
-          <p className="auth-footer-text">
-            ¿No tenés cuenta? <Link to="/registro" state={{ backgroundLocation }} replace className="auth-link">Creá una cuenta</Link>
-          </p>
+          {!cursosCerrados && (
+            <p className="auth-footer-text">
+              ¿No tenés cuenta? <Link to="/registro" state={{ backgroundLocation, cambioAuth: true }} replace className="auth-link">Creá una cuenta</Link>
+            </p>
+          )}
         </div>
       </div>
     </div>

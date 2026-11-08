@@ -531,6 +531,7 @@
 /* ==================== Tablas ==================== */
 
 .admin-tabla-wrap {
+  position: relative;
   overflow-x: auto;
   scrollbar-width: thin;
   scrollbar-color: rgba(18, 18, 20, 0.25) transparent;
@@ -699,6 +700,9 @@
 
 /* ---- Switch Activo/Oculto ---- */
 .admin-switch {
+  /* relative: el checkbox oculto queda adentro del switch (si no, en el
+     celular se escapa de las tablas con scroll y ensancha toda la página) */
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: var(--ui-s-2);
@@ -3006,6 +3010,11 @@
   font-weight: var(--ui-fw-bold, 700);
   line-height: 20px;
   text-align: center;
+}
+.admin-preguntas-filtros {
+  display: flex;
+  justify-content: flex-start;
+  margin: 4px 0 14px;
 }
 .admin-preguntas-lista {
   list-style: none;

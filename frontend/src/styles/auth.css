@@ -492,6 +492,112 @@
 
 
 
+/* ---------- Animaciones de la ventana de ingreso ----------
+ * Al abrirse: el fondo se oscurece y la tarjeta sube desde abajo, con el
+ * contenido apareciendo en cascada. Al pasar de "Iniciar sesión" a
+ * "Crear cuenta" (o al revés) la ventana no se vuelve a abrir: la pestaña
+ * dorada se desliza y el formulario entra desde el costado. */
+.auth-overlay {
+  animation: auth-fondo-entra 0.28s ease both;
+}
+.auth-overlay .auth-card {
+  animation: auth-tarjeta-entra 0.42s cubic-bezier(0.2, 0.9, 0.25, 1) both;
+}
+.auth-overlay .auth-card-accent {
+  transform-origin: center;
+  animation: auth-linea-entra 0.6s 0.12s cubic-bezier(0.2, 0.9, 0.25, 1) both;
+}
+.auth-overlay .auth-card-body > * {
+  animation: auth-item-entra 0.4s cubic-bezier(0.2, 0.9, 0.25, 1) both;
+}
+.auth-overlay .auth-card-body > :nth-child(1) { animation-delay: 0.08s; }
+.auth-overlay .auth-card-body > :nth-child(2) { animation-delay: 0.12s; }
+.auth-overlay .auth-card-body > :nth-child(3) { animation-delay: 0.16s; }
+.auth-overlay .auth-card-body > :nth-child(4) { animation-delay: 0.2s; }
+.auth-overlay .auth-card-body > :nth-child(n + 5) { animation-delay: 0.24s; }
+
+/* Cambio de pestaña: sin volver a abrir la ventana */
+.auth-overlay.auth-sin-entrada,
+.auth-overlay.auth-sin-entrada .auth-card,
+.auth-overlay.auth-sin-entrada .auth-card-accent,
+.auth-overlay.auth-sin-entrada .auth-card-body > * {
+  animation: none;
+}
+.auth-overlay.auth-sin-entrada .auth-card-body.auth-cambio-der > :not(.auth-brand, .auth-tabs) {
+  animation: auth-desde-der 0.34s cubic-bezier(0.2, 0.9, 0.25, 1) both;
+}
+.auth-overlay.auth-sin-entrada .auth-card-body.auth-cambio-izq > :not(.auth-brand, .auth-tabs) {
+  animation: auth-desde-izq 0.34s cubic-bezier(0.2, 0.9, 0.25, 1) both;
+}
+
+/* Pestañas: el fondo blanco es una pieza aparte que se desliza */
+.auth-tabs {
+  position: relative;
+  isolation: isolate;
+}
+.auth-tabs::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc(50% - 4px);
+  border-radius: 7px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+.auth-tabs .auth-tab-activo {
+  background: transparent;
+  box-shadow: none;
+}
+.auth-tabs--registro::before {
+  transform: translateX(100%);
+}
+.auth-tabs--registro.auth-tabs--desliza::before {
+  animation: auth-pestana-a-der 0.34s cubic-bezier(0.2, 0.9, 0.25, 1) both;
+}
+.auth-tabs--login.auth-tabs--desliza::before {
+  animation: auth-pestana-a-izq 0.34s cubic-bezier(0.2, 0.9, 0.25, 1) both;
+}
+
+@keyframes auth-fondo-entra {
+  from { background-color: rgba(18, 18, 20, 0); backdrop-filter: blur(0); -webkit-backdrop-filter: blur(0); }
+}
+@keyframes auth-tarjeta-entra {
+  from { opacity: 0; transform: translateY(28px) scale(0.96); }
+}
+@keyframes auth-linea-entra {
+  from { transform: scaleX(0); }
+}
+@keyframes auth-item-entra {
+  from { opacity: 0; transform: translateY(10px); }
+}
+@keyframes auth-desde-der {
+  from { opacity: 0; transform: translateX(28px); }
+}
+@keyframes auth-desde-izq {
+  from { opacity: 0; transform: translateX(-28px); }
+}
+@keyframes auth-pestana-a-der {
+  from { transform: translateX(0); }
+  to { transform: translateX(100%); }
+}
+@keyframes auth-pestana-a-izq {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-overlay,
+  .auth-overlay .auth-card,
+  .auth-overlay .auth-card-accent,
+  .auth-overlay .auth-card-body > *,
+  .auth-tabs::before {
+    animation: none !important;
+  }
+}
+
 /* ------------------------------------------------------------------
  * NOTA: este archivo tiene un bloque "Auth (Login / Registro)" viejo
  * (el de arriba, con .auth-page / .auth-wrapper) y otro más nuevo que

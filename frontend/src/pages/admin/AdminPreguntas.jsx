@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { listarConsultasRequest, responderConsultaRequest } from '../../services/consultaService';
 import FiltroSegmentado from '../../components/FiltroSegmentado';
 import { CeldaPersona } from './tablaAdmin';
-import { Paginacion } from './filtrosAdmin';
+import { Paginacion, FiltroFechas, fechasDeAtajo } from './filtrosAdmin';
 import { useAuth } from '../../context/AuthContext';
 
 function haceCuanto(fecha) {
@@ -106,10 +106,16 @@ function AdminPreguntas() {
   const [vista, setVista] = useState('pendientes');
   const [pagina, setPagina] = useState(1);
   const [datos, setDatos] = useState(null);
+  const [fechas, setFechas] = useState(() => fechasDeAtajo('30d'));
 
   const cargar = useCallback(() => {
-    listarConsultasRequest({ vista, pagina }).then(setDatos).catch(() => setDatos({ items: [], total: 0, pagina: 1, porPagina: 10, pendientes: 0 }));
-  }, [vista, pagina]);
+    const params = { vista, pagina };
+    if (vista === 'respondidas') {
+      if (fechas.desde) params.desde = fechas.desde;
+      if (fechas.hasta) params.hasta = fechas.hasta;
+    }
+    listarConsultasRequest(params).then(setDatos).catch(() => setDatos({ items: [], total: 0, pagina: 1, porPagina: 10, pendientes: 0 }));
+  }, [vista, pagina, fechas]);
 
   useEffect(() => { cargar(); }, [cargar]);
 
@@ -142,12 +148,17 @@ function AdminPreguntas() {
             onCambiar={(v) => { setVista(v); setPagina(1); }}
           />
         </div>
+        {vista === 'respondidas' && (
+          <div className="admin-preguntas-filtros">
+            <FiltroFechas etiqueta="Respondidas" fechas={fechas} onCambiar={(f) => { setFechas(f); setPagina(1); }} />
+          </div>
+        )}
 
         {!datos ? (
           <p className="admin-dash-vacio admin-dash-vacio--izq">Cargando…</p>
         ) : datos.items.length === 0 ? (
           <p className="admin-dash-vacio admin-dash-vacio--izq">
-            {vista === 'pendientes' ? 'No hay preguntas sin responder.' : 'Todavía no respondiste ninguna pregunta.'}
+            {vista === 'pendientes' ? 'No hay preguntas sin responder.' : 'No hay preguntas respondidas en este período.'}
           </p>
         ) : (
           <ul className="admin-preguntas-lista">

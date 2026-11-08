@@ -29,6 +29,15 @@ function PanelCuenta() {
   const [generando, setGenerando] = useState(null);
   const [error, setError] = useState('');
   const [preguntas, setPreguntas] = useState({ items: [], sinVer: 0 });
+  // En el celular el panel arranca cerrado y se abre desde la solapa del borde derecho
+  const [abierto, setAbierto] = useState(false);
+
+  useEffect(() => {
+    if (!abierto) return undefined;
+    const esc = (e) => { if (e.key === 'Escape') setAbierto(false); };
+    document.addEventListener('keydown', esc);
+    return () => document.removeEventListener('keydown', esc);
+  }, [abierto]);
 
   useEffect(() => {
     cargarDatos();
@@ -72,7 +81,33 @@ function PanelCuenta() {
   }
 
   return (
-    <aside className="panel-cuenta" aria-label="Tu cuenta">
+    <>
+    <button
+      type="button"
+      className="panel-cuenta-solapa"
+      onClick={() => setAbierto(true)}
+      aria-expanded={abierto}
+      aria-controls="panel-cuenta"
+      aria-label="Abrir tu cuenta"
+    >
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <polyline points="15 6 9 12 15 18" />
+      </svg>
+      {preguntas.sinVer > 0 && <span className="panel-cuenta-solapa-punto" />}
+    </button>
+    {abierto && <div className="panel-cuenta-fondo" onClick={() => setAbierto(false)} aria-hidden="true" />}
+    <aside
+      id="panel-cuenta"
+      className={`panel-cuenta ${abierto ? 'abierto' : ''}`}
+      aria-label="Tu cuenta"
+      // Al tocar un link en el celular, el panel se cierra
+      onClick={(e) => { if (e.target.closest('a')) setAbierto(false); }}
+    >
+      <button type="button" className="panel-cuenta-cerrar" onClick={() => setAbierto(false)} aria-label="Cerrar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <polyline points="9 6 15 12 9 18" />
+        </svg>
+      </button>
       {/* El aside ocupa todo el alto de la página; el contenido queda fijo al hacer scroll */}
       <div className="panel-cuenta-contenido">
       <div className="panel-cuenta-usuario">
@@ -171,6 +206,7 @@ function PanelCuenta() {
       </div>
       </div>
     </aside>
+    </>
   );
 }
 

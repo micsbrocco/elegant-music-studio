@@ -141,6 +141,23 @@ function CursoAprender() {
     }
   });
 
+  // En el celular, la barra de arriba (Volver / tema) y los botones Anterior /
+  // Siguiente se esconden al bajar y vuelven a aparecer al subir.
+  const [barrasOcultas, setBarrasOcultas] = useState(false);
+  useEffect(() => {
+    let ultimaY = window.scrollY;
+    function alScrollear() {
+      const y = window.scrollY;
+      if (y < 120) setBarrasOcultas(false);
+      else if (y > ultimaY + 6) setBarrasOcultas(true);
+      else if (y < ultimaY - 6) setBarrasOcultas(false);
+      else return;
+      ultimaY = y;
+    }
+    window.addEventListener('scroll', alScrollear, { passive: true });
+    return () => window.removeEventListener('scroll', alScrollear);
+  }, []);
+
   // Una clase de tipo "bloques" puede tener varios bloques de quiz, así que estos
   // tres viven "arriba" indexados por bloque (no por clase), así no se pierden al navegar.
   const [preguntasPorBloque, setPreguntasPorBloque] = useState({});
@@ -544,7 +561,7 @@ function CursoAprender() {
   ) : null;
 
   return (
-    <div className={`aprender-page ${tema === 'claro' ? 'aprender-tema-claro' : ''}`}>
+    <div className={`aprender-page ${tema === 'claro' ? 'aprender-tema-claro' : ''} ${barrasOcultas ? 'aprender-barras-ocultas' : ''}`}>
       <div className="aprender-subheader">
         <div className="aprender-subheader-inner">
           <Link to={volverA} className="aprender-volver">← Volver</Link>

@@ -17,6 +17,8 @@ function Registro() {
   const navigate = useNavigate();
   const location = useLocation();
   const backgroundLocation = location.state && location.state.backgroundLocation;
+  // Si se llegó desde "Iniciar sesión", la ventana ya estaba abierta: solo se desliza el contenido
+  const cambio = location.state && location.state.cambioAuth;
 
   function cerrar() {
     if (backgroundLocation) {
@@ -57,7 +59,7 @@ function Registro() {
 
   return (
     <div
-      className="auth-overlay"
+      className={`auth-overlay ${cambio ? 'auth-sin-entrada' : ''}`}
       onClick={(e) => {
         if (e.target === e.currentTarget) cerrar();
       }}
@@ -85,13 +87,13 @@ function Registro() {
             </Link>
           </div>
         ) : (
-          <div className="auth-card-body">
+          <div className={`auth-card-body ${cambio ? 'auth-cambio-der' : ''}`}>
             <div className="auth-brand">
               <img src={logoElegant} alt="Elegant Music Studio" className="auth-logo" />
             </div>
 
-            <div className="auth-tabs">
-              <Link to="/login" state={{ backgroundLocation }} replace className="auth-tab">Iniciar sesión</Link>
+            <div className={`auth-tabs auth-tabs--registro ${cambio ? 'auth-tabs--desliza' : ''}`}>
+              <Link to="/login" state={{ backgroundLocation, cambioAuth: true }} replace className="auth-tab">Iniciar sesión</Link>
               <span className="auth-tab auth-tab-activo">Crear cuenta</span>
             </div>
 
@@ -201,7 +203,7 @@ function Registro() {
             <BotonGoogle onError={setError} />
 
             <p className="auth-footer-text">
-              ¿Ya tenés cuenta? <Link to="/login" state={{ backgroundLocation }} replace className="auth-link">Iniciá sesión</Link>
+              ¿Ya tenés cuenta? <Link to="/login" state={{ backgroundLocation, cambioAuth: true }} replace className="auth-link">Iniciá sesión</Link>
             </p>
           </div>
         )}

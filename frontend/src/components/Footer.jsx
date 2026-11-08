@@ -1,9 +1,11 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useSitio } from '../context/SitioContext';
 
 function Footer() {
   const anio = new Date().getFullYear();
   const location = useLocation();
+  const { cursosCerrados } = useSitio();
   const navigate = useNavigate();
   const { usuario, logout } = useAuth();
 
@@ -114,7 +116,7 @@ function Footer() {
             ) : (
               <>
                 <Link to="/login" state={{ backgroundLocation: location }} className="footer-link">Iniciar sesión</Link>
-                <Link to="/registro" state={{ backgroundLocation: location }} className="footer-link">Crear cuenta</Link>
+                {!cursosCerrados && <Link to="/registro" state={{ backgroundLocation: location }} className="footer-link">Crear cuenta</Link>}
               </>
             )}
           </div>

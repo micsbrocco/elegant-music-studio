@@ -582,21 +582,104 @@
 }
 
 /* Pantallas angostas: el panel pasa arriba de los cursos, a todo el ancho */
+/* Solapa, fondo y botón de cerrar: solo en pantallas angostas */
+.panel-cuenta-solapa,
+.panel-cuenta-cerrar,
+.panel-cuenta-fondo {
+  display: none;
+}
+
+/* En pantallas angostas el panel se vuelve una persiana que entra desde la
+   derecha: primero se ve "Hola, ..." y la cuenta se abre con la solapa. */
 @media (max-width: 1000px) {
   .portal-page.portal-layout {
     grid-template-columns: 1fr;
   }
-  .panel-cuenta {
-    order: -1;
-    border-left: none;
-    border-bottom: 1px solid var(--ui-line);
-  }
-  .panel-cuenta-contenido {
-    padding: 24px;
-  }
   .portal-principal {
     padding-top: 32px;
   }
+  .panel-cuenta {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 70;
+    width: min(340px, 88vw);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background: #fafafb;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: -18px 0 48px -12px rgba(18, 18, 20, 0.28);
+    transform: translateX(100%);
+    visibility: hidden;
+    transition: transform 0.28s cubic-bezier(0.2, 0, 0, 1), visibility 0s linear 0.28s;
+  }
+  .panel-cuenta.abierto {
+    transform: none;
+    visibility: visible;
+    transition: transform 0.28s cubic-bezier(0.2, 0, 0, 1);
+  }
+  .panel-cuenta-contenido {
+    padding: 56px 24px 32px;
+  }
+  .panel-cuenta-cerrar {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--ui-line);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--ui-text);
+    cursor: pointer;
+  }
+  .panel-cuenta-fondo {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 65;
+    background: rgba(10, 10, 11, 0.4);
+    animation: panel-cuenta-aparece 0.2s ease;
+  }
+  .panel-cuenta-solapa {
+    position: fixed;
+    top: 112px;
+    right: 0;
+    z-index: 45;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 52px;
+    padding: 0 0 0 4px;
+    border: 1px solid var(--ui-line);
+    border-right: none;
+    border-radius: 14px 0 0 14px;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: -4px 6px 18px -6px rgba(18, 18, 20, 0.25);
+    color: var(--ui-gold-text);
+    cursor: pointer;
+  }
+  .panel-cuenta-solapa-punto {
+    position: absolute;
+    top: 8px;
+    left: 7px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--ui-gold);
+    box-shadow: 0 0 0 2px #fff;
+  }
+}
+@keyframes panel-cuenta-aparece {
+  from { opacity: 0; }
 }
 
 @media (max-width: 720px) {

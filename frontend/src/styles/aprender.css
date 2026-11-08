@@ -1451,15 +1451,40 @@
   .aprender-panel-solapa {
     top: 12px;
   }
+  /* Con el panel cerrado, Anterior / Siguiente quedan fijos abajo de la
+     pantalla (y el contenido deja lugar para que no tapen nada) */
   .aprender-layout.panel-cerrado .aprender-main-scroll {
-    padding-bottom: 20px;
+    padding-bottom: 96px;
   }
   .aprender-nav-inferior.aprender-nav-flotante {
-    position: sticky;
-    right: auto;
-    bottom: 16px;
-    margin: 16px 0 0 auto;
-    width: fit-content;
+    position: fixed;
+    right: 16px;
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    z-index: 35;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+  }
+  .aprender-barras-ocultas .aprender-nav-inferior.aprender-nav-flotante {
+    transform: translateY(calc(100% + 32px));
+    opacity: 0;
+    pointer-events: none;
+  }
+  /* La barra de arriba (Volver / tema) se esconde detrás del navbar al bajar */
+  .aprender-subheader {
+    background: var(--ap-bg);
+    transition: transform 0.25s ease;
+  }
+  .aprender-barras-ocultas .aprender-subheader {
+    transform: translateY(-100%);
+  }
+  /* La solapa del panel no tapa el inicio del título de la clase */
+  .aprender-layout.panel-cerrado .aprender-main-scroll {
+    padding-left: 40px;
+  }
+}
+@media (max-width: 1100px) and (prefers-reduced-motion: reduce) {
+  .aprender-subheader,
+  .aprender-nav-inferior.aprender-nav-flotante {
+    transition: none;
   }
 }
 @media (prefers-reduced-motion: reduce) {

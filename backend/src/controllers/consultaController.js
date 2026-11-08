@@ -162,14 +162,26 @@ async function misConsultasRecientes(req, res) {
   }
 }
 
-// GET /api/consultas?vista=pendientes|respondidas&pagina=
+// Lee ?desde=AAAA-MM-DD&hasta=AAAA-MM-DD ("hasta" incluye todo ese día)
+function rangoFechas(query) {
+  const rango = {};
+  const desde = query.desde ? new Date(`${query.desde}T00:00:00`) : null;
+  const hasta = query.hasta ? new Date(`${query.hasta}T00:00:00`) : null;
+  if (desde && !isNaN(desde)) rango.gte = desde;
+  if (hasta && !isNaN(hasta)) rango.lt = new Date(hasta.getTime() + 24 * 60 * 60 * 1000);
+  return rango;
+}
+
+// GET /api/consultas?vista=pendientes|respondidas&pagina=&desde=&hasta=
+// Las respondidas se filtran por la fecha de la respuesta; las pendientes se
+// muestran todas, para que ninguna quede sin ver.
 async function listarConsultas(req, res) {
   try {
     const respondidas = req.query.vista === 'respondidas';
     const pagina = Math.max(1, parseInt(req.query.pagina, 10) || 1);
     const porPagina = 10;
     const base = await filtroCursos(req.usuario);
-    const where = { ...base, respondidaEn: respondidas ? { not: null } : null };
+    const where = { ...base, respondidaEn: respondidas ? { not: null, ...rangoFechas(req.query) } : null };
 
     const [items, total, pendientes] = await Promise.all([
       prisma.consultaClase.findMany({
