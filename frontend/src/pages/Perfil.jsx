@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { obtenerPerfilRequest, editarPerfilRequest, subirFotoPerfilRequest } from '../services/usuarioService';
-import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import Configuracion from './Configuracion';
 
 const ETIQUETAS_GENERO = {
   masculino: 'Masculino',
@@ -10,6 +11,7 @@ const ETIQUETAS_GENERO = {
 };
 
 function Perfil() {
+  const { actualizarUsuario } = useAuth();
   const [perfil, setPerfil] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState('');
@@ -88,6 +90,8 @@ function Perfil() {
       const actualizado = await editarPerfilRequest({ nombre, apellido, descripcion, genero });
 
       setPerfil(actualizado);
+      // Se actualiza también la sesión, para que la miniatura de la navbar muestre la foto nueva.
+      actualizarUsuario({ nombre: actualizado.nombre, apellido: actualizado.apellido, fotoPerfil: actualizado.fotoPerfil || null });
       setArchivoSeleccionado(null);
       setPreviewFoto(null);
       setMensaje('Perfil actualizado correctamente');
@@ -99,92 +103,121 @@ function Perfil() {
     }
   }
 
-  if (cargando) return <p>Cargando perfil...</p>;
+  if (cargando) return <p className="text-muted">Cargando...</p>;
 
   const fotoAMostrar = previewFoto || perfil.fotoPerfil;
 
   return (
-    <div>
-      <h2>Mi perfil</h2>
-
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {mensaje && <p style={{ color: 'green' }}>{mensaje}</p>}
-
-      {/* Foto de perfil */}
-      <div>
-        {fotoAMostrar ? (
-          <img
-            src={fotoAMostrar}
-            alt="Foto de perfil"
-            style={{ width: '120px', height: '120px', borderRadius: '50%', objectFit: 'cover' }}
-          />
-        ) : (
-          <div
-            style={{
-              width: '120px',
-              height: '120px',
-              borderRadius: '50%',
-              background: '#ccc',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '2rem',
-            }}
-          >
-            {perfil.nombre[0]}
-          </div>
-        )}
-
-        {modoEdicion && (
-          <div>
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              onChange={handleSeleccionarArchivo}
-            />
-            {previewFoto && <p><em>Vista previa — se guardará al confirmar los cambios</em></p>}
-          </div>
-        )}
+    <div className="cuenta-seccion">
+      <div className="cuenta-seccion-cab">
+        <h2 className="cuenta-seccion-titulo cuenta-titulo-con-accion">
+          Mi cuenta
+          {!modoEdicion && (
+            <button
+              type="button"
+              className="cuenta-icono-btn"
+              onClick={handleEntrarModoEdicion}
+              aria-label="Editar perfil"
+              title="Editar perfil"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 20h9" />
+                <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
+              </svg>
+            </button>
+          )}
+        </h2>
+        <p className="cuenta-seccion-sub">Tus datos personales y tu contraseña.</p>
       </div>
+
+      {error && <div className="error-box">{error}</div>}
+      {mensaje && <div className="success-box">{mensaje}</div>}
 
       {/* Vista de solo lectura */}
       {!modoEdicion && (
-        <div>
-          <p><strong>Nombre:</strong> {perfil.nombre} {perfil.apellido}</p>
-          <p><strong>Email:</strong> {perfil.email}</p>
-          <p><strong>Descripción:</strong> {perfil.descripcion || 'Sin descripción'}</p>
-          <p><strong>Género:</strong> {perfil.genero ? ETIQUETAS_GENERO[perfil.genero] : 'No especificado'}</p>
-
-          <p>
-            <Link to="/mis-cursos">Mis cursos</Link>
-            {' | '}
-            <Link to="/carrito">Carrito</Link>
-            {' | '}
-            <Link to="/favoritos">Favoritos</Link>
-        </p>
-
-          <button onClick={handleEntrarModoEdicion}>Editar perfil</button>
-        </div>
+        <>
+          <div className="perfil-datos">
+            <div className="perfil-dato">
+              <span className="perfil-dato-label">Nombre</span>
+              <span className="perfil-dato-valor">{perfil.nombre} {perfil.apellido}</span>
+            </div>
+            <div className="perfil-dato">
+              <span className="perfil-dato-label">Correo electrónico</span>
+              <span className="perfil-dato-valor">{perfil.email}</span>
+            </div>
+            <div className="perfil-dato">
+              <span className="perfil-dato-label">Descripción</span>
+              <span className="perfil-dato-valor">{perfil.descripcion || 'Sin descripción'}</span>
+            </div>
+            <div className="perfil-dato">
+              <span className="perfil-dato-label">Género</span>
+              <span className="perfil-dato-valor">
+                {perfil.genero ? ETIQUETAS_GENERO[perfil.genero] : 'No especificado'}
+              </span>
+            </div>
+          </div>
+        </>
       )}
 
       {/* Vista de edición */}
       {modoEdicion && (
-        <form onSubmit={handleGuardarCambios}>
-          <div>
-            <label>Nombre</label>
-            <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
+        <form onSubmit={handleGuardarCambios} className="perfil-form">
+          <div className="perfil-foto-edicion">
+            {fotoAMostrar ? (
+              <img src={fotoAMostrar} referrerPolicy="no-referrer" alt="Foto de perfil" className="perfil-avatar" />
+            ) : (
+              <div className="perfil-avatar perfil-avatar-inicial">{perfil.nombre[0]}</div>
+            )}
+            <div>
+              <label className="btn btn-outline btn-sm" style={{ cursor: 'pointer' }}>
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={handleSeleccionarArchivo}
+                  hidden
+                />
+                Cambiar foto
+              </label>
+              {previewFoto && (
+                <p className="perfil-preview-nota" style={{ margin: '8px 0 0' }}>
+                  <em>Vista previa: se guardará al confirmar los cambios</em>
+                </p>
+              )}
+            </div>
           </div>
-          <div>
-            <label>Apellido</label>
-            <input type="text" value={apellido} onChange={(e) => setApellido(e.target.value)} required />
+
+          <div className="field">
+            <label className="label">Nombre</label>
+            <input
+              className="input"
+              type="text"
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
+              required
+            />
           </div>
-          <div>
-            <label>Descripción</label>
-            <textarea value={descripcion} onChange={(e) => setDescripcion(e.target.value)} />
+          <div className="field">
+            <label className="label">Apellido</label>
+            <input
+              className="input"
+              type="text"
+              value={apellido}
+              onChange={(e) => setApellido(e.target.value)}
+              required
+            />
           </div>
-          <div>
-            <label>Género</label>
-            <select value={genero} onChange={(e) => setGenero(e.target.value)}>
+          <div className="field">
+            <label className="label">Descripción</label>
+            <textarea
+              className="input"
+              rows={4}
+              value={descripcion}
+              onChange={(e) => setDescripcion(e.target.value)}
+            />
+          </div>
+          <div className="field">
+            <label className="label">Género</label>
+            <select className="input" value={genero} onChange={(e) => setGenero(e.target.value)}>
               <option value="">Preferir no especificar</option>
               <option value="masculino">Masculino</option>
               <option value="femenino">Femenino</option>
@@ -193,14 +226,19 @@ function Perfil() {
             </select>
           </div>
 
-          <button type="submit" disabled={guardando}>
-            {guardando ? 'Guardando...' : 'Guardar cambios'}
-          </button>
-          <button type="button" onClick={handleCancelarEdicion} disabled={guardando}>
-            Cancelar
-          </button>
+          <div className="perfil-form-acciones">
+            <button type="submit" className="btn btn-success" disabled={guardando}>
+              {guardando ? 'Guardando...' : 'Guardar cambios'}
+            </button>
+            <button type="button" className="btn btn-outline" onClick={handleCancelarEdicion} disabled={guardando}>
+              Cancelar
+            </button>
+          </div>
         </form>
       )}
+
+      {/* La contraseña (antes en "Configuración") vive ahora en la misma página */}
+      {!modoEdicion && <Configuracion embebido />}
     </div>
   );
 }

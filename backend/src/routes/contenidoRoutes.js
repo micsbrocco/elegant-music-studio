@@ -4,18 +4,31 @@ const {
   crearContenido,
   obtenerContenido,
   editarContenido,
+  moverContenido,
   eliminarContenido,
   reordenarContenido,
+  reordenarContenidosLote,
+  subirArchivoLeccion,
+  firmarUrlArchivoAdmin,
+  obtenerUrlArchivo,
 } = require('../controllers/contenidoController');
-const { verificarToken, verificarAdmin } = require('../middlewares/authMiddleware');
-const preguntaRoutes = require('./preguntaRoutes');
+const { verificarToken, verificarAdminOInstructor } = require('../middlewares/authMiddleware');
+const { uploadArchivoLeccion } = require('../middlewares/uploadMiddleware');
+const bloqueRoutes = require('./bloqueRoutes');
 
-router.get('/:id', obtenerContenido);
-router.post('/', verificarToken, verificarAdmin, crearContenido);
-router.put('/:id', verificarToken, verificarAdmin, editarContenido);
-router.delete('/:id', verificarToken, verificarAdmin, eliminarContenido);
-router.put('/:id/reordenar', verificarToken, verificarAdmin, reordenarContenido);
+router.put('/reordenar-lote', verificarToken, verificarAdminOInstructor, reordenarContenidosLote);
+router.post('/subir-archivo', verificarToken, verificarAdminOInstructor, uploadArchivoLeccion.single('archivo'), subirArchivoLeccion);
+router.post('/firmar-url-admin', verificarToken, verificarAdminOInstructor, firmarUrlArchivoAdmin);
+router.get('/archivos/:archivoId/url', verificarToken, obtenerUrlArchivo);
+router.get('/:id', verificarToken, obtenerContenido);
+router.post('/', verificarToken, verificarAdminOInstructor, crearContenido);
+router.put('/:id', verificarToken, verificarAdminOInstructor, editarContenido);
+router.put('/:id/mover', verificarToken, verificarAdminOInstructor, moverContenido);
+router.delete('/:id', verificarToken, verificarAdminOInstructor, eliminarContenido);
+router.put('/:id/reordenar', verificarToken, verificarAdminOInstructor, reordenarContenido);
 
-router.use('/:contenidoId/preguntas', preguntaRoutes);
+// Los bloques (texto/quiz) de una clase de tipo "bloques" viven acá. Las
+// preguntas de un quiz, a su vez, cuelgan de cada bloque (ver bloqueRoutes).
+router.use('/:contenidoId/bloques', bloqueRoutes);
 
 module.exports = router;

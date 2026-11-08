@@ -1,4 +1,6 @@
 const prisma = require('../config/prisma');
+const { avisarVenta } = require('../utils/avisoVenta');
+const { INSCRIPCION_VIGENTE } = require('../utils/inscripcionVigente');
 
 async function agregarAlCarrito(req, res) {
   try {
@@ -12,7 +14,7 @@ async function agregarAlCarrito(req, res) {
 
     // Si ya está inscripto, no tiene sentido agregarlo al carrito
     const yaInscripto = await prisma.inscripcion.findFirst({
-      where: { idUsuario, idCurso: parseInt(cursoId) },
+      where: { idUsuario, idCurso: parseInt(cursoId), ...INSCRIPCION_VIGENTE },
     });
     if (yaInscripto) {
       return res.status(409).json({ error: 'Ya estás inscripto en este curso' });
@@ -96,7 +98,7 @@ async function comprarCarrito(req, res) {
           data: { idUsuario, idCurso: item.idCurso },
         });
 
-        await tx.pago.create({
+        const nuevoPago = await tx.pago.create({
           data: {
             idInscripcion: nuevaInscripcion.id,
             monto: item.curso.precio,
@@ -105,7 +107,7 @@ async function comprarCarrito(req, res) {
           },
         });
 
-        inscripcionesCreadas.push(nuevaInscripcion);
+        inscripcionesCreadas.push({ ...nuevaInscripcion, idPago: nuevoPago.id });
       }
 
       // Vaciamos el carrito una vez procesada la compra
@@ -114,6 +116,7 @@ async function comprarCarrito(req, res) {
       return inscripcionesCreadas;
     });
 
+    await avisarVenta(idUsuario, resultado.map((i) => i.idPago));
     res.status(201).json({ mensaje: 'Compra realizada correctamente', inscripciones: resultado });
   } catch (error) {
     console.error(error);

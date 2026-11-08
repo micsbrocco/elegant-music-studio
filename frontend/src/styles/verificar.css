@@ -1,0 +1,48 @@
+/* Página pública de verificación de certificados (pages/VerificarCertificado.jsx) */
+.verif-resultado {
+  width: 100%;
+  margin: 8px 0 20px;
+  padding: 18px 20px;
+  border-radius: 14px;
+  text-align: left;
+}
+.verif-ok {
+  background: rgba(31, 157, 85, 0.08);
+  border: 1px solid rgba(31, 157, 85, 0.35);
+}
+.verif-mal {
+  background: rgba(200, 60, 60, 0.07);
+  border: 1px solid rgba(200, 60, 60, 0.3);
+}
+.verif-estado {
+  margin: 0;
+  font-weight: 700;
+  font-size: 15px;
+}
+.verif-ok .verif-estado { color: #1f9d55; }
+.verif-mal .verif-estado { color: #c0392b; }
+.verif-datos {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 16px;
+  margin: 14px 0 0;
+  font-size: 14px;
+}
+.verif-datos dt { color: #7a7a82; }
+.verif-datos dd { margin: 0; font-weight: 600; }
+.verif-codigo {
+  font-family: var(--font-mono, monospace);
+  letter-spacing: 0.04em;
+}
+.verif-form {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+.verif-input {
+  flex: 1;
+  min-width: 0;
+  text-transform: uppercase;
+  font-family: var(--font-mono, monospace);
+  letter-spacing: 0.04em;
+}

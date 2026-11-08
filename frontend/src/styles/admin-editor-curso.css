@@ -1,0 +1,3767 @@
+
+/* ============================================================
+ * Panel de Administrador: Editor de Curso unificado
+ * (parte de index.css, separado para que sea más fácil de ubicar)
+ *
+ * Usa el sistema "ui" (ui-variables.css): Manrope, dorado como acento,
+ * verde y rojo únicos. Ocupa todo el ancho al lado del sidemenu.
+ * ============================================================ */
+
+/* ---- Ocupar todo el ancho disponible (al lado del sidemenu), solo acá ---- */
+.admin-main:has(.editor-curso-page) {
+  max-width: none;
+  padding: 30px 40px 56px;
+}
+
+.editor-curso-page {
+  /* Este editor usa el sistema "ui" (ui-variables.css): estos alias solo
+     reenvían a las variables --ui-* para no reescribir cada selector. */
+  --ed-ink: var(--ui-ink);
+  --ed-fg: var(--ui-text);
+  --ed-zinc: var(--ui-text-2);
+  --ed-border: rgba(18, 18, 20, 0.1);
+  --ed-fill: var(--ui-fill);
+  --ed-canvas: #ffffff;
+  --ed-surface: #f8f9fb;
+
+  /* Acento dorado */
+  --ed-amber: var(--ui-gold);
+  --ed-amber-solid: var(--ui-gold);
+  --ed-amber-deep: var(--ui-gold-text);
+  --ed-amber-tint: var(--ui-gold-tint);
+
+  /* Verde (éxito / guardado) y rojo (peligro): uno solo de cada uno */
+  --ed-emerald: var(--ui-success);
+  --ed-emerald-tint: var(--ui-success-tint);
+  --ed-danger: var(--ui-danger);
+
+  /* Tipografía: una sola familia */
+  --ed-font-display: var(--ui-font);
+  --ed-font-body: var(--ui-font);
+  --ed-font-mono: var(--ui-font);
+
+  /* Radios */
+  --ed-radius-sm: var(--ui-r-md);
+  --ed-radius-lg: var(--ui-r-lg);
+  --ed-radius-xl: var(--ui-r-xl);
+  --ed-radius-pill: var(--ui-r-pill);
+
+  /* Sombras */
+  --ed-shadow-0: 0 0 0 1px var(--ed-border);
+  --ed-shadow-1: var(--ui-shadow-card);
+  --ed-shadow-2: var(--ui-shadow-card-hover);
+  --ed-shadow-3: var(--ui-shadow-pop);
+
+  --editor-radius-lg: var(--ed-radius-lg);
+  --editor-radius-md: var(--ui-r-md);
+  --editor-radius-sm: var(--ed-radius-sm);
+  --editor-shadow: var(--ed-shadow-1);
+  --editor-shadow-hover: var(--ed-shadow-2);
+
+  font-family: var(--ui-font);
+  color: var(--ed-fg);
+}
+
+/* Botones globales (.btn) dentro del editor: misma tipografía del sistema */
+.editor-curso-page .btn {
+  font-family: var(--ui-font);
+  letter-spacing: 0;
+}
+
+/* ---- Encabezado ---- */
+.editor-curso-page .admin-page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--ed-border);
+}
+.editor-curso-page .admin-page-header h2 {
+  font-family: var(--ed-font-display);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: var(--ui-tracking-titulo);
+  color: var(--ed-ink);
+  margin: 0 0 7px;
+}
+.editor-curso-page .admin-page-header p {
+  font-family: var(--ed-font-body);
+  font-size: 14px;
+  color: var(--ed-zinc);
+  max-width: 580px;
+}
+/* Botón "Ver como alumno": más grande que un btn-sm normal, con un borde
+   bien visible y una flechita inclinada que indica que abre en otra pestaña. */
+.editor-curso-ver-como-alumno {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--ed-font-mono);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 11px 18px;
+  border: 1.5px solid var(--ed-ink);
+  border-radius: var(--ed-radius-pill);
+  color: var(--ed-ink);
+  background: transparent;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+.editor-curso-ver-como-alumno:hover {
+  background: var(--ed-ink);
+  color: #fff;
+}
+.editor-curso-ver-como-alumno svg {
+  flex-shrink: 0;
+}
+
+.editor-curso-estado-pill {
+  font-family: var(--ed-font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  padding: 7px 16px;
+  border-radius: var(--ed-radius-pill);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.editor-curso-estado-pill--activo {
+  background: var(--ed-emerald-tint);
+  color: var(--ed-emerald);
+}
+.editor-curso-estado-pill--oculto {
+  background: var(--ed-amber-tint);
+  color: var(--ed-amber-deep);
+}
+.editor-curso-estado-pill--borrador {
+  background: var(--ed-fill);
+  color: var(--ed-zinc);
+}
+
+/* ---- Layout general: a todo el ancho ---- */
+.editor-curso {
+  display: grid;
+  grid-template-columns: 340px 1fr 300px;
+  gap: 24px;
+  align-items: start;
+}
+@media (max-width: 1360px) {
+  .editor-curso { grid-template-columns: 300px 1fr; }
+  .editor-curso-col-der { grid-column: 1 / -1; }
+}
+@media (max-width: 900px) {
+  .editor-curso { grid-template-columns: 1fr; }
+  .editor-curso-col-der { grid-column: auto; }
+}
+
+.editor-curso-col-izq,
+.editor-curso-col-centro,
+.editor-curso-col-der {
+  min-width: 0;
+}
+.editor-curso-col-izq,
+.editor-curso-col-der {
+  position: sticky;
+  top: 20px;
+}
+
+.editor-curso-page .admin-card {
+  border-radius: var(--ed-radius-lg);
+  border: 1px solid var(--ed-border);
+  box-shadow: var(--ed-shadow-1);
+  background: var(--ed-canvas);
+  padding: 22px;
+}
+
+/* ---- Tabs como control segmentado ---- */
+.editor-curso-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 18px;
+  background: var(--ed-fill);
+  border-radius: var(--ed-radius-pill);
+  padding: 4px;
+}
+.editor-curso-tab {
+  flex: 1;
+  background: none;
+  border: none;
+  border-radius: var(--ed-radius-pill);
+  padding: 9px 10px;
+  font-family: var(--ed-font-display);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ed-zinc);
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+.editor-curso-tab.activo {
+  background: var(--ed-ink);
+  color: #fff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.editor-curso-resumen {
+  font-family: var(--ed-font-mono);
+  font-size: 12px;
+  letter-spacing: 0;
+  color: var(--ed-zinc);
+  margin: 0 0 16px;
+}
+
+.editor-curso-arbol {
+  max-height: 60vh;
+  overflow-y: auto;
+  margin-bottom: 16px;
+  padding-right: 4px;
+}
+
+.editor-curso-modulo {
+  border: 1px solid var(--ed-border);
+  border-radius: var(--editor-radius-md);
+  margin-bottom: 12px;
+  background: var(--ed-canvas);
+  transition: box-shadow 0.2s, border-color 0.2s, opacity 0.15s;
+}
+.editor-curso-modulo:hover {
+  box-shadow: var(--ed-shadow-1);
+}
+.editor-curso-modulo.arrastrando {
+  opacity: 0.4;
+}
+.editor-curso-modulo.sobre {
+  border-color: var(--ed-amber);
+  box-shadow: 0 0 0 3px var(--ed-amber-tint);
+}
+.editor-curso-modulo-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 12px 13px 10px;
+  cursor: grab;
+}
+.editor-curso-modulo-header:active {
+  cursor: grabbing;
+}
+.editor-curso-drag-handle {
+  color: var(--ed-zinc);
+  flex-shrink: 0;
+  display: flex;
+  cursor: grab;
+}
+.editor-curso-modulo-numero {
+  font-family: var(--ed-font-display);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ed-amber-deep);
+  background: var(--ed-amber-tint);
+  border-radius: var(--ui-r-md);
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.editor-curso-modulo-titulo-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--ed-font-body);
+  min-width: 0;
+}
+.editor-curso-modulo-titulo {
+  font-family: var(--ed-font-display);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ed-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.editor-curso-modulo-meta {
+  font-family: var(--ed-font-mono);
+  font-size: 12px;
+  color: var(--ed-zinc);
+  font-weight: 400;
+  flex-shrink: 0;
+}
+.editor-curso-modulo-borrar {
+  background: none;
+  border: none;
+  color: var(--ed-zinc);
+  cursor: pointer;
+  padding: 5px;
+  border-radius: var(--ed-radius-sm);
+  flex-shrink: 0;
+  display: flex;
+  transition: background 0.15s, color 0.15s;
+}
+.editor-curso-modulo-borrar:hover {
+  color: var(--ed-danger);
+  background: var(--ui-danger-tint);
+}
+
+.editor-curso-lecciones {
+  padding: 2px 12px 12px 34px;
+}
+.editor-curso-leccion {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 10px;
+  border-radius: var(--editor-radius-sm);
+  cursor: pointer;
+  border: 1px solid transparent;
+  margin-bottom: 5px;
+  transition: background 0.15s, opacity 0.15s, border-color 0.15s;
+}
+.editor-curso-leccion:hover {
+  background: var(--ed-fill);
+}
+.editor-curso-leccion.activa {
+  background: var(--ed-amber-tint);
+  border-color: rgba(201, 162, 39, 0.3);
+  box-shadow: inset 3px 0 0 var(--ed-amber-solid);
+}
+.editor-curso-leccion.arrastrando {
+  opacity: 0.4;
+}
+.editor-curso-leccion.sobre {
+  border-color: var(--ed-amber);
+}
+.editor-curso-leccion.oculta {
+  opacity: 0.55;
+}
+.editor-curso-leccion-drag {
+  color: var(--ed-zinc);
+  flex-shrink: 0;
+  display: flex;
+  cursor: grab;
+}
+.editor-curso-leccion-tipo {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--ed-radius-pill);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.editor-curso-leccion-tipo--video { background: var(--ui-fill); color: var(--ui-text-2); }
+.editor-curso-leccion-tipo--bloques { background: var(--ed-amber-tint); color: var(--ed-amber-deep); }
+.editor-curso-leccion-titulo {
+  flex: 1;
+  font-size: 12px;
+  color: var(--ed-fg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.editor-curso-leccion-oculta-pill {
+  font-family: var(--ed-font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--ed-zinc);
+  background: var(--ed-fill);
+  border-radius: var(--ed-radius-pill);
+  padding: 3px 9px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.editor-curso-leccion-visibilidad {
+  background: none;
+  border: none;
+  color: var(--ed-zinc);
+  cursor: pointer;
+  padding: 3px;
+  border-radius: var(--ui-r-md);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+.editor-curso-leccion-visibilidad:hover {
+  color: var(--ed-amber-deep);
+  background: var(--ed-amber-tint);
+}
+.editor-curso-leccion-borrar {
+  background: none;
+  border: none;
+  color: var(--ed-zinc);
+  cursor: pointer;
+  padding: 3px;
+  border-radius: var(--ui-r-md);
+  flex-shrink: 0;
+  display: none;
+}
+.editor-curso-leccion:hover .editor-curso-leccion-borrar,
+.editor-curso-bloque-header .editor-curso-leccion-borrar {
+  display: flex;
+}
+.editor-curso-leccion-borrar:hover {
+  color: var(--ed-danger);
+  background: var(--ui-danger-tint);
+}
+
+/* ---- Tarjetas de "+ agregar clase": el punto de entrada más visible del panel ---- */
+.editor-curso-agregar-leccion-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+.editor-curso-add-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  background: var(--ed-canvas);
+  border: 1.5px dashed var(--ed-border);
+  border-radius: var(--editor-radius-md);
+  padding: 11px 14px;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--ed-font-body);
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+.editor-curso-add-card:hover {
+  border-color: var(--ed-amber-solid);
+  border-style: solid;
+  background: var(--ed-amber-tint);
+  box-shadow: var(--ed-shadow-1);
+  transform: translateY(-1px);
+}
+.editor-curso-add-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--ed-radius-pill);
+  background: var(--ed-amber-tint);
+  color: var(--ed-amber-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.editor-curso-add-texto {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.editor-curso-add-texto strong {
+  font-family: var(--ed-font-display);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ed-ink);
+}
+.editor-curso-add-texto span {
+  font-size: 12px;
+  color: var(--ed-zinc);
+}
+.editor-curso-add-plus {
+  width: 26px;
+  height: 26px;
+  border-radius: var(--ed-radius-pill);
+  background: var(--ed-ink);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.editor-curso-add-card:hover .editor-curso-add-plus {
+  background: var(--ed-amber-solid);
+  color: #fff;
+}
+
+.editor-curso-nuevo-modulo-form {
+  display: flex;
+  gap: 8px;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--ed-border);
+}
+.editor-curso-nuevo-modulo-form .admin-input {
+  flex: 1;
+  border-radius: var(--ed-radius-pill);
+  padding: 9px 16px;
+}
+.editor-curso-nuevo-modulo-form .btn {
+  border-radius: var(--ed-radius-pill);
+}
+
+.editor-curso-vacio {
+  padding: 70px 20px;
+  text-align: center;
+  color: var(--ed-zinc);
+  font-size: 14px;
+}
+
+.editor-curso-panel-titulo {
+  font-family: var(--ed-font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--ed-amber-deep);
+  margin: 0 0 16px;
+}
+
+/* ---- Layout de nivel de página: tabs arriba + columna única abajo,
+   igual disposición que el mockup (sin grilla de 3 columnas) ---- */
+.editor-curso-tabs-top {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--ed-border);
+}
+.editor-curso-tab-top {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0 4px 14px;
+  margin-bottom: -1px;
+  font-family: var(--ed-font-display);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ed-zinc);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.editor-curso-tab-top + .editor-curso-tab-top {
+  margin-left: 18px;
+}
+.editor-curso-tab-top-icono {
+  display: flex;
+}
+.editor-curso-tab-top.activo {
+  color: var(--ed-ink);
+  border-bottom-color: var(--ed-amber-solid);
+}
+.editor-curso-tab-top-badge {
+  font-family: var(--ed-font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ed-amber-deep);
+  background: var(--ed-amber-tint);
+  border-radius: var(--ed-radius-pill);
+  padding: 2px 8px;
+}
+
+.editor-curso-general-full {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.editor-curso-general-dos-col {
+  display: flex;
+  align-items: stretch;
+  gap: 24px;
+}
+.editor-curso-general-col {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+/* La columna "relleno" (la 03) se estira para terminar a la misma altura que
+   la columna de al lado (02 + 04 apiladas): su única tarjeta crece para
+   ocupar todo el alto disponible de la columna. */
+.editor-curso-general-col--relleno {
+  display: flex;
+}
+.editor-curso-general-col--relleno > .editor-curso-seccion {
+  flex: 1;
+}
+@media (max-width: 1100px) {
+  .editor-curso-general-dos-col { flex-direction: column; }
+  .editor-curso-general-col,
+  .editor-curso-general-col--relleno > .editor-curso-seccion {
+    flex: none;
+  }
+}
+
+/* ---- Secciones numeradas de "Información General" (estilo del mockup):
+   cada una es su propia tarjeta blanca, como en el mockup ---- */
+.editor-curso-seccion-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.editor-curso-seccion-eyebrow {
+  font-family: var(--ui-font);
+  font-size: var(--ui-fs-20);
+  font-weight: var(--ui-fw-bold);
+  letter-spacing: var(--ui-tracking-titulo);
+  color: var(--ed-ink);
+  margin: 0 0 18px;
+}
+.editor-curso-seccion-head { margin-bottom: 18px; }
+.editor-curso-seccion-head .editor-curso-seccion-eyebrow { margin: 0; }
+.editor-curso-seccion-eyebrow--compacto { margin-bottom: 4px; }
+.editor-curso-seccion-titulo {
+  font-family: var(--ed-font-display);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: var(--ui-tracking-titulo);
+  color: var(--ed-ink);
+  margin: 4px 0 18px;
+}
+.editor-curso-seccion-badge {
+  font-family: var(--ed-font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--ed-zinc);
+  background: var(--ed-fill);
+  border-radius: var(--ed-radius-pill);
+  padding: 4px 10px;
+  flex-shrink: 0;
+}
+
+/* ---- Estado del curso: control segmentado de 3 opciones ---- */
+.editor-curso-estado-segmentado {
+  display: inline-flex;
+  gap: 4px;
+  background: var(--ed-fill);
+  border-radius: var(--ed-radius-pill);
+  padding: 4px;
+}
+.editor-curso-estado-segmentado-btn {
+  background: none;
+  border: none;
+  border-radius: var(--ed-radius-pill);
+  padding: 7px 16px;
+  font-family: var(--ed-font-display);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ed-zinc);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+}
+.editor-curso-estado-segmentado-btn.activo {
+  background: var(--ed-canvas);
+  color: var(--ed-ink);
+  box-shadow: var(--ed-shadow-1);
+}
+.editor-curso-estado-segmentado-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ---- Fila de imagen de portada (sección 01) ---- */
+.editor-curso-imagen-row {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.editor-curso-imagen-preview {
+  width: 220px;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--editor-radius-md);
+  overflow: hidden;
+  background: var(--ed-fill);
+  border: 1px solid var(--ed-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.editor-curso-imagen-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.editor-curso-imagen-preview-vacia {
+  font-size: 24px;
+  color: var(--ed-zinc);
+}
+.editor-curso-imagen-info {
+  flex: 1;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+}
+.editor-curso-imagen-info strong {
+  font-family: var(--ed-font-display);
+  font-size: 14px;
+  color: var(--ed-ink);
+  margin-bottom: 4px;
+}
+.editor-curso-imagen-info span {
+  font-size: 12px;
+  color: var(--ed-zinc);
+}
+
+/* ---- Vista previa, al lado de los campos de "01 / Información básica"
+   (antes esa sección quedaba con un hueco enorme a la derecha porque los
+   campos no usan todo el ancho de la tarjeta) ---- */
+.editor-curso-info-basica-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 32px;
+}
+.editor-curso-info-basica-campos {
+  flex: 1;
+  min-width: 0;
+}
+.editor-curso-preview-panel {
+  width: 300px;
+  flex-shrink: 0;
+}
+@media (max-width: 1100px) {
+  .editor-curso-info-basica-layout {
+    flex-direction: column;
+  }
+  .editor-curso-preview-panel {
+    width: 100%;
+  }
+}
+.editor-curso-preview-eyebrow {
+  font-family: var(--ed-font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: var(--ed-zinc);
+  margin: 0 0 10px;
+}
+.editor-curso-preview-card {
+  border-radius: var(--editor-radius-md);
+  border: 1px solid var(--ed-border);
+  background: var(--ed-canvas);
+  overflow: hidden;
+  box-shadow: var(--ed-shadow-1);
+}
+.editor-curso-preview-card-img {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  background: var(--ed-fill);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.editor-curso-preview-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.editor-curso-preview-card-img-vacia {
+  font-size: 24px;
+  color: var(--ed-zinc);
+}
+.editor-curso-preview-card-tag {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ed-ink);
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: var(--ed-radius-pill);
+  padding: 4px 10px;
+}
+.editor-curso-preview-card-body {
+  padding: 16px;
+}
+.editor-curso-preview-card-titulo {
+  font-family: var(--ed-font-display);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ed-ink);
+  margin: 0 0 6px;
+  line-height: 1.3;
+}
+.editor-curso-preview-card-desc {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ed-zinc);
+  margin: 0 0 14px;
+}
+.editor-curso-preview-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid var(--ed-border);
+}
+.editor-curso-preview-card-precio {
+  font-family: var(--ed-font-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ed-ink);
+}
+.editor-curso-preview-card-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ed-amber-deep);
+}
+.editor-curso-preview-nota {
+  font-size: 12px;
+  color: var(--ed-zinc);
+  margin: 10px 0 0;
+  line-height: 1.5;
+}
+
+/* ---- Grilla de precios/nivel (sección 02): 2 columnas, ya que la sección
+   comparte fila con "Acceso & docencia" y queda a media pantalla ---- */
+.editor-curso-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+/* ---- Dos columnas (sección 03: toggles + tarjeta de instructor) ---- */
+.editor-curso-seccion-dos-col {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 20px;
+  align-items: start;
+}
+@media (max-width: 760px) {
+  .editor-curso-seccion-dos-col { grid-template-columns: 1fr; }
+}
+/* ---- Subsecciones dentro de una misma tarjeta (sección 04: incluye +
+   estadísticas, juntas en una sola tarjeta) ---- */
+.editor-curso-subseccion {
+  padding-top: 18px;
+  margin-top: 18px;
+  border-top: 1px solid var(--ed-border);
+}
+.editor-curso-subseccion:first-of-type {
+  padding-top: 0;
+  margin-top: 0;
+  border-top: none;
+}
+.editor-curso-estadistica-fila {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+/* ---- Selector visual de ícono (reemplaza el dropdown de nombres) ---- */
+.editor-curso-icono-picker {
+  display: flex;
+  gap: 4px;
+  background: var(--ed-fill);
+  border-radius: var(--ed-radius-sm);
+  padding: 4px;
+  flex-shrink: 0;
+}
+.editor-curso-icono-picker-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  border-radius: var(--ui-r-md);
+  color: var(--ed-zinc);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.editor-curso-icono-picker-btn:hover {
+  color: var(--ed-ink);
+}
+.editor-curso-icono-picker-btn.activo {
+  background: var(--ed-canvas);
+  color: var(--ed-amber-deep);
+  box-shadow: var(--ed-shadow-1);
+}
+
+.editor-curso-instructor-card {
+  border: 1px solid var(--ed-border);
+  border-radius: var(--editor-radius-md);
+  background: var(--ed-surface);
+  padding: 16px;
+}
+
+.editor-curso-colaboradores-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.editor-curso-instructor-titulo {
+  display: block;
+  font-family: var(--ui-font);
+  font-size: var(--ui-fs-16);
+  font-weight: var(--ui-fw-bold);
+  color: var(--ed-ink);
+  margin-bottom: var(--ui-s-3);
+}
+.editor-curso-instructor-nota {
+  margin: 0 0 var(--ui-s-3);
+  font-size: var(--ui-fs-14);
+  color: var(--ed-zinc);
+}
+.editor-curso-colaborador-agregar {
+  display: flex;
+  gap: var(--ui-s-2);
+  margin-bottom: var(--ui-s-4);
+}
+.editor-curso-colaborador-agregar .admin-input { flex: 1; min-width: 0; }
+
+/* Todas las filas con la misma estructura y tamaño: asa, ojo, nombre (columna
+   fija), título/rol (columna fija) y botón (columna fija, aunque no haya). */
+.editor-curso-colaborador-fila {
+  display: grid;
+  grid-template-columns: 24px 32px minmax(0, 1fr) 84px;
+  align-items: center;
+  gap: var(--ui-s-3);
+  height: 64px;
+  padding: 0 var(--ui-s-3);
+  border: 1px solid var(--ed-border);
+  border-radius: var(--editor-radius-sm);
+  background: var(--ed-canvas);
+}
+.editor-curso-colaborador-drag {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--ui-r-md);
+  background: none;
+  color: var(--ed-zinc);
+  cursor: grab;
+  touch-action: none;
+}
+.editor-curso-colaborador-drag:hover:not(:disabled) { color: var(--ed-ink); background: var(--ui-fill); }
+.editor-curso-colaborador-drag:active { cursor: grabbing; }
+.editor-curso-colaborador-drag:focus-visible { outline: none; box-shadow: var(--ui-focus); }
+.editor-curso-colaborador-drag:disabled { opacity: 0.4; cursor: default; }
+
+.editor-curso-colaborador-visible-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ed-border);
+  background: var(--ed-surface);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.editor-curso-colaborador-visible-btn.visible {
+  color: var(--ed-emerald);
+  border-color: var(--ed-emerald-tint);
+  background: var(--ed-emerald-tint);
+}
+.editor-curso-colaborador-visible-btn.oculto { color: var(--ed-zinc); }
+
+.editor-curso-colaborador-datos {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  align-items: center;
+  gap: var(--ui-s-3);
+  min-width: 0;
+}
+.editor-curso-colaborador-nombre {
+  min-width: 0;
+  font-size: var(--ui-fs-14);
+  font-weight: var(--ui-fw-semibold);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.editor-curso-colaborador-creador { font-weight: var(--ui-fw-regular); color: var(--ed-zinc); }
+.editor-curso-colaborador-etiqueta { width: 100%; min-width: 0; }
+.editor-curso-colaborador-sacar { width: 84px; justify-content: center; }
+
+.editor-curso-acciones-row--flotante {
+  padding-top: 16px;
+  padding-bottom: 4px;
+}
+
+/* ============================================================
+ * Pestaña "Módulos y Contenido": lista de una sola columna a todo
+ * el ancho, con el panel de edición de la clase desplegándose en
+ * línea debajo de la fila seleccionada (en vez de una columna
+ * aparte), igual disposición que el mockup.
+ * ============================================================ */
+.editor-curso-modulos-full {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.editor-curso-stats-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.editor-curso-stats-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.editor-curso-stats-card .editor-curso-navegador {
+  position: static;
+  padding: 0 !important;
+  box-shadow: none !important;
+  border-top: 1px solid var(--ed-border);
+  padding-top: 14px !important;
+}
+.editor-curso-stats-chips {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.editor-curso-stats-chips span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--ed-font-mono);
+  font-size: 12px;
+  color: var(--ed-zinc);
+  background: var(--ed-fill);
+  border-radius: var(--ed-radius-pill);
+  padding: 6px 12px;
+}
+
+.editor-curso-modulo-card-full {
+  padding: 0;
+  overflow: hidden;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+.editor-curso-modulo-card-full.sobre {
+  border-color: var(--ed-amber);
+  box-shadow: 0 0 0 3px var(--ed-amber-tint);
+}
+.editor-curso-modulo-card-full-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  cursor: grab;
+}
+.editor-curso-modulo-card-full-header:active {
+  cursor: grabbing;
+}
+.editor-curso-modulo-titulo-btn-full {
+  flex: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  min-width: 0;
+}
+.editor-curso-modulo-titulo-full {
+  font-family: var(--ed-font-display);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ed-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.editor-curso-modulo-meta-full {
+  font-family: var(--ed-font-mono);
+  font-size: 12px;
+  color: var(--ed-zinc);
+  flex-shrink: 0;
+}
+.editor-curso-modulo-card-full-body {
+  border-top: 1px solid var(--ed-border);
+  padding: 6px 18px 18px;
+}
+
+.editor-curso-leccion-full {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 8px;
+  border-radius: var(--ed-radius-sm);
+  border-bottom: 1px solid var(--ed-border);
+  transition: background 0.15s, opacity 0.15s;
+}
+.editor-curso-leccion-full:hover {
+  background: var(--ed-surface);
+}
+.editor-curso-leccion-full.activa {
+  background: var(--ed-amber-tint);
+}
+.editor-curso-leccion-full.oculta {
+  opacity: 0.6;
+}
+.editor-curso-leccion-full.sobre {
+  outline: 1.5px solid var(--ed-amber);
+}
+.editor-curso-leccion-titulo-full {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ed-fg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.editor-curso-leccion-estado-pill {
+  font-family: var(--ed-font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  border-radius: var(--ed-radius-pill);
+  padding: 4px 10px;
+  flex-shrink: 0;
+}
+.editor-curso-leccion-estado-pill.visible {
+  background: var(--ed-emerald-tint);
+  color: var(--ed-emerald);
+}
+.editor-curso-leccion-estado-pill.oculta {
+  background: var(--ed-fill);
+  color: var(--ed-zinc);
+}
+.editor-curso-leccion-acciones {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+/* Botones de acción (ocultar / editar / eliminar) más grandes y con
+   superficie propia, para que sean fáciles de tocar y de distinguir. */
+.editor-curso-leccion-accion-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ed-canvas);
+  border: 1px solid var(--ed-border);
+  border-radius: var(--ed-radius-sm);
+  color: var(--ed-zinc);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.editor-curso-leccion-accion-btn svg {
+  width: 17px;
+  height: 17px;
+}
+.editor-curso-leccion-accion-btn:hover {
+  color: var(--ed-amber-deep);
+  border-color: var(--ed-amber-solid);
+  background: var(--ed-amber-tint);
+}
+.editor-curso-leccion-accion-btn--borrar:hover {
+  color: var(--ed-danger);
+  border-color: rgba(192, 57, 43, 0.3);
+  background: var(--ui-danger-tint);
+}
+
+/* ---- Vista de edición de una clase, en su propia sección a pantalla
+   completa (no desplegada entre las filas: así no se pierde de vista
+   lo que se está editando) ---- */
+.editor-curso-edicion-full {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.editor-curso-navegador {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  padding: 8px 10px !important;
+  box-shadow: var(--ed-shadow-0) !important;
+}
+.editor-curso-navegador-volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 4px 6px;
+  font-family: var(--ed-font-body);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ed-zinc);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+.editor-curso-navegador-volver:hover {
+  color: var(--ed-ink);
+}
+.editor-curso-navegador-lista {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow-x: auto;
+  flex: 1;
+  min-width: 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ed-border) transparent;
+}
+.editor-curso-navegador-lista::-webkit-scrollbar {
+  height: 4px;
+}
+.editor-curso-navegador-lista::-webkit-scrollbar-thumb {
+  background: var(--ed-border);
+  border-radius: var(--ui-r-md);
+}
+.editor-curso-navegador-lista::-webkit-scrollbar-track {
+  background: transparent;
+}
+.editor-curso-navegador-modulo {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.editor-curso-navegador-separador {
+  width: 1px;
+  height: 16px;
+  background: var(--ed-border);
+  margin: 0 6px;
+  flex-shrink: 0;
+}
+.editor-curso-navegador-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--ed-fill);
+  border: 1px solid transparent;
+  border-radius: var(--ed-radius-sm);
+  padding: 6px 11px;
+  font-family: var(--ed-font-display);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ed-ink);
+  cursor: pointer;
+  white-space: nowrap;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.editor-curso-navegador-chip span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.editor-curso-navegador-chip:hover {
+  background: var(--ed-amber-tint);
+  border-color: var(--ed-amber-solid);
+  color: var(--ed-amber-deep);
+}
+.editor-curso-navegador-chip.activo {
+  background: var(--ed-ink);
+  color: #fff;
+}
+.editor-curso-navegador-chip.oculta {
+  opacity: 0.55;
+}
+.editor-curso-navegador--modulos .editor-curso-navegador-chip {
+  max-width: 220px;
+}
+.editor-curso-navegador--modulos .editor-curso-modulo-numero {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.editor-curso-agregar-leccion-grupo-full {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-top: 14px;
+}
+.editor-curso-agregar-leccion-full-label {
+  font-size: 12px;
+  color: var(--ed-zinc);
+  margin-right: 2px;
+}
+
+.editor-curso-nuevo-modulo-form-full {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--ed-zinc);
+  border: 1.5px dashed var(--ed-border);
+  background: var(--ed-surface) !important;
+  box-shadow: none !important;
+}
+.editor-curso-nuevo-modulo-form-full .admin-input {
+  flex: 1;
+}
+
+.editor-curso-leccion-cabecera-badges {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.editor-curso-tipo-readonly {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  background: var(--ed-fill);
+  border: 1px solid var(--ed-border);
+  border-radius: var(--ed-radius-pill);
+  padding: 6px 16px 6px 6px;
+  font-size: 12px;
+  color: var(--ed-zinc);
+  margin: 0;
+}
+.editor-curso-tipo-readonly-icono {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--ed-radius-pill);
+  background: #fff;
+  color: var(--ed-amber-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.editor-curso-tipo-readonly strong {
+  color: var(--ed-ink);
+  font-family: var(--ed-font-display);
+}
+
+/* Pill clickeable para visible/oculta, en el panel de edición de la clase */
+.editor-curso-visibilidad-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid var(--ed-border);
+  border-radius: var(--ed-radius-pill);
+  padding: 6px 14px 6px 10px;
+  font-family: var(--ed-font-display);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--ed-canvas);
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.editor-curso-visibilidad-pill.visible {
+  color: var(--ed-emerald);
+  background: var(--ed-emerald-tint);
+  border-color: rgba(21, 128, 61, 0.25);
+}
+.editor-curso-visibilidad-pill.oculta {
+  color: var(--ed-zinc);
+  background: var(--ed-fill);
+}
+.editor-curso-visibilidad-pill:hover {
+  border-color: var(--ed-amber-solid);
+}
+.editor-curso-visibilidad-ayuda {
+  font-size: 12px;
+  color: var(--ed-zinc);
+  margin: 0 0 18px;
+}
+
+.editor-curso-acciones-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--ed-border);
+}
+.editor-curso-mensaje-ok {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ed-emerald);
+  white-space: nowrap;
+}
+.editor-curso-archivos-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.editor-curso-archivo-fila {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--ed-fill);
+  border: 1px solid var(--ed-border);
+  border-radius: var(--editor-radius-sm);
+  padding: 8px 10px;
+}
+.editor-curso-archivo-fila-icono {
+  flex-shrink: 0;
+  display: flex;
+  color: var(--ed-amber-deep);
+}
+.editor-curso-archivo-fila-input {
+  flex: 1;
+  min-width: 0;
+}
+.editor-curso-archivo-fila-boton {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ed-ink);
+  text-decoration: none;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: var(--ed-radius-sm);
+  border: 1px solid var(--ed-border);
+  background: var(--ed-canvas);
+  white-space: nowrap;
+}
+.editor-curso-archivo-fila-boton:hover {
+  border-color: var(--ed-amber-solid);
+}
+.editor-curso-archivo-fila-quitar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--ed-radius-sm);
+  border: 1px solid var(--ed-border);
+  background: var(--ed-canvas);
+  color: var(--ed-danger);
+  cursor: pointer;
+}
+.editor-curso-archivo-fila-quitar:hover {
+  background: var(--ui-danger-tint);
+  border-color: rgba(192, 57, 43, 0.3);
+}
+.editor-curso-archivo-agregar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ed-ink);
+  border: 1.5px dashed var(--ed-border);
+  border-radius: var(--editor-radius-sm);
+  padding: 10px 14px;
+  background: var(--ed-canvas);
+  margin: 0;
+}
+.editor-curso-archivo-agregar:hover {
+  border-color: var(--ed-amber-solid);
+  color: var(--ed-amber-deep);
+}
+
+.editor-curso-page .admin-landing-bloque {
+  border-radius: var(--editor-radius-md);
+}
+.editor-curso-page .admin-landing-bloque-titulo {
+  font-family: var(--ed-font-mono);
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--ed-amber-deep);
+}
+
+.editor-curso-cert-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  background: var(--ed-amber-tint);
+  border: 1px solid rgba(201, 162, 39, 0.25);
+  border-radius: var(--editor-radius-md);
+  padding: 16px;
+  margin-top: 14px;
+}
+.editor-curso-cert-texto {
+  flex: 1 1 220px;
+  min-width: 0;
+}
+.editor-curso-cert-texto strong {
+  display: block;
+  font-size: 12px;
+  color: var(--ed-ink);
+  margin-bottom: 3px;
+}
+.editor-curso-cert-texto span {
+  font-size: 12px;
+  color: var(--ed-zinc);
+}
+.editor-curso-cert-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  flex-shrink: 0;
+  background: var(--ed-canvas);
+  border: 1px solid var(--ed-border);
+  border-radius: var(--ui-r-pill);
+  padding: 6px 14px 6px 6px;
+  cursor: pointer;
+  font-family: var(--ed-font-body);
+  white-space: nowrap;
+}
+.editor-curso-cert-toggle-perilla {
+  width: 34px;
+  height: 20px;
+  border-radius: var(--ui-r-xl);
+  background: var(--ed-border);
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.15s ease;
+}
+.editor-curso-cert-toggle-perilla::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  transition: transform 0.15s ease;
+}
+.editor-curso-cert-toggle.activo .editor-curso-cert-toggle-perilla {
+  background: var(--ed-emerald);
+}
+.editor-curso-cert-toggle.activo .editor-curso-cert-toggle-perilla::after {
+  transform: translateX(14px);
+}
+.editor-curso-cert-toggle-texto {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ed-ink);
+}
+
+/* ---- Bloques (texto/quiz) ---- */
+.editor-curso-bloques {
+  margin-top: 4px;
+}
+.editor-curso-bloque-card {
+  border: 1px solid var(--ed-border);
+  border-radius: var(--editor-radius-md);
+  background: var(--ed-canvas);
+  margin-bottom: 14px;
+  overflow: hidden;
+  box-shadow: var(--ed-shadow-1);
+  transition: box-shadow 0.2s;
+}
+.editor-curso-bloque-card:hover {
+  box-shadow: var(--ed-shadow-2);
+}
+.editor-curso-bloque-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  background: var(--ed-surface);
+  border-bottom: 1px solid var(--ed-border);
+}
+.editor-curso-bloque-drag {
+  color: var(--ed-zinc);
+  display: flex;
+  cursor: grab;
+  flex-shrink: 0;
+  touch-action: none;
+}
+.editor-curso-bloque-drag:active {
+  cursor: grabbing;
+}
+.editor-curso-bloque-tipo {
+  flex: 1;
+  font-family: var(--ed-font-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0;
+  padding: 4px 12px;
+  border-radius: var(--ed-radius-pill);
+  display: inline-flex;
+  width: fit-content;
+}
+.editor-curso-bloque-tipo--texto { background: var(--ui-fill); color: var(--ui-text-2); }
+.editor-curso-bloque-tipo--quiz { background: var(--ed-amber-tint); color: var(--ed-amber-deep); }
+.editor-curso-bloque-body {
+  padding: 16px;
+}
+
+/* Botones compactos para agregar bloques dentro de una clase: quedan fijos
+   arriba de la lista, así los bloques nuevos se agregan siempre debajo. */
+.editor-curso-add-bloque-grupo {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 16px;
+}
+.editor-curso-add-bloque-btn {
+  background: var(--ed-canvas);
+  border: 1.5px dashed var(--ed-border);
+  border-radius: var(--ed-radius-pill);
+  padding: 8px 16px;
+  font-family: var(--ed-font-body);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ed-zinc);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+.editor-curso-add-bloque-btn:hover {
+  border-color: var(--ed-amber-solid);
+  border-style: solid;
+  color: var(--ed-amber-deep);
+  background: var(--ed-amber-tint);
+}
+
+/* Guardar bloque: verde convencional de "guardar/confirmar", se habilita
+   solo cuando hay cambios sin guardar en ese bloque. */
+.editor-curso-btn-guardar-bloque {
+  font-family: var(--ed-font-display);
+  font-weight: 700;
+  font-size: 12px;
+  border: none;
+  border-radius: var(--ed-radius-sm);
+  padding: 9px 18px;
+  cursor: pointer;
+  background: var(--ed-emerald);
+  color: #fff;
+  transition: background 0.15s, opacity 0.15s;
+}
+.editor-curso-btn-guardar-bloque:hover:not(:disabled) {
+  background: var(--ui-success);
+}
+.editor-curso-btn-guardar-bloque:disabled {
+  background: var(--ed-fill);
+  color: var(--ed-zinc);
+  cursor: not-allowed;
+}
+
+.editor-curso-preguntas {
+  margin-top: 8px;
+}
+.editor-curso-preguntas-aviso {
+  font-size: 12px;
+  color: var(--ed-amber-deep);
+  background: var(--ed-amber-tint);
+  border: 1px solid rgba(201, 162, 39, 0.3);
+  border-radius: var(--editor-radius-sm);
+  padding: 9px 14px;
+  margin-bottom: 12px;
+}
+.editor-curso-pregunta-card {
+  border: 1px solid var(--ed-border);
+  border-radius: var(--editor-radius-sm);
+  padding: 14px;
+  margin-bottom: 10px;
+  background: var(--ed-canvas);
+}
+.editor-curso-pregunta-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.editor-curso-pregunta-enunciado {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ed-ink);
+  margin: 0;
+}
+.editor-curso-pregunta-opcion {
+  font-size: 12px;
+  color: var(--ed-zinc);
+  padding: 3px 0;
+  display: flex;
+  gap: 6px;
+}
+.editor-curso-pregunta-opcion.correcta {
+  color: var(--ed-emerald);
+  font-weight: 600;
+}
+
+/* ---- Formulario de pregunta (quiz): aprovecha el ancho disponible ---- */
+.editor-curso-pregunta-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.editor-curso-pregunta-campo label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ed-zinc);
+  margin-bottom: 4px;
+}
+.editor-curso-pregunta-campo--enunciado textarea {
+  resize: vertical;
+}
+.editor-curso-pregunta-opciones-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+.editor-curso-pregunta-opcion-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  border: 1px solid var(--ed-border);
+  border-radius: var(--editor-radius-sm);
+  background: var(--ed-fill);
+}
+.editor-curso-pregunta-opcion-campo label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ed-zinc);
+}
+.editor-curso-pregunta-opcion-campo-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.editor-curso-pregunta-opcion-campo .admin-input {
+  background: var(--ed-canvas);
+}
+.editor-curso-pregunta-opcion-campo .admin-input-sm {
+  font-size: 12px;
+  padding: 6px 10px;
+}
+.editor-curso-pregunta-opcion-campo--agregar {
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: transparent;
+  border: 1px dashed var(--ed-border);
+}
+.editor-curso-pregunta-pie {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-top: 10px;
+  border-top: 1px solid var(--ed-border);
+}
+.editor-curso-pregunta-campo--respuesta {
+  min-width: 160px;
+}
+.editor-curso-pregunta-campo--respuesta select {
+  width: auto;
+  min-width: 160px;
+}
+.editor-curso-pregunta-pie-acciones {
+  display: flex;
+  gap: 8px;
+}
+@media (max-width: 760px) {
+  .editor-curso-pregunta-opciones-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- Columna derecha: vista previa ---- */
+.editor-curso-col-der .editor-curso-panel-titulo {
+  margin-bottom: 18px;
+}
+.editor-curso-col-der .course-card {
+  box-shadow: none;
+}
+.editor-curso-col-der .course-card:hover {
+  box-shadow: var(--ed-shadow-1);
+  transform: none;
+}
+
+/* Editor de texto enriquecido simple */
+.editor-rte {
+  border: 1px solid var(--ed-border);
+  border-radius: var(--ui-r-md);
+  overflow: hidden;
+  background: var(--ed-canvas);
+}
+.editor-rte-toolbar {
+  display: flex;
+  gap: 2px;
+  padding: 6px;
+  background: var(--ed-surface);
+  border-bottom: 1px solid var(--ed-border);
+  flex-wrap: wrap;
+}
+.editor-rte-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  border-radius: var(--ui-r-md);
+  color: var(--ed-ink);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: var(--ed-font-body);
+}
+.editor-rte-btn:hover {
+  background: var(--ed-fill);
+}
+.editor-rte-btn.activo {
+  background: var(--ed-amber-tint);
+  color: var(--ed-amber-deep);
+}
+.editor-rte-select {
+  border: 1px solid var(--ed-border);
+  border-radius: var(--ui-r-md);
+  padding: 4px 6px;
+  font-size: 12px;
+  font-family: var(--ed-font-body);
+  color: var(--ed-ink);
+  background: var(--ed-canvas);
+  cursor: pointer;
+}
+.editor-rte-separador {
+  width: 1px;
+  align-self: stretch;
+  background: var(--ed-border);
+  margin: 2px 4px;
+}
+.editor-rte-area {
+  padding: 12px 14px;
+  min-height: 160px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--ed-ink);
+  outline: none;
+  font-family: var(--ed-font-body);
+}
+/* Lo que se pega acá (desde Word, Google Docs, una web, etc.) puede traer su
+   propia tipografía/color incrustados como estilo en línea. El pegado ya se
+   limpia en EditorTextoEnriquecido.jsx, pero esto es un resguardo extra para
+   que, pase lo que pase, adentro del editor todo se vea con una única
+   tipografía y un color legible, nunca el de la fuente original. */
+.editor-rte-area,
+.editor-rte-area * {
+  font-family: var(--ed-font-body) !important;
+  color: var(--ed-ink) !important;
+  background: transparent !important;
+}
+.editor-rte-area ul, .editor-rte-area ol {
+  padding-left: 22px;
+  margin: 8px 0;
+}
+.editor-rte-area a {
+  color: var(--ed-amber-deep) !important;
+}
+.editor-rte-area h1, .editor-rte-area h2, .editor-rte-area h3 {
+  font-family: var(--ed-font-display) !important;
+  font-weight: 700;
+  color: var(--ed-ink) !important;
+  margin: 14px 0 8px;
+  line-height: 1.3;
+}
+.editor-rte-area h1 { font-size: 20px; }
+.editor-rte-area h2 { font-size: 16px; }
+.editor-rte-area h3 { font-size: 14px; }
+.editor-rte-area:empty::before {
+  content: attr(data-placeholder);
+  color: var(--ed-zinc);
+  font-weight: 400;
+}
+
+
+/* ---- Botón "Volver al catálogo" (pie del formulario) ---- */
+.editor-curso-volver {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ui-s-3);
+  height: 48px;
+  padding: 0 var(--ui-s-6) 0 var(--ui-s-5);
+  border: 0;
+  border-radius: var(--ui-r-pill);
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--ed-ink);
+  color: var(--ed-ink);
+  font-family: var(--ui-font);
+  font-size: var(--ui-fs-16);
+  font-weight: var(--ui-fw-semibold);
+  cursor: pointer;
+  transition: background var(--ui-t-fast) var(--ui-ease), color var(--ui-t-fast) var(--ui-ease);
+}
+.editor-curso-volver svg { width: 20px; height: 20px; flex: none; }
+.editor-curso-volver:hover { background: var(--ed-ink); color: #fff; }
+.editor-curso-volver:focus-visible { outline: none; box-shadow: var(--ui-focus); }
+/* El contenido de las clases usa la misma tipografía que el editor de texto
+   enriquecido del admin (.editor-rte-area), en vez de la tipografía propia
+   de la pantalla "aprender" (pensada para su UI, no para el contenido).
+   Igual que en el editor, esto puede traer tipografía o color pegados desde
+   la fuente original (Word, Docs, una web): se fuerza acá una única
+   tipografía y un color legible en cualquiera de los dos temas (claro u
+   oscuro) de la pantalla de aprender, pase lo que pase con el HTML guardado. */
+.aprender-notas-enriquecidas,
+.aprender-notas-enriquecidas * {
+  font-family: var(--font-body) !important;
+  color: var(--ap-text-dim) !important;
+  background: transparent !important;
+}
+.aprender-notas-enriquecidas ul,
+.aprender-notas-enriquecidas ol {
+  padding-left: 22px;
+  margin: 10px 0;
+}
+.aprender-notas-enriquecidas a {
+  color: var(--color-gold-light) !important;
+  text-decoration: underline;
+}
+.aprender-notas-enriquecidas strong,
+.aprender-notas-enriquecidas b {
+  color: var(--ap-text) !important;
+}
+.aprender-notas-enriquecidas p {
+  margin: 0 0 12px;
+  font-weight: 400;
+}
+.aprender-notas-enriquecidas h1,
+.aprender-notas-enriquecidas h2,
+.aprender-notas-enriquecidas h3 {
+  /* Misma tipografía que usan los títulos dentro del editor de texto
+     enriquecido (.editor-rte-area), para que el contenido se vea igual
+     para el alumno que como lo armó el admin. */
+  font-family: var(--font-body) !important;
+  color: var(--ap-text) !important;
+  font-weight: 700;
+  line-height: 1.3;
+  margin: 18px 0 10px;
+}
+.aprender-notas-enriquecidas h1 { font-size: 24px; }
+.aprender-notas-enriquecidas h2 { font-size: 20px; }
+.aprender-notas-enriquecidas h3 { font-size: 17px; }
+
+/* Las reglas genéricas ".admin-card ul li" (admin-dashboard.css) no deben
+   pisar las filas de colaboradores */
+.editor-curso-instructor-card .editor-curso-colaboradores-lista { margin: 0; }
+.editor-curso-colaboradores-lista .editor-curso-colaborador-fila {
+  padding: 0 var(--ui-s-3);
+  box-shadow: none;
+  font-size: var(--ui-fs-14);
+}
+
+/* Asa de arrastre de los módulos (ahora es un botón, con teclado y animación) */
+button.editor-curso-drag-handle {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ed-zinc);
+  touch-action: none;
+  border-radius: var(--ui-r-md);
+}
+button.editor-curso-drag-handle:hover { color: var(--ed-ink); }
+button.editor-curso-drag-handle:active { cursor: grabbing; }
+button.editor-curso-drag-handle:focus-visible { outline: none; box-shadow: var(--ui-focus); }
+
+/* Detalle dorado a la izquierda del título de cada tarjeta (igual que el dashboard) */
+.editor-curso-seccion-eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 18px;
+  margin-right: 10px;
+  border-radius: 2px;
+  background: var(--ui-gold);
+  vertical-align: -3px;
+}
+
+/* Configuración del curso (estado y certificado) dentro de "Información básica y configuración" */
+.editor-curso-config-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ui-s-6);
+  margin-top: var(--ui-s-6);
+  padding-top: var(--ui-s-6);
+  border-top: 1px solid var(--ed-border);
+}
+.editor-curso-config-item {
+  min-width: 0;
+}
+.editor-curso-config-item > label,
+.editor-curso-config-etiqueta {
+  display: block;
+  font-size: var(--ui-fs-12);
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ed-zinc);
+  margin-bottom: var(--ui-s-2);
+}
+.editor-curso-config-item .editor-curso-cert-card {
+  margin: 0;
+}
+@media (max-width: 800px) {
+  .editor-curso-config-row { grid-template-columns: 1fr; }
+}
+
+/* Instructores: la lista va directo bajo el título de la tarjeta, sin recuadro anidado */
+.editor-curso-instructor-card {
+  border: 0;
+  background: none;
+  padding: 0;
+}
+
+/* ============================================================
+ * Edición de una clase en dos columnas
+ *  - columna principal: lo que se edita (video y notas, o el bloque activo)
+ *  - panel lateral fijo: datos de la clase, archivos, lista de bloques y guardar
+ * ============================================================ */
+.editor-curso-edicion-full {
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+}
+.editor-clase-grid {
+  display: grid;
+  grid-template-columns: 500px minmax(0, 1fr);
+  gap: var(--ui-s-6);
+  align-items: start;
+}
+.editor-clase-principal {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-s-5);
+}
+.editor-clase-principal .editor-curso-seccion-head { margin-bottom: 0; }
+.editor-clase-principal--vacio {
+  align-items: flex-start;
+}
+.editor-clase-vacio-titulo {
+  margin: 0;
+  font-size: var(--ui-fs-16);
+  font-weight: var(--ui-fw-bold);
+  color: var(--ui-text);
+}
+
+/* Campos */
+.editor-clase-campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-s-1);
+  margin: 0;
+  min-width: 0;
+}
+.editor-clase-etiqueta {
+  font-size: var(--ui-fs-12);
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text-2);
+}
+.editor-clase-ayuda {
+  font-size: var(--ui-fs-12);
+  color: var(--ui-text-2);
+  margin: 0;
+}
+.editor-clase-archivo-input { display: none; }
+
+/* Panel lateral */
+.editor-curso-page .editor-clase-aside.admin-card {
+  position: sticky;
+  top: 76px;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 100px);
+  padding: 0;
+  overflow: hidden;
+}
+.editor-clase-aside-cuerpo {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--ui-s-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-s-5);
+}
+.editor-clase-aside-fila {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-s-3);
+}
+.editor-clase-aside-fila .editor-curso-estado-segmentado { display: flex; }
+.editor-clase-aside-fila .editor-curso-estado-segmentado-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ui-s-2);
+}
+.editor-clase-aside-fila .editor-curso-visibilidad-pill { justify-content: center; width: 100%; }
+.editor-clase-aside .editor-curso-archivos-lista { margin-bottom: var(--ui-s-2); }
+.editor-clase-aside .editor-curso-archivo-fila-input { min-width: 0; }
+.editor-clase-aside .editor-curso-archivo-agregar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ui-s-2);
+  width: 100%;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+.editor-clase-aside .editor-curso-archivo-agregar.subiendo { cursor: default; }
+.editor-clase-aside-pie {
+  flex-shrink: 0;
+  padding: var(--ui-s-4) var(--ui-s-5);
+  border-top: 1px solid var(--ed-border);
+  background: var(--ui-glass-bg-fuerte);
+}
+.editor-clase-aside-acciones {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-s-2);
+}
+.editor-clase-mensaje {
+  margin: 0 0 var(--ui-s-2);
+  font-size: var(--ui-fs-14);
+  white-space: normal;
+}
+
+/* Lista de bloques del panel lateral */
+.editor-clase-bloques-agregar {
+  display: flex;
+  gap: var(--ui-s-2);
+}
+.editor-clase-aside .editor-clase-bloques-agregar .admin-tabla-accion {
+  flex: 1;
+  justify-content: center;
+}
+.editor-clase-bloques-lista {
+  list-style: none;
+  margin: var(--ui-s-2) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-s-1);
+  /* Entran 3 filas completas; con más, la lista scrollea sola */
+  max-height: 132px;
+  scrollbar-width: thin;
+  overflow-y: auto;
+}
+.editor-clase-bloque-fila {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-s-1);
+  padding: 0 var(--ui-s-2) 0 var(--ui-s-1);
+  border-radius: var(--ui-r-md);
+  background: var(--ui-fill);
+  transition: background var(--ui-t-fast) var(--ui-ease), box-shadow var(--ui-t-fast) var(--ui-ease);
+}
+.editor-clase-bloque-fila:hover { background: var(--ui-fill-hover); }
+.editor-clase-bloque-fila.activo {
+  background: var(--ui-gold-tint);
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 39, 0.55);
+}
+.editor-clase-bloque-drag {
+  width: 24px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: grab;
+}
+.editor-clase-bloque-seleccionar {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--ui-s-3);
+  padding: 4px var(--ui-s-2);
+  background: none;
+  border: 0;
+  border-radius: var(--ui-r-md);
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+}
+.editor-clase-bloque-seleccionar:focus-visible { outline: none; box-shadow: var(--ui-focus); }
+.editor-clase-bloque-tipo {
+  flex-shrink: 0;
+  min-width: 36px;
+  line-height: 1.4;
+  font-size: var(--ui-fs-12);
+  font-weight: var(--ui-fw-bold);
+  color: var(--ui-text-2);
+}
+.editor-clase-bloque-tipo--quiz { color: var(--ui-gold-text); }
+.editor-clase-bloque-resumen {
+  line-height: 1.4;
+  flex: 1;
+  min-width: 0;
+  font-size: var(--ui-fs-14);
+  color: var(--ui-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Tarjeta del bloque activo */
+.editor-clase-principal .editor-curso-bloque-card { margin-bottom: 0; }
+.editor-curso-bloque-card[hidden] { display: none; }
+.editor-clase-principal .editor-curso-bloque-tipo { flex: none; }
+.editor-clase-principal .editor-curso-bloque-body { padding: var(--ui-s-5); }
+.editor-clase-principal .editor-rte-area { min-height: 220px; }
+.editor-clase-posicion {
+  margin-right: auto;
+  font-size: var(--ui-fs-12);
+  color: var(--ui-text-2);
+}
+.editor-clase-bloque-borrar {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: var(--ui-r-md);
+  background: none;
+  color: var(--ui-text-2);
+  cursor: pointer;
+  transition: background var(--ui-t-fast) var(--ui-ease), color var(--ui-t-fast) var(--ui-ease);
+}
+.editor-clase-bloque-borrar:hover { color: var(--ui-danger); background: var(--ui-danger-tint); }
+.editor-clase-bloque-borrar:focus-visible { outline: none; box-shadow: var(--ui-focus); }
+.editor-clase-bloque-pie {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--ui-s-3);
+  margin-top: var(--ui-s-3);
+}
+
+@media (max-width: 1100px) {
+  .editor-clase-grid { grid-template-columns: minmax(0, 1fr); }
+  .editor-clase-aside { order: 2; }
+  .editor-curso-page .editor-clase-aside.admin-card {
+    position: static;
+    max-height: none;
+  }
+}
+
+.editor-clase-aside .admin-tabla-accion:disabled { opacity: 0.4; }
+
+/* Tacho dentro de cada fila de la lista de bloques */
+.editor-clase-bloque-borrar--fila {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  margin-right: var(--ui-s-3);
+  color: var(--ui-danger);
+}
+.editor-clase-bloque-borrar--fila:hover { background: var(--ui-danger-tint); color: var(--ui-danger); }
+
+/* Cartel de advertencia chico (confirmar una eliminación simple) */
+.admin-modal.admin-modal--advertencia {
+  max-width: 340px;
+  padding: var(--ui-s-5);
+  border-radius: var(--ui-r-lg);
+  text-align: center;
+}
+.admin-modal--advertencia .admin-modal-titulo {
+  margin: 0;
+  font-size: var(--ui-fs-16);
+}
+.admin-modal--advertencia .admin-modal-acciones {
+  justify-content: center;
+  margin-top: var(--ui-s-4);
+}
+
+/* ============================================================
+ * Editor de cursos: flujo nuevo (crear → contenido → publicar)
+ * ============================================================ */
+
+/* Sin la rayita dorada en los títulos de las tarjetas */
+.editor-curso-seccion-eyebrow::before {
+  display: none;
+}
+
+/* Botones principales en negro, como en el resto del panel.
+   Los de guardar (btn-success) van en verde, igual que en todo el sitio. */
+.editor-curso-page .btn-primary {
+  background: var(--ui-btn-bg);
+  color: var(--ui-btn-text);
+  border-color: var(--ui-btn-bg);
+}
+.editor-curso-page .btn-primary:hover:not(:disabled) {
+  background: var(--ui-btn-bg-hover);
+  border-color: var(--ui-btn-bg-hover);
+}
+.editor-curso-page .btn-success {
+  background: #1f9d55;
+  color: #fff;
+  border-color: #1f9d55;
+}
+.editor-curso-page .btn-success:hover:not(:disabled) {
+  background: #188a49;
+  border-color: #188a49;
+}
+
+/* ---- Encabezado: migas + título a la izquierda, acciones a la derecha ---- */
+.editor-encabezado {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 24px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.editor-encabezado-texto {
+  min-width: 0;
+}
+.editor-migas {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: var(--ui-text-2);
+}
+.editor-migas a {
+  color: var(--ui-text-2);
+  text-decoration: none;
+  font-weight: var(--ui-fw-semibold);
+}
+.editor-migas a:hover {
+  color: var(--ui-text);
+  text-decoration: underline;
+}
+.editor-migas span:last-child {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 40ch;
+}
+.editor-encabezado-titulo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.editor-encabezado-titulo h2 {
+  margin: 0;
+  font-family: var(--ui-font);
+  font-size: 26px;
+  font-weight: var(--ui-fw-bold);
+  letter-spacing: var(--ui-tracking-titulo);
+  color: var(--ui-text);
+}
+.editor-encabezado .editor-curso-estado-pill {
+  font-family: var(--ui-font);
+  font-weight: var(--ui-fw-semibold);
+  padding: 4px 12px;
+}
+.editor-encabezado-acciones {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.editor-encabezado .editor-curso-ver-como-alumno {
+  font-family: var(--ui-font);
+  font-size: 13px;
+  padding: 0 16px;
+  height: 40px;
+  border-width: 1px;
+  border-color: var(--ui-line);
+  box-shadow: none;
+}
+.editor-boton-alto {
+  height: 40px;
+  padding: 0 18px;
+}
+.editor-boton-publicar {
+  border: none;
+  cursor: pointer;
+}
+.editor-boton-publicar:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Indicador de guardado automático */
+.editor-guardado {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text-2);
+  margin-right: 6px;
+}
+.editor-guardado--guardado {
+  color: var(--ui-success);
+}
+.editor-guardado--error,
+.editor-guardado--incompleto {
+  color: var(--ui-danger);
+}
+
+/* Punto en la pestaña "Precio y publicación" si falta algo para publicar */
+.editor-curso-tab-top-punto {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ui-gold);
+}
+.editor-curso-tab-top.activo {
+  border-bottom-color: var(--ui-ink);
+}
+
+/* Campos en dos columnas */
+.editor-curso-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+@media (max-width: 640px) {
+  .editor-curso-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+.editor-curso-config-row--solo {
+  display: block;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+.editor-curso-cert-texto span {
+  display: block;
+  color: var(--ui-text-2);
+}
+
+/* ---- Lista de control para publicar ---- */
+.editor-lista-control {
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.editor-lista-control-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 4px;
+  border-bottom: 1px solid var(--ui-line);
+  font-size: 14px;
+}
+.editor-lista-control-item:last-child {
+  border-bottom: none;
+}
+.editor-lista-control-marca {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 0 1.5px var(--ui-line);
+}
+.editor-lista-control-item.ok .editor-lista-control-marca {
+  background: var(--ui-success);
+  color: #fff;
+  box-shadow: none;
+}
+.editor-lista-control-item.falta .editor-lista-control-marca {
+  box-shadow: inset 0 0 0 1.5px var(--ui-danger);
+}
+.editor-lista-control-texto {
+  flex: 1;
+  color: var(--ui-text);
+}
+.editor-lista-control-item.ok .editor-lista-control-texto {
+  color: var(--ui-text-2);
+}
+.editor-lista-control-tag {
+  margin-left: 8px;
+  font-size: 11px;
+  font-weight: var(--ui-fw-semibold);
+  padding: 2px 8px;
+  border-radius: var(--ui-r-pill);
+  background: var(--ui-fill);
+  color: var(--ui-text-2);
+}
+.editor-lista-control-ir {
+  border: none;
+  background: none;
+  font-family: var(--ui-font);
+  font-size: 13px;
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.editor-publicacion-estado {
+  margin: 0 0 14px;
+  font-size: 14px;
+  color: var(--ui-text-2);
+}
+.editor-publicacion-estado strong {
+  color: var(--ui-text);
+}
+.editor-publicacion-sub {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: var(--ui-fw-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ui-text-2);
+}
+.editor-modal-publicar {
+  width: min(520px, 94vw);
+}
+
+/* ---- Contenido: bienvenida y estado vacío ---- */
+.editor-bienvenida {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  margin-bottom: 16px;
+  border-radius: var(--ui-r-lg);
+  background: var(--ui-ink);
+  color: #fff;
+}
+.editor-bienvenida div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+}
+.editor-bienvenida span {
+  color: rgba(255, 255, 255, 0.72);
+}
+.editor-bienvenida .admin-modal-cerrar {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+.editor-vacio {
+  text-align: center;
+  padding: 40px 24px 28px;
+  max-width: 520px;
+  margin: 0 auto;
+}
+.editor-vacio-icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: var(--ui-gold-tint);
+  color: var(--ui-gold-text);
+  margin-bottom: 14px;
+}
+.editor-vacio-icono svg {
+  width: 24px;
+  height: 24px;
+}
+.editor-vacio h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: var(--ui-fw-bold);
+  color: var(--ui-text);
+}
+.editor-vacio p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ui-text-2);
+}
+.editor-vacio h3 {
+  font-family: var(--ui-font);
+  letter-spacing: var(--ui-tracking-titulo);
+}
+
+/* ============================================================
+ * Contenido en dos columnas: estructura (izquierda) + clase (derecha)
+ * ============================================================ */
+.editor-contenido {
+  display: grid;
+  grid-template-columns: 330px minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+@media (max-width: 1100px) {
+  .editor-contenido {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ---- Estructura ---- */
+.editor-curso-page .editor-estructura.admin-card {
+  position: sticky;
+  top: 20px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  padding: 18px 14px 14px;
+  margin: 0;
+}
+@media (max-width: 1100px) {
+  .editor-curso-page .editor-estructura.admin-card {
+    position: static;
+    max-height: none;
+  }
+}
+.editor-estructura-cabecera {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 6px 12px;
+}
+.editor-estructura-cabecera h3 {
+  margin: 0;
+  font-family: var(--ui-font);
+  font-size: 15px;
+  font-weight: var(--ui-fw-bold);
+  color: var(--ui-text);
+}
+.editor-estructura-cabecera span {
+  font-size: 12px;
+  color: var(--ui-text-2);
+}
+
+.editor-estructura-modulo {
+  border-radius: 12px;
+  margin-bottom: 4px;
+  transition: background var(--ui-t-fast) var(--ui-ease);
+}
+.editor-estructura-modulo.abierto {
+  background: var(--ui-fill);
+}
+.editor-estructura-modulo.sobre {
+  box-shadow: inset 0 0 0 1.5px var(--ui-gold);
+}
+.editor-estructura-modulo-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 4px 4px 0;
+}
+.editor-estructura-asa {
+  flex-shrink: 0;
+  width: 22px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  color: var(--ui-text-2);
+  opacity: 0;
+  cursor: grab;
+  transition: opacity var(--ui-t-fast) var(--ui-ease);
+}
+.editor-estructura-modulo-cabecera:hover .editor-estructura-asa,
+.editor-estructura-asa:focus-visible {
+  opacity: 1;
+}
+.editor-estructura-modulo-toggle {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 6px;
+  border: none;
+  border-radius: 10px;
+  background: none;
+  font-family: var(--ui-font);
+  text-align: left;
+  cursor: pointer;
+}
+.editor-estructura-modulo-toggle:hover {
+  background: var(--ui-fill-hover);
+}
+.editor-estructura-modulo-toggle:focus-visible {
+  outline: none;
+  box-shadow: var(--ui-focus);
+}
+.editor-estructura-modulo-num {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px var(--ui-line);
+  font-size: 11px;
+  font-weight: var(--ui-fw-bold);
+  color: var(--ui-gold-text);
+  font-variant-numeric: tabular-nums;
+}
+.editor-estructura-modulo.abierto .editor-estructura-modulo-num {
+  background: var(--ui-ink);
+  color: var(--ui-gold);
+  box-shadow: none;
+}
+.editor-estructura-modulo-titulo {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.editor-estructura-modulo-cant {
+  flex-shrink: 0;
+  min-width: 20px;
+  padding: 1px 7px;
+  border-radius: var(--ui-r-pill);
+  background: var(--ui-fill);
+  font-size: 11px;
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text-2);
+  text-align: center;
+}
+.editor-estructura-modulo.abierto .editor-estructura-modulo-cant {
+  background: #fff;
+}
+.editor-estructura-chevron {
+  display: inline-flex;
+  color: var(--ui-text-2);
+  transition: transform 220ms var(--ui-ease);
+}
+.editor-estructura-chevron.abierto {
+  transform: rotate(180deg);
+}
+.editor-estructura-modulo-acciones {
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity var(--ui-t-fast) var(--ui-ease);
+}
+.editor-estructura-modulo-cabecera:hover .editor-estructura-modulo-acciones,
+.editor-estructura-modulo-acciones:focus-within {
+  opacity: 1;
+}
+.editor-estructura-modulo-acciones button {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: var(--ui-text-2);
+  cursor: pointer;
+}
+.editor-estructura-modulo-acciones button:hover {
+  background: #fff;
+  color: var(--ui-text);
+}
+.editor-estructura-modulo-acciones button.peligro:hover {
+  color: var(--ui-danger);
+}
+.editor-estructura-renombrar {
+  flex: 1;
+  min-width: 0;
+  height: 34px;
+  padding: 0 10px;
+  font-size: 14px;
+}
+
+/* Cuerpo desplegable (animado) */
+.editor-estructura-modulo-cuerpo {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 260ms var(--ui-ease);
+}
+.editor-estructura-modulo.abierto .editor-estructura-modulo-cuerpo {
+  grid-template-rows: 1fr;
+}
+.editor-estructura-modulo-interior {
+  overflow: hidden;
+  min-height: 0;
+  padding: 0 8px;
+}
+.editor-estructura-modulo.abierto .editor-estructura-modulo-interior {
+  padding-bottom: 8px;
+}
+.editor-estructura-vacio {
+  margin: 2px 0 6px 34px;
+  font-size: 12.5px;
+  color: var(--ui-text-2);
+}
+.editor-estructura-clase {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: 22px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  color: var(--ui-text);
+  cursor: pointer;
+  transition: background var(--ui-t-fast) var(--ui-ease);
+}
+.editor-estructura-clase:hover {
+  background: #fff;
+}
+.editor-estructura-clase:focus-visible {
+  outline: none;
+  box-shadow: var(--ui-focus);
+}
+.editor-estructura-clase.activa {
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(18, 18, 20, 0.06), inset 3px 0 0 var(--ui-gold);
+  font-weight: var(--ui-fw-semibold);
+}
+.editor-estructura-clase.sobre {
+  box-shadow: inset 0 2px 0 var(--ui-gold);
+}
+.editor-estructura-clase.oculta .editor-estructura-clase-titulo {
+  color: var(--ui-text-2);
+}
+.editor-estructura-clase-tipo {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.editor-estructura-clase-tipo svg {
+  width: 13px;
+  height: 13px;
+}
+.editor-estructura-clase-tipo--video {
+  background: rgba(47, 111, 214, 0.12);
+  color: #2f6fd6;
+}
+.editor-estructura-clase-tipo--bloques {
+  background: rgba(109, 79, 194, 0.12);
+  color: #6d4fc2;
+}
+.editor-estructura-clase-titulo {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.editor-estructura-clase-oculta {
+  display: inline-flex;
+  color: var(--ui-text-2);
+}
+.editor-estructura-agregar-clase {
+  display: block;
+  margin: 4px 0 2px 22px;
+  padding: 7px 10px;
+  border: none;
+  border-radius: 10px;
+  background: none;
+  font-family: var(--ui-font);
+  font-size: 13px;
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-gold-text);
+  cursor: pointer;
+}
+.editor-estructura-agregar-clase:hover {
+  background: #fff;
+}
+.editor-estructura-agregar-opciones {
+  margin: 6px 0 2px 22px;
+  padding: 10px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(18, 18, 20, 0.06);
+}
+.editor-estructura-agregar-opciones > span {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text-2);
+}
+.editor-estructura-agregar-opciones > div {
+  display: flex;
+  gap: 6px;
+}
+.editor-estructura-agregar-opciones button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  border: none;
+  border-radius: var(--ui-r-pill);
+  background: var(--ui-fill);
+  font-family: var(--ui-font);
+  font-size: 12.5px;
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text);
+  cursor: pointer;
+}
+.editor-estructura-agregar-opciones button:hover {
+  background: var(--ui-btn-bg);
+  color: var(--ui-btn-text);
+}
+.editor-estructura-agregar-opciones button.cancelar {
+  margin-left: auto;
+  padding: 7px;
+  background: none;
+  color: var(--ui-text-2);
+}
+.editor-estructura-agregar-opciones button.cancelar:hover {
+  background: var(--ui-fill);
+  color: var(--ui-text);
+}
+.editor-estructura-agregar-opciones svg {
+  width: 13px;
+  height: 13px;
+}
+
+.editor-estructura-nuevo-modulo {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--ui-line);
+}
+.editor-estructura-nuevo-modulo .admin-input {
+  flex: 1;
+  min-width: 0;
+  height: 40px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 10px;
+  background: var(--ui-fill);
+  font-family: var(--ui-font);
+  font-size: 14px;
+}
+.editor-estructura-nuevo-modulo .admin-input::placeholder {
+  color: var(--ui-gold-text);
+  font-weight: var(--ui-fw-semibold);
+}
+.editor-estructura-nuevo-modulo .admin-input:focus {
+  outline: none;
+  box-shadow: var(--ui-focus);
+}
+.editor-estructura-nuevo-modulo .admin-input:focus::placeholder {
+  color: var(--ui-text-2);
+  font-weight: var(--ui-fw-regular);
+}
+.editor-estructura-nuevo-modulo .admin-boton-primario {
+  height: 40px;
+  border: none;
+  cursor: pointer;
+}
+
+/* ---- Panel derecho ---- */
+.editor-contenido-panel {
+  min-width: 0;
+}
+.editor-contenido-migas {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 2px 0 12px;
+  font-size: 13px;
+  color: var(--ui-text-2);
+}
+.editor-contenido-migas strong {
+  color: var(--ui-text);
+}
+.editor-contenido-panel .editor-clase-grid {
+  grid-template-columns: minmax(280px, 380px) minmax(0, 1fr);
+  gap: 16px;
+}
+@media (max-width: 1400px) {
+  .editor-contenido-panel .editor-clase-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .editor-contenido-panel .editor-clase-aside {
+    order: 0;
+  }
+  .editor-curso-page .editor-contenido-panel .editor-clase-aside.admin-card {
+    position: static;
+    max-height: none;
+  }
+}
+.editor-clase-autoguardado {
+  font-size: 12px;
+  color: var(--ui-text-2);
+}
+.editor-vacio--panel {
+  max-width: none;
+  margin: 0;
+  padding: 56px 32px;
+}
+.editor-vacio--panel p {
+  max-width: 460px;
+  margin: 0 auto;
+}
+.editor-vacio-cifras {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+.editor-vacio-cifras span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: var(--ui-r-pill);
+  background: var(--ui-fill);
+  font-size: 12.5px;
+  color: var(--ui-text-2);
+}
+.editor-vacio-cifras svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* ---- Cartel de bienvenida: verde, de éxito ---- */
+.editor-bienvenida {
+  align-items: center;
+  background: var(--ui-success-tint);
+  color: var(--ui-text);
+  box-shadow: inset 0 0 0 1px rgba(47, 138, 76, 0.25);
+}
+.editor-bienvenida span {
+  color: var(--ui-text-2);
+}
+.editor-bienvenida div {
+  flex: 1;
+}
+.editor-bienvenida-icono {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ui-success);
+  color: #fff !important;
+}
+.editor-bienvenida .admin-modal-cerrar {
+  color: var(--ui-text-2);
+  background: transparent;
+}
+.editor-bienvenida .admin-modal-cerrar:hover {
+  background: rgba(47, 138, 76, 0.12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .editor-estructura-modulo-cuerpo,
+  .editor-estructura-chevron {
+    transition: none;
+  }
+}
+
+/* ============================================================
+ * Contenido v3: módulos a todo el ancho + panel lateral por clase
+ * (reemplaza la vista en dos columnas)
+ * ============================================================ */
+.editor-contenido {
+  display: block;
+}
+.editor-contenido-resumen {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.editor-contenido-resumen > span:not(.editor-contenido-resumen-ayuda) {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: var(--ui-r-pill);
+  background: var(--ui-glass-bg-fuerte);
+  box-shadow: inset 0 0 0 1px var(--ui-line);
+  font-size: 12.5px;
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text-2);
+}
+.editor-contenido-resumen svg {
+  width: 13px;
+  height: 13px;
+}
+.editor-contenido-resumen-ayuda {
+  margin-left: auto;
+  font-size: 13px;
+  color: var(--ui-text-2);
+}
+.editor-contenido .editor-vacio--panel {
+  margin-bottom: 14px;
+}
+
+/* ---- Módulo ---- */
+.editor-curso-page .editor-modulo.admin-card {
+  padding: 0;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+.editor-modulo.sobre {
+  box-shadow: var(--ui-shadow-card), inset 0 0 0 2px var(--ui-gold);
+}
+.editor-modulo-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px 14px 8px;
+}
+.editor-modulo-asa {
+  flex-shrink: 0;
+  width: 24px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  color: var(--ui-text-2);
+  cursor: grab;
+  opacity: 0.45;
+}
+.editor-modulo-asa:hover,
+.editor-modulo-asa:focus-visible {
+  opacity: 1;
+}
+.editor-modulo-num {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ui-fill);
+  font-size: 13px;
+  font-weight: var(--ui-fw-bold);
+  color: var(--ui-gold-text);
+  font-variant-numeric: tabular-nums;
+}
+.editor-modulo.abierto .editor-modulo-num {
+  background: var(--ui-ink);
+  color: var(--ui-gold);
+}
+.editor-modulo-num--nuevo {
+  background: var(--ui-gold-tint);
+  font-size: 18px;
+}
+.editor-modulo-toggle {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 6px 0;
+  border: none;
+  background: none;
+  font-family: var(--ui-font);
+  text-align: left;
+  cursor: pointer;
+}
+.editor-modulo-toggle:focus-visible {
+  outline: none;
+  box-shadow: var(--ui-focus);
+  border-radius: 8px;
+}
+.editor-modulo-titulo {
+  min-width: 0;
+  font-size: 16px;
+  font-weight: var(--ui-fw-bold);
+  color: var(--ui-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.editor-modulo-cant {
+  flex-shrink: 0;
+  font-size: 13px;
+  color: var(--ui-text-2);
+}
+.editor-modulo-renombrar {
+  flex: 1;
+  min-width: 0;
+  height: 38px;
+  padding: 0 12px;
+  font-size: 15px;
+}
+.editor-modulo-acciones {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.editor-modulo-acciones button {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 10px;
+  background: none;
+  color: var(--ui-text-2);
+  cursor: pointer;
+}
+.editor-modulo-acciones button:hover {
+  background: var(--ui-fill);
+  color: var(--ui-text);
+}
+.editor-modulo-acciones button.peligro:hover {
+  background: var(--ui-danger-tint);
+  color: var(--ui-danger);
+}
+.editor-modulo-acciones button:focus-visible {
+  outline: none;
+  box-shadow: var(--ui-focus);
+}
+.editor-modulo-chevron svg {
+  transition: transform 220ms var(--ui-ease);
+}
+.editor-modulo-chevron.abierto svg {
+  transform: rotate(180deg);
+}
+
+.editor-modulo-cuerpo {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 260ms var(--ui-ease);
+}
+.editor-modulo.abierto .editor-modulo-cuerpo {
+  grid-template-rows: 1fr;
+}
+.editor-modulo-interior {
+  overflow: hidden;
+  min-height: 0;
+}
+.editor-modulo.abierto .editor-modulo-interior {
+  border-top: 1px solid var(--ui-line);
+  padding: 8px 16px 16px;
+}
+
+/* ---- Fila de clase ---- */
+.editor-clase-fila {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--ui-line);
+  transition: background var(--ui-t-fast) var(--ui-ease);
+}
+.editor-clase-fila:hover {
+  background: var(--ui-fill);
+  border-radius: 10px;
+}
+.editor-clase-fila.sobre {
+  box-shadow: inset 0 2px 0 var(--ui-gold);
+}
+.editor-clase-fila-asa {
+  display: inline-flex;
+  color: var(--ui-text-2);
+  cursor: grab;
+  opacity: 0.4;
+}
+.editor-clase-fila:hover .editor-clase-fila-asa {
+  opacity: 1;
+}
+.editor-clase-fila-num {
+  flex-shrink: 0;
+  width: 22px;
+  font-size: 12px;
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text-2);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.editor-clase-fila-titulo {
+  flex: 1;
+  min-width: 0;
+  font-size: 14.5px;
+  font-weight: var(--ui-fw-medium);
+  color: var(--ui-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.editor-clase-fila.oculta .editor-clase-fila-titulo {
+  color: var(--ui-text-2);
+}
+.editor-clase-fila-tipo {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--ui-r-pill);
+  font-size: 12px;
+  font-weight: var(--ui-fw-semibold);
+}
+.editor-clase-fila-tipo svg {
+  width: 12px;
+  height: 12px;
+}
+.editor-clase-fila-tipo--video {
+  background: rgba(47, 111, 214, 0.1);
+  color: #2f6fd6;
+}
+.editor-clase-fila-tipo--bloques {
+  background: rgba(109, 79, 194, 0.1);
+  color: #6d4fc2;
+}
+.editor-clase-fila-visible,
+.editor-clase-fila-borrar {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 10px;
+  background: none;
+  color: var(--ui-success);
+  cursor: pointer;
+}
+.editor-clase-fila-visible.oculta {
+  color: var(--ui-text-2);
+}
+.editor-clase-fila-borrar {
+  color: var(--ui-text-2);
+}
+.editor-clase-fila-visible:hover,
+.editor-clase-fila-borrar:hover {
+  background: #fff;
+}
+.editor-clase-fila-borrar:hover {
+  color: var(--ui-danger);
+}
+.editor-clase-fila-editar {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 14px;
+  border: none;
+  border-radius: var(--ui-r-pill);
+  background: var(--ui-btn-bg);
+  color: var(--ui-btn-text);
+  font-family: var(--ui-font);
+  font-size: 13px;
+  font-weight: var(--ui-fw-semibold);
+  cursor: pointer;
+}
+.editor-clase-fila-editar:hover {
+  background: var(--ui-btn-bg-hover);
+}
+.editor-clase-fila-editar svg {
+  width: 13px;
+  height: 13px;
+}
+.editor-clase-fila :is(button):focus-visible {
+  outline: none;
+  box-shadow: var(--ui-focus);
+}
+
+/* ---- Agregar clase / módulo ---- */
+.editor-clase-nueva,
+.editor-modulo-nuevo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.editor-clase-nueva {
+  margin-top: 12px;
+  padding: 6px 6px 6px 12px;
+  border-radius: 12px;
+  background: var(--ui-fill);
+}
+.editor-clase-nueva-mas {
+  font-size: 18px;
+  font-weight: var(--ui-fw-bold);
+  color: var(--ui-gold-text);
+}
+.editor-clase-nueva .admin-input,
+.editor-modulo-nuevo .admin-input {
+  flex: 1;
+  min-width: 0;
+  height: 40px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  font-family: var(--ui-font);
+  font-size: 14.5px;
+  color: var(--ui-text);
+}
+.editor-clase-nueva .admin-input:focus,
+.editor-modulo-nuevo .admin-input:focus {
+  outline: none;
+  background: #fff;
+  box-shadow: var(--ui-focus);
+}
+.editor-clase-nueva .admin-boton-primario,
+.editor-modulo-nuevo .admin-boton-primario {
+  height: 40px;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.editor-clase-nueva .admin-boton-primario:disabled,
+.editor-modulo-nuevo .admin-boton-primario:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.editor-curso-page .editor-modulo-nuevo.admin-card {
+  padding: 12px 16px 12px 40px;
+  box-shadow: none;
+  border: 1.5px dashed var(--ui-line);
+  background: transparent;
+}
+
+/* ============================================================
+ * Panel lateral de la clase
+ * ============================================================ */
+.editor-panel-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: rgba(18, 18, 20, 0.32);
+  display: flex;
+  justify-content: flex-end;
+  animation: editor-panel-fondo-entra 180ms ease;
+}
+.editor-panel {
+  width: min(860px, 94vw);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--ui-bg);
+  box-shadow: -24px 0 48px -16px rgba(0, 0, 0, 0.25);
+  animation: editor-panel-entra 260ms cubic-bezier(0.2, 0, 0, 1);
+  font-family: var(--ui-font);
+}
+@keyframes editor-panel-entra {
+  from { transform: translateX(40px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+@keyframes editor-panel-fondo-entra {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.editor-panel-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 24px;
+  background: #fff;
+  border-bottom: 1px solid var(--ui-line);
+}
+.editor-panel-cabecera-texto {
+  flex: 1;
+  min-width: 0;
+}
+.editor-panel-migas {
+  margin: 0 0 2px;
+  font-size: 12.5px;
+  color: var(--ui-text-2);
+}
+.editor-panel-cabecera h3 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: var(--ui-fw-bold);
+  color: var(--ui-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.editor-panel-cuerpo {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.editor-panel-paso {
+  display: flex;
+  gap: 14px;
+  padding: 18px 20px;
+  border-radius: var(--ui-r-lg);
+  background: #fff;
+  box-shadow: var(--ui-shadow-card);
+}
+.editor-panel-paso-num {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ui-ink);
+  color: var(--ui-gold);
+  font-size: 12px;
+  font-weight: var(--ui-fw-bold);
+}
+.editor-panel-paso-contenido {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.editor-panel-etiqueta {
+  font-size: 14px;
+  font-weight: var(--ui-fw-bold);
+  color: var(--ui-text);
+  margin-top: 3px;
+}
+.editor-panel-ayuda {
+  margin: -4px 0 0;
+  font-size: 13px;
+  color: var(--ui-text-2);
+}
+.editor-panel .admin-input {
+  width: 100%;
+  box-sizing: border-box;
+}
+.editor-panel-tipos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.editor-panel-tipo {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 12px;
+  align-items: center;
+  padding: 14px;
+  border: none;
+  border-radius: 14px;
+  background: var(--ui-fill);
+  box-shadow: inset 0 0 0 1.5px transparent;
+  font-family: var(--ui-font);
+  text-align: left;
+  cursor: pointer;
+  transition: box-shadow var(--ui-t-fast) var(--ui-ease), background var(--ui-t-fast) var(--ui-ease);
+}
+.editor-panel-tipo:hover {
+  background: var(--ui-fill-hover);
+}
+.editor-panel-tipo.activo {
+  background: #fff;
+  box-shadow: inset 0 0 0 2px var(--ui-ink);
+}
+.editor-panel-tipo:focus-visible {
+  outline: none;
+  box-shadow: var(--ui-focus);
+}
+.editor-panel-tipo-icono {
+  grid-row: span 2;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.editor-panel-tipo-icono--video {
+  background: rgba(47, 111, 214, 0.12);
+  color: #2f6fd6;
+}
+.editor-panel-tipo-icono--bloques {
+  background: rgba(109, 79, 194, 0.12);
+  color: #6d4fc2;
+}
+.editor-panel-tipo strong {
+  font-size: 14.5px;
+  color: var(--ui-text);
+}
+.editor-panel-tipo span:last-child {
+  font-size: 12.5px;
+  color: var(--ui-text-2);
+}
+/* Lo que se reutiliza adentro del panel (video/notas y bloques) sin tarjetas extra */
+.editor-panel .editor-clase-principal.admin-card {
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+  border: none;
+  background: none;
+}
+.editor-panel .editor-clase-principal .editor-curso-seccion-head {
+  display: none;
+}
+.editor-panel-bloques {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.editor-panel-pie {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 24px;
+  background: #fff;
+  border-top: 1px solid var(--ui-line);
+}
+.editor-panel-pie .editor-clase-autoguardado {
+  margin-left: auto;
+}
+.editor-panel-pie .editor-boton-publicar {
+  height: 40px;
+  padding: 0 22px;
+}
+@media (max-width: 640px) {
+  .editor-panel-tipos {
+    grid-template-columns: 1fr;
+  }
+  .editor-panel-cuerpo {
+    padding: 14px;
+  }
+  .editor-clase-fila-tipo {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .editor-panel,
+  .editor-panel-fondo,
+  .editor-modulo-cuerpo,
+  .editor-modulo-chevron svg {
+    animation: none;
+    transition: none;
+  }
+}
+.editor-panel-cabecera h3 {
+  font-family: var(--ui-font);
+  letter-spacing: var(--ui-tracking-titulo);
+}
+/* Tarjetas de tipo: solo el ícono y el nombre */
+.editor-panel-tipo {
+  grid-template-rows: auto;
+}
+.editor-panel-tipo-icono {
+  grid-row: auto;
+}
+.editor-panel-listo {
+  margin-left: auto;
+}
+
+/* ---- Revisión de cursos de instructores ---- */
+.editor-revision-aviso {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+  margin-bottom: 16px;
+  border-radius: var(--ui-r-lg);
+  background: color-mix(in srgb, var(--ui-gold) 14%, transparent);
+  color: var(--ui-text);
+  font-family: var(--ui-font);
+}
+.editor-revision-aviso div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 14px;
+}
+.editor-revision-aviso span {
+  color: var(--ui-text-2);
+}
+.editor-revision-aviso--cambios {
+  background: var(--ui-danger-tint);
+}
+.editor-revision-aviso button {
+  flex-shrink: 0;
+}
+.editor-revision-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: var(--ui-r-pill);
+  background: color-mix(in srgb, var(--ui-gold) 16%, transparent);
+  font-family: var(--ui-font);
+  font-size: 13px;
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text);
+}
+.editor-devolver-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 4px 0 8px;
+  font-family: var(--ui-font);
+  font-size: 13px;
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text-2);
+}
+.editor-devolver-campo textarea {
+  resize: vertical;
+  font-weight: 400;
+}
+@media (max-width: 640px) {
+  .editor-revision-aviso {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

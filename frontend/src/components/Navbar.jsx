@@ -1,7 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useSitio } from '../context/SitioContext';
+import { verCarritoRequest, quitarDelCarritoRequest } from '../services/carritoService';
+import { obtenerCarritoInvitado, quitarDelCarritoInvitado, alCambiarCarritoInvitado } from '../services/carritoInvitado';
+import { obtenerCursoRequest } from '../services/cursoService';
 import logoElegant from '../assets/logo-elegant.png';
+
 
 function IconoCarrito() {
   return (
@@ -20,10 +25,11 @@ function IconoPerfil() {
   );
 }
 
-function IconoFavoritos() {
+
+function IconoCompras() {
   return (
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+      <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 01-8 0" />
     </svg>
   );
 }
@@ -36,34 +42,137 @@ function IconoSalir() {
   );
 }
 
+function IconoQuitar() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M18 6L6 18M6 6l12 12" />
+    </svg>
+  );
+}
+
 function Navbar() {
   const { usuario, logout } = useAuth();
+  // En "Próximamente" no hay carrito ni registro
+  const { cursosCerrados } = useSitio();
+  const destinoCursos = '/#cursos-destacados';
   const navigate = useNavigate();
+  const location = useLocation();
+
   const [menuMobileAbierto, setMenuMobileAbierto] = useState(false);
   const [dropdownAbierto, setDropdownAbierto] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Cierra el dropdown si se hace clic afuera de él
+  const [carritoAbierto, setCarritoAbierto] = useState(false);
+  const [carritoItems, setCarritoItems] = useState([]);
+  const [carritoCargando, setCarritoCargando] = useState(false);
+  const [errorCarrito, setErrorCarrito] = useState('');
+  const carritoRef = useRef(null);
+
+  // Dentro de una clase, la nav se reduce: no compite con el contenido ni
+  // ofrece navegación que no tiene sentido ahí (catálogo, carrito, etc).
+  // Si hay una ventana abierta (Mi cuenta, Mis compras, login), se mira la página de fondo.
+  const fondo = (location.state && location.state.backgroundLocation) || location;
+  const modoAprendizaje = /^\/cursos\/[^/]+\/aprender/.test(fondo.pathname);
+  // En Mis cursos la navbar también va reducida (Inicio, Mis cursos y menú de usuario),
+  // pero se mantiene el carrito porque desde "Explorar cursos" se pueden agregar cursos.
+  // /perfil y /mis-compras abiertos directo por URL muestran Mis cursos de fondo.
+  const enMisCursos = ['/mis-cursos', '/perfil', '/mis-compras'].includes(fondo.pathname);
+  const navReducida = modoAprendizaje || enMisCursos;
+
+  // Cierra los dropdowns si se hace clic afuera de ellos
   useEffect(() => {
     function manejarClickAfuera(e) {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setDropdownAbierto(false);
+      }
+      if (carritoRef.current && !carritoRef.current.contains(e.target)) {
+        setCarritoAbierto(false);
       }
     }
     document.addEventListener('mousedown', manejarClickAfuera);
     return () => document.removeEventListener('mousedown', manejarClickAfuera);
   }, []);
 
+  // Sin sesión, el carrito vive en este navegador (localStorage), no en la
+  // base de datos: buscamos los datos de cada curso guardado ahí.
+  async function obtenerCarritoDeInvitadoConDatos() {
+    const ids = obtenerCarritoInvitado();
+    const cursos = await Promise.all(
+      ids.map((id) =>
+        obtenerCursoRequest(id)
+          .then((curso) => ({ id: curso.id, curso }))
+          .catch(() => null)
+      )
+    );
+    return cursos.filter(Boolean);
+  }
+
+  // Para que el ícono ya muestre la cantidad de cursos en el carrito sin
+  // tener que abrirlo
+  useEffect(() => {
+    cargarCarrito();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [usuario]);
+
+  // Si se agrega/quita algo del carrito de invitado desde otra parte de la
+  // página (ej: el catálogo), el número del ícono se actualiza al toque.
+  useEffect(() => {
+    return alCambiarCarritoInvitado(() => {
+      if (!usuario) cargarCarrito();
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [usuario]);
+
+  async function cargarCarrito() {
+    try {
+      const data = usuario ? await verCarritoRequest() : await obtenerCarritoDeInvitadoConDatos();
+      setCarritoItems(data);
+    } catch (err) {
+      // silencioso: si falla, simplemente no mostramos el contador
+    }
+  }
+
+  function toggleCarrito() {
+    const abrir = !carritoAbierto;
+    setCarritoAbierto(abrir);
+    setDropdownAbierto(false);
+    if (abrir) {
+      setErrorCarrito('');
+      setCarritoCargando(true);
+      const promesa = usuario ? verCarritoRequest() : obtenerCarritoDeInvitadoConDatos();
+      promesa
+        .then(setCarritoItems)
+        .catch(() => setErrorCarrito('No se pudo cargar el carrito'))
+        .finally(() => setCarritoCargando(false));
+    }
+  }
+
+  async function handleQuitarDelCarrito(id) {
+    if (!usuario) {
+      quitarDelCarritoInvitado(id);
+      setCarritoItems((prev) => prev.filter((item) => item.id !== id));
+      return;
+    }
+
+    try {
+      await quitarDelCarritoRequest(id);
+      setCarritoItems((prev) => prev.filter((item) => item.id !== id));
+    } catch (err) {
+      alert('Error al quitar el curso del carrito');
+    }
+  }
+
   function handleLogout() {
     logout();
     setMenuMobileAbierto(false);
     setDropdownAbierto(false);
-    navigate('/login');
+    navigate('/');
   }
 
   function cerrarMenus() {
     setMenuMobileAbierto(false);
     setDropdownAbierto(false);
+    setCarritoAbierto(false);
   }
 
   const navLinkStyle = ({ isActive }) => ({
@@ -87,8 +196,150 @@ function Navbar() {
     opacity: 0.85,
   };
 
+  const totalCarrito = carritoItems.reduce((suma, item) => suma + Number(item.curso.precio), 0);
+
+  const menuUsuario = usuario ? (
+    <div ref={dropdownRef} style={{ position: 'relative' }}>
+      <button
+        onClick={() => { setDropdownAbierto(!dropdownAbierto); setCarritoAbierto(false); }}
+        style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+      >
+        <div style={{ width: 38, height: 38, borderRadius: '50%', background: 'rgba(201,162,39,0.15)', boxShadow: '0 0 0 2px var(--color-gold)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          {usuario.fotoPerfil ? (
+            <img src={usuario.fotoPerfil} referrerPolicy="no-referrer" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: '50%' }} />
+          ) : (
+            <span style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 600, color: 'var(--color-gold)' }}>
+              {usuario.nombre[0]}
+            </span>
+          )}
+        </div>
+        <span style={{ fontSize: 13, color: 'var(--color-warm-white)' }}>{usuario.nombre}</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2">
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+
+      {dropdownAbierto && (
+        <div
+          style={{
+            position: 'absolute', right: 0, top: 'calc(100% + 10px)', background: '#fff',
+            border: '1px solid var(--color-warm-gray)', borderRadius: 10, minWidth: 190,
+            boxShadow: '0 12px 32px rgba(26,21,16,0.25)', overflow: 'hidden', zIndex: 60,
+          }}
+        >
+          <Link to="/perfil" state={{ backgroundLocation: fondo }} onClick={cerrarMenus} className="dropdown-item">
+            <IconoPerfil /> Mi cuenta
+          </Link>
+          <Link to="/mis-compras" state={{ backgroundLocation: fondo }} onClick={cerrarMenus} className="dropdown-item">
+            <IconoCompras /> Mis compras
+          </Link>
+          <button onClick={handleLogout} className="dropdown-item dropdown-item-danger">
+            <IconoSalir /> Cerrar sesión
+          </button>
+        </div>
+      )}
+    </div>
+  ) : (
+    <>
+      <Link to="/login" state={{ backgroundLocation: location }} style={anchorLinkStyle}>Ingresar</Link>
+      {!cursosCerrados && (
+        <Link to="/registro" state={{ backgroundLocation: location }} className="btn btn-primary btn-sm" style={{ textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Registrarme</Link>
+      )}
+    </>
+  );
+
+  const menuCarrito = (
+    <div ref={carritoRef} style={{ position: 'relative' }}>
+      <button
+        onClick={toggleCarrito}
+        aria-label="Carrito"
+        style={{ ...anchorLinkStyle, display: 'flex', opacity: 0.9, background: 'none', border: 'none', cursor: 'pointer', padding: 0, position: 'relative' }}
+      >
+        <IconoCarrito />
+        {carritoItems.length > 0 && (
+          <span
+            style={{
+              position: 'absolute', top: -8, right: -10, minWidth: 16, height: 16, padding: '0 4px',
+              borderRadius: 999, background: 'var(--color-gold)', color: 'var(--color-ink)',
+              fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              lineHeight: 1,
+            }}
+          >
+            {carritoItems.length}
+          </span>
+        )}
+      </button>
+
+      {carritoAbierto && (
+        <div
+          style={{
+            position: 'absolute', right: 0, top: 'calc(100% + 14px)', background: '#fff',
+            border: '1px solid var(--color-warm-gray)', borderRadius: 14, width: 320,
+            boxShadow: '0 12px 32px rgba(26,21,16,0.25)', overflow: 'hidden', zIndex: 60,
+            padding: 18,
+          }}
+        >
+          <p style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: 'var(--color-ink)', margin: '0 0 12px' }}>
+            Mi carrito
+          </p>
+
+          {carritoCargando ? (
+            <p className="text-muted" style={{ fontSize: 13, margin: 0 }}>Cargando...</p>
+          ) : carritoItems.length === 0 ? (
+            <>
+              <p className="text-muted" style={{ fontSize: 13, marginBottom: 14 }}>Tu carrito está vacío.</p>
+              <Link to="/cursos" onClick={cerrarMenus} className="btn btn-outline btn-sm" style={{ textDecoration: 'none', width: '100%', textAlign: 'center' }}>
+                Ver catálogo
+              </Link>
+            </>
+          ) : (
+            <>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 260, overflowY: 'auto', marginBottom: 14 }}>
+                {carritoItems.map((item) => (
+                  <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <div style={{ flex: 1 }}>
+                      <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-ink)', margin: 0, lineHeight: 1.3 }}>
+                        {item.curso.titulo}
+                      </p>
+                      <p style={{ fontSize: 12, color: 'var(--color-muted)', margin: 0 }}>
+                        ${item.curso.precio}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => handleQuitarDelCarrito(item.id)}
+                      aria-label="Quitar del carrito"
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-muted)', padding: 4 }}
+                    >
+                      <IconoQuitar />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              {errorCarrito && <div className="error-box" style={{ marginBottom: 12 }}>{errorCarrito}</div>}
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--color-warm-gray)', paddingTop: 12, marginBottom: 14 }}>
+                <span style={{ fontSize: 13, color: 'var(--color-muted)' }}>Total</span>
+                <span style={{ fontSize: 18, fontWeight: 700, color: 'var(--color-ink)' }}>${totalCarrito}</span>
+              </div>
+
+              <Link
+                to="/carrito"
+                onClick={cerrarMenus}
+                className="btn auth-submit navbar-ir-a-pagar"
+                style={{ width: '100%', textDecoration: 'none', textAlign: 'center', display: 'block' }}
+              >
+                Ir a pagar
+              </Link>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+
   return (
-    <nav style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', position: 'sticky', top: 0, zIndex: 50, background: 'var(--color-ink)' }}>
+    <nav style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', position: 'sticky', top: 0, zIndex: 50, background: 'var(--color-hero)' }}>
       <div className="container navbar-inner" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Link to="/" onClick={cerrarMenus} style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
           <img src={logoElegant} alt="Elegant Music Studio" style={{ height: 68, width: 'auto' }} />
@@ -97,64 +348,39 @@ function Navbar() {
         {/* Desktop */}
         <div className="nav-links-desktop">
           <NavLink to="/" end style={navLinkStyle}>Inicio</NavLink>
-          <NavLink to="/cursos" style={navLinkStyle}>Cursos</NavLink>
-          <a href="/#producciones" style={anchorLinkStyle}>Nuestras producciones</a>
 
-          {usuario && (
-            <NavLink to="/mis-cursos" style={navLinkStyle}>Portal estudiante</NavLink>
-          )}
-
-          <Link to="/carrito" style={{ ...anchorLinkStyle, display: 'flex', opacity: 0.9 }} aria-label="Carrito">
-            <IconoCarrito />
-          </Link>
-
-          {usuario?.rol === 'admin' && (
-            <NavLink to="/admin" style={navLinkStyle}>Panel Admin</NavLink>
-          )}
-
-          {usuario ? (
-            <div ref={dropdownRef} style={{ position: 'relative' }}>
-              <button
-                onClick={() => setDropdownAbierto(!dropdownAbierto)}
-                style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-              >
-                <div style={{ width: 30, height: 30, borderRadius: '50%', background: 'rgba(201,162,39,0.15)', border: '1.5px solid var(--color-gold)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600, color: 'var(--color-gold)' }}>
-                    {usuario.nombre[0]}
-                  </span>
-                </div>
-                <span style={{ fontSize: 13, color: 'var(--color-warm-white)' }}>{usuario.nombre}</span>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2">
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-              </button>
-
-              {dropdownAbierto && (
-                <div
-                  style={{
-                    position: 'absolute', right: 0, top: 'calc(100% + 10px)', background: '#fff',
-                    border: '1px solid var(--color-warm-gray)', borderRadius: 10, minWidth: 190,
-                    boxShadow: '0 12px 32px rgba(26,21,16,0.25)', overflow: 'hidden', zIndex: 60,
-                  }}
-                >
-                  <Link to="/perfil" onClick={cerrarMenus} className="dropdown-item">
-                    <IconoPerfil /> Mi perfil
-                  </Link>
-                  <Link to="/favoritos" onClick={cerrarMenus} className="dropdown-item">
-                    <IconoFavoritos /> Favoritos
-                  </Link>
-                  <button onClick={handleLogout} className="dropdown-item dropdown-item-danger">
-                    <IconoSalir /> Cerrar sesión
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
+          {!navReducida && (
             <>
-              <Link to="/login" style={anchorLinkStyle}>Ingresar</Link>
-              <Link to="/registro" className="btn btn-primary btn-sm" style={{ textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Registrarme</Link>
+              <Link to={destinoCursos} style={anchorLinkStyle}>Cursos</Link>
+              <Link to="/#producciones" style={anchorLinkStyle}>Nuestras producciones</Link>
+              <Link to="/#nosotros" style={anchorLinkStyle}>Conócenos</Link>
             </>
           )}
+
+          {!modoAprendizaje && !cursosCerrados && menuCarrito}
+
+          {!navReducida && (
+            <Link to="/#contacto" className="btn btn-outline-gold btn-sm" style={{ textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+              Contáctanos
+            </Link>
+          )}
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginLeft: 'auto' }}>
+            <span aria-hidden="true" style={{ color: 'rgba(255,255,255,0.25)', fontSize: 16, fontWeight: 300 }}>|</span>
+
+            {usuario && (
+              <NavLink to="/mis-cursos" style={navLinkStyle}>Mis cursos</NavLink>
+            )}
+
+            {!navReducida && usuario?.rol === 'admin' && (
+              <NavLink to="/admin" style={navLinkStyle}>Panel Admin</NavLink>
+            )}
+            {!navReducida && usuario?.rol === 'profesor' && (
+              <NavLink to="/panel-instructor" style={navLinkStyle}>Editar cursos</NavLink>
+            )}
+
+            {menuUsuario}
+          </div>
         </div>
 
         {/* Botón hamburguesa mobile */}
@@ -168,21 +394,32 @@ function Navbar() {
       {/* Menú mobile (todo plano, sin dropdown anidado) */}
       <div className={`nav-mobile-menu ${menuMobileAbierto ? 'open' : ''}`}>
         <Link to="/" onClick={cerrarMenus}>Inicio</Link>
-        <Link to="/cursos" onClick={cerrarMenus}>Cursos</Link>
-        <a href="/#producciones" onClick={cerrarMenus}>Nuestras producciones</a>
-        <Link to="/carrito" onClick={cerrarMenus}>🛒 Carrito</Link>
+        {!navReducida && <Link to={destinoCursos} onClick={cerrarMenus}>Cursos</Link>}
+        {!navReducida && <Link to="/#producciones" onClick={cerrarMenus}>Nuestras producciones</Link>}
+        {!navReducida && <Link to="/#nosotros" onClick={cerrarMenus}>Conócenos</Link>}
+        {!modoAprendizaje && !cursosCerrados && (
+          <Link to="/carrito" onClick={cerrarMenus}>
+            🛒 Carrito{carritoItems.length > 0 ? ` (${carritoItems.length})` : ''}
+          </Link>
+        )}
+        {!navReducida && (
+          <Link to="/#contacto" onClick={cerrarMenus} className="btn btn-outline-gold btn-sm" style={{ marginTop: 4 }}>
+            Contáctanos
+          </Link>
+        )}
         {usuario ? (
           <>
-            <Link to="/mis-cursos" onClick={cerrarMenus}>Portal estudiante</Link>
-            <Link to="/favoritos" onClick={cerrarMenus}>Favoritos</Link>
-            <Link to="/perfil" onClick={cerrarMenus}>Mi perfil ({usuario.nombre})</Link>
-            {usuario.rol === 'admin' && <Link to="/admin" onClick={cerrarMenus}>Panel Admin</Link>}
+            <Link to="/mis-cursos" onClick={cerrarMenus}>Mis cursos</Link>
+            <Link to="/perfil" state={{ backgroundLocation: fondo }} onClick={cerrarMenus}>Mi cuenta ({usuario.nombre})</Link>
+            <Link to="/mis-compras" state={{ backgroundLocation: fondo }} onClick={cerrarMenus}>Mis compras</Link>
+            {!navReducida && usuario.rol === 'admin' && <Link to="/admin" onClick={cerrarMenus}>Panel Admin</Link>}
+            {!navReducida && usuario.rol === 'profesor' && <Link to="/panel-instructor" onClick={cerrarMenus}>Editar cursos</Link>}
             <button onClick={handleLogout} className="btn btn-outline btn-sm" style={{ marginTop: 8 }}>Cerrar sesión</button>
           </>
         ) : (
           <>
             <Link to="/login" onClick={cerrarMenus}>Ingresar</Link>
-            <Link to="/registro" onClick={cerrarMenus}>Registrarme</Link>
+            {!cursosCerrados && <Link to="/registro" onClick={cerrarMenus}>Registrarme</Link>}
           </>
         )}
       </div>

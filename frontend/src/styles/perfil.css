@@ -1,0 +1,173 @@
+/* ============================================================
+ * Página Perfil (datos de la cuenta del usuario)
+ * (parte de index.css, separado para que sea más fácil de ubicar)
+ * ============================================================ */
+
+.perfil-page {
+  background: linear-gradient(180deg, var(--color-cream), var(--color-warm-white) 220px);
+  min-height: calc(100vh - 84px);
+  padding: 56px 0 80px;
+}
+
+.perfil-container {
+  max-width: 640px;
+}
+
+.perfil-card {
+  background: #fff;
+  border: 1px solid var(--color-warm-gray);
+  border-radius: 16px;
+  padding: 36px 40px 40px;
+  box-shadow: 0 20px 60px rgba(26, 21, 16, 0.08);
+}
+
+.perfil-header {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin-bottom: 28px;
+}
+
+.perfil-avatar-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.perfil-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--color-gold);
+}
+
+.perfil-avatar-inicial {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-cream);
+  color: var(--color-gold-dim);
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 600;
+}
+
+.perfil-avatar-editar {
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-ink);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+
+.perfil-avatar-editar:hover {
+  background: var(--color-gold-dim);
+}
+
+.perfil-header-info {
+  min-width: 0;
+}
+
+.perfil-nombre {
+  font-size: 24px;
+  margin: 4px 0 2px;
+}
+
+.perfil-email {
+  font-size: 13px;
+  margin: 0;
+}
+
+.perfil-preview-nota {
+  font-size: 12px;
+  color: var(--color-muted);
+  margin: -12px 0 20px;
+}
+
+.perfil-datos {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px 0;
+  border-top: 1px solid var(--color-warm-gray);
+  border-bottom: 1px solid var(--color-warm-gray);
+  margin-bottom: 24px;
+}
+
+.perfil-dato {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.perfil-dato-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-gold-dim);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.perfil-dato-valor {
+  font-size: 14px;
+  color: var(--color-ink);
+}
+
+.perfil-nav-pills {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.perfil-pill {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-ink);
+  background: var(--color-cream);
+  border: 1px solid var(--color-warm-gray);
+  border-radius: 999px;
+  padding: 9px 18px;
+  text-decoration: none;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.perfil-pill:hover {
+  background: #fff;
+  border-color: var(--color-gold);
+}
+
+.perfil-form {
+  margin-top: 4px;
+}
+
+.perfil-form-acciones {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.perfil-cargando {
+  min-height: calc(100vh - 84px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 560px) {
+  .perfil-card {
+    padding: 28px 22px 32px;
+  }
+  .perfil-header {
+    flex-direction: column;
+    text-align: center;
+  }
+}

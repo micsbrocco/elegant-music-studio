@@ -1,4 +1,6 @@
 const prisma = require('../config/prisma');
+const { avisarVenta } = require('../utils/avisoVenta');
+const { INSCRIPCION_VIGENTE } = require('../utils/inscripcionVigente');
 
 // Comprar un curso (crea Inscripcion + Pago simulado)
 async function comprarCurso(req, res) {
@@ -17,7 +19,7 @@ async function comprarCurso(req, res) {
 
     // Evitar que se inscriba dos veces al mismo curso
     const inscripcionExistente = await prisma.inscripcion.findFirst({
-      where: { idUsuario, idCurso: parseInt(cursoId) },
+      where: { idUsuario, idCurso: parseInt(cursoId), ...INSCRIPCION_VIGENTE },
     });
     if (inscripcionExistente) {
       return res.status(409).json({ error: 'Ya estás inscripto en este curso' });
@@ -44,6 +46,7 @@ async function comprarCurso(req, res) {
       return { inscripcion: nuevaInscripcion, pago: nuevoPago };
     });
 
+    await avisarVenta(idUsuario, [resultado.pago.id]);
     res.status(201).json(resultado);
   } catch (error) {
     console.error(error);
@@ -57,12 +60,62 @@ async function misCursos(req, res) {
     const idUsuario = req.usuario.id;
 
     const inscripciones = await prisma.inscripcion.findMany({
-      where: { idUsuario },
-      include: { curso: true },
+      where: { idUsuario, ...INSCRIPCION_VIGENTE },
+      include: {
+        // Se traen las clases visibles en orden (módulo y clase) para saber por
+        // cuál va el alumno, y los avances marcados para saber cuáles ya hizo.
+        curso: {
+          include: {
+            modulos: {
+              orderBy: { orden: 'asc' },
+              select: {
+                titulo: true,
+                contenidos: {
+                  where: { visible: true },
+                  orderBy: { orden: 'asc' },
+                  select: { id: true, titulo: true },
+                },
+              },
+            },
+          },
+        },
+        progresos: {
+          where: { completado: true },
+          select: { idContenido: true, fecha: true },
+        },
+      },
       orderBy: { fechaInscripcion: 'desc' },
     });
 
-    res.json(inscripciones);
+    // A cada inscripción se le suma: total de clases, cuántas completó, cuál es
+    // la siguiente que le toca (para "Continuá donde lo dejaste") y la fecha de
+    // su último avance. Los módulos no se mandan: el frontend no los necesita acá.
+    const resultado = inscripciones.map(({ curso, progresos, ...inscripcion }) => {
+      const { modulos, ...datosCurso } = curso;
+      const clases = modulos.flatMap((m) =>
+        m.contenidos.map((c) => ({ id: c.id, titulo: c.titulo, modulo: m.titulo }))
+      );
+      const hechas = new Set(progresos.map((p) => p.idContenido));
+      const clasesCompletadas = clases.filter((c) => hechas.has(c.id)).length;
+      const indiceSiguiente = clases.findIndex((c) => !hechas.has(c.id));
+      const ultimaActividad = progresos.reduce(
+        (masReciente, p) => (!masReciente || p.fecha > masReciente ? p.fecha : masReciente),
+        null
+      );
+
+      return {
+        ...inscripcion,
+        curso: datosCurso,
+        totalClases: clases.length,
+        clasesCompletadas,
+        siguienteClase: indiceSiguiente >= 0
+          ? { ...clases[indiceSiguiente], numero: indiceSiguiente + 1 }
+          : null,
+        ultimaActividad,
+      };
+    });
+
+    res.json(resultado);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Error al obtener tus cursos' });
@@ -76,7 +129,7 @@ async function verificarInscripcion(req, res) {
     const idUsuario = req.usuario.id;
 
     const inscripcion = await prisma.inscripcion.findFirst({
-      where: { idUsuario, idCurso: parseInt(cursoId) },
+      where: { idUsuario, idCurso: parseInt(cursoId), ...INSCRIPCION_VIGENTE },
     });
 
     res.json({ inscripto: Boolean(inscripcion), inscripcion: inscripcion || null });

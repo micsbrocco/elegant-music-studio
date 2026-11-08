@@ -1,0 +1,120 @@
+/* ============================================================
+ * Resumen de compra (pages/Carrito.jsx): de acá se va a pagar a Mercado Pago
+ * ============================================================ */
+.checkout-page {
+  background: var(--ui-bg);
+  min-height: calc(100vh - 85px);
+  padding: 48px 0 72px;
+  font-family: var(--ui-font);
+  color: var(--ui-text);
+}
+.checkout-migas { font-size: 13px; color: var(--ui-text-2); margin-bottom: 14px; }
+.checkout-migas a { color: var(--ui-text-2); text-decoration: none; }
+.checkout-migas a:hover { color: var(--ui-text); }
+.checkout-migas span { margin: 0 6px; }
+.checkout-migas span:last-child { margin: 0; color: var(--ui-text); }
+.checkout-titulo {
+  font-family: var(--ui-font);
+  margin: 0 0 28px;
+  font-size: clamp(28px, 3vw, 38px);
+  font-weight: var(--ui-fw-bold);
+  letter-spacing: -0.03em;
+}
+.checkout-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 400px;
+  gap: clamp(28px, 4vw, 56px);
+  align-items: start;
+}
+.checkout-subtitulo { margin: 0 0 12px; font-size: 13px; font-weight: 600; color: var(--ui-text-2); }
+.checkout-items ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.checkout-item {
+  display: grid;
+  grid-template-columns: 168px minmax(0, 1fr) auto;
+  gap: 20px;
+  align-items: center;
+  padding: 14px;
+  background: #fff;
+  border-radius: var(--ui-r-lg);
+  box-shadow: var(--ui-shadow-card);
+}
+.checkout-item-portada { display: block; border-radius: 12px; overflow: hidden; aspect-ratio: 16 / 10; }
+.checkout-item-portada .portada-curso { width: 100%; height: 100%; }
+.checkout-item-datos { min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.checkout-item-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.checkout-item-titulo {
+  font-size: 17px;
+  font-weight: var(--ui-fw-bold);
+  line-height: 1.3;
+  color: var(--ui-text);
+  text-decoration: none;
+}
+.checkout-item-titulo:hover { text-decoration: underline; }
+.checkout-item-quitar {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-size: 13px;
+  color: var(--ui-text-2);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.checkout-item-quitar:hover { color: var(--ui-danger); }
+.checkout-item-precio { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; padding-right: 8px; }
+.checkout-item-precio span { font-size: 18px; font-weight: var(--ui-fw-bold); white-space: nowrap; }
+.checkout-item-precio s { font-size: 13px; color: var(--ui-text-2); }
+.checkout-seguir { display: inline-block; margin-top: 18px; font-size: 14px; font-weight: 600; color: var(--ui-gold-text); text-decoration: none; }
+.checkout-seguir:hover { text-decoration: underline; }
+
+.checkout-resumen { position: sticky; top: 110px; display: flex; flex-direction: column; gap: 14px; }
+.checkout-tarjeta {
+  padding: 24px;
+  background: #fff;
+  border-radius: var(--ui-r-xl);
+  box-shadow: var(--ui-shadow-card);
+}
+.checkout-tarjeta-titulo { margin: 0 0 14px; font-size: 18px; font-weight: var(--ui-fw-bold); }
+.checkout-fila { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; font-size: 14.5px; color: var(--ui-text-2); }
+.checkout-fila--descuento span:last-child { color: var(--ui-success); font-weight: 600; }
+.checkout-fila--total {
+  margin-top: 8px;
+  padding-top: 14px;
+  border-top: 1px solid var(--ui-line);
+  font-size: 15px;
+  color: var(--ui-text);
+  font-weight: 600;
+  align-items: baseline;
+}
+.checkout-fila--total span:last-child { font-size: 28px; font-weight: var(--ui-fw-bold); letter-spacing: -0.02em; }
+.checkout-incluye { list-style: none; margin: 18px 0; padding: 14px 0 0; border-top: 1px solid var(--ui-line); display: flex; flex-direction: column; gap: 8px; }
+.checkout-incluye li { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+.checkout-incluye svg { color: var(--ui-gold-text); flex: 0 0 auto; }
+.checkout-error { margin-bottom: 12px; }
+.checkout-pagar { width: 100%; height: 50px; font-size: 15.5px; }
+.checkout-seguro { display: flex; gap: 8px; margin: 12px 0 0; font-size: 12.5px; line-height: 1.5; color: var(--ui-text-2); }
+.checkout-seguro svg { flex: 0 0 auto; margin-top: 2px; }
+.checkout-politica { margin: 0; padding: 0 6px; font-size: 12.5px; line-height: 1.55; color: var(--ui-text-2); }
+.checkout-politica a { color: var(--ui-text-2); font-weight: 600; }
+
+.checkout-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 32px;
+  background: #fff;
+  border-radius: var(--ui-r-xl);
+  box-shadow: var(--ui-shadow-card);
+}
+.checkout-vacio p { margin: 0; font-size: 16px; }
+
+@media (max-width: 960px) {
+  .checkout-grid { grid-template-columns: 1fr; }
+  .checkout-resumen { position: static; }
+}
+@media (max-width: 600px) {
+  .checkout-page { padding: 28px 0 48px; }
+  .checkout-item { grid-template-columns: 96px minmax(0, 1fr); }
+  .checkout-item-precio { grid-column: 2; align-items: flex-start; padding: 0; }
+}

@@ -9,3 +9,8 @@ export async function obtenerProgresoCursoRequest(cursoId) {
   const response = await api.get(`/progreso/curso/${cursoId}`);
   return response.data;
 }
+// Avance de una clase de video: tramos de 5 segundos que se vieron
+export async function marcarVideoVistoRequest(contenidoId, tramos, duracion) {
+  const response = await api.post(`/progreso/video/${contenidoId}`, { tramos, duracion });
+  return response.data;
+}

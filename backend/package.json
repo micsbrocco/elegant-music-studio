@@ -1,8 +1,17 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "build": "prisma generate --config prisma7.config.ts",
+    "migrar": "prisma migrate deploy --config prisma7.config.ts",
+    "datos:prueba": "node scripts/cargarDatosPrueba.js",
+    "datos:borrar": "node scripts/borrarDatosPrueba.js",
+    "certificados:regenerar": "node scripts/regenerarCertificados.js",
+    "cursos:demo": "node scripts/cargarCursosDemo.js",
+    "cursos:demo:borrar": "node scripts/borrarCursosDemo.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -18,10 +27,17 @@
     "dotenv": "^17.4.2",
     "exceljs": "^4.4.0",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.7.3",
+    "google-auth-library": "^11.2.0",
+    "helmet": "^8.3.0",
     "jsonwebtoken": "^9.0.3",
+    "mercadopago": "^3.6.1",
     "multer": "^2.4.0",
+    "nodemailer": "^10.0.13",
     "pdfkit": "^0.20.2",
-    "pg": "^8.23.0"
+    "pg": "^8.23.0",
+    "qrcode": "^1.5.4",
+    "sanitize-html": "^2.18.1"
   },
   "devDependencies": {
     "prisma": "^7.10.0"

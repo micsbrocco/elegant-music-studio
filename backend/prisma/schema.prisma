@@ -7,6 +7,22 @@ datasource db {
   provider = "postgresql"
 }
 
+// Fila única (id fijo = 1) con el contenido editable de la landing (Home.jsx)
+model ConfiguracionLanding {
+  id            Int      @id
+  contenido     Json
+  actualizadoEn DateTime @updatedAt
+}
+
+// Configuración general del sitio (una sola fila, id = 1).
+// modoProximamente: la parte de cursos queda cerrada al público ("Próximamente"):
+// solo se ve la landing. El admin y los instructores siguen viendo todo.
+model ConfiguracionSitio {
+  id               Int      @id @default(1)
+  modoProximamente Boolean  @default(false)
+  actualizadoEn    DateTime @updatedAt
+}
+
 model Usuario {
   id                    Int      @id @default(autoincrement())
   nombre                String
@@ -17,14 +33,62 @@ model Usuario {
   fechaRegistro         DateTime @default(now())
   resetPasswordToken    String?
   resetPasswordExpires  DateTime?
+  emailVerificado       Boolean  @default(false)
+  verificacionToken     String?
+  verificacionExpira    DateTime?
   descripcion           String?
   genero                String?
   fotoPerfil            String?
+  // Actividad: se actualiza cuando el alumno inicia sesión o usa la plataforma
+  // (ver clases, comprar, etc.). Si pasa mucho tiempo sin actividad, una tarea
+  // diaria lo marca como inactivo (activo = false): la cuenta sigue funcionando
+  // igual, solo sale de la lista principal del panel. Vuelve a activo solo al
+  // entrar de nuevo, o si el admin lo reactiva a mano.
+  ultimaActividad       DateTime @default(now())
+  activo                Boolean  @default(true)
 
-  cursosCreados  Curso[]        @relation("CursosCreadosPorAdmin")
+  cursosCreados  Curso[]            @relation("CursosCreadosPorAdmin")
+  // Cursos donde este usuario (admin o profesor) tiene acceso de edición como
+  // colaborador. Que aparezca o no como instructor en la página pública de
+  // cada curso lo decide el flag "visible" de cada fila, no esta relación.
+  colaboraciones CursoColaborador[]
   inscripciones  Inscripcion[]
   carritoItems   CarritoItem[]
   favoritos      Favorito[]
+  respuestas     RespuestaPregunta[]
+  // Registro de altas y bajas como instructor (de este usuario, y las que hizo como admin)
+  historialInstructor HistorialInstructor[] @relation("HistorialDelInstructor")
+  historialHecho      HistorialInstructor[] @relation("HistorialHechoPor")
+  operacionesPago      OperacionPago[]
+  arrepentimientos     SolicitudArrepentimiento[]
+  notificaciones       Notificacion[]
+  consultasHechas      ConsultaClase[] @relation("ConsultasHechas")
+  consultasRespondidas ConsultaClase[] @relation("ConsultasRespondidas")
+  mensajesRevision     MensajeRevision[]
+  sesiones             SesionUsuario[]
+
+  @@index([rol, activo])
+}
+
+// Registro de instructores: cada vez que alguien es dado de alta o de baja
+// como instructor queda una fila con la fecha y quién lo hizo. Se guardan el
+// nombre y el email del momento, así el registro se sigue leyendo aunque el
+// usuario cambie sus datos o se borre.
+model HistorialInstructor {
+  id          Int      @id @default(autoincrement())
+  idUsuario   Int?
+  nombre      String
+  email       String
+  accion      String   // 'alta' | 'baja'
+  fecha       DateTime @default(now())
+  idAdmin     Int?
+  nombreAdmin String?
+  nota        String?
+
+  usuario Usuario? @relation("HistorialDelInstructor", fields: [idUsuario], references: [id], onDelete: SetNull)
+  admin   Usuario? @relation("HistorialHechoPor", fields: [idAdmin], references: [id], onDelete: SetNull)
+
+  @@index([fecha])
 }
 
 model CarritoItem {
@@ -58,13 +122,58 @@ model Curso {
   precio           Decimal
   categoria        String
   imagenPortada    String?
+  nivel            String?
+  precioOriginal   Decimal?
+  incluye          String[] @default([])
+  estadisticas     Json?
+  estado           String   @default("activo")
+  emiteCertificado Boolean  @default(true)
   idAdminCreador   Int
+  // Estados: activo (publicado) | oculto (publicado antes, retirado por ahora) |
+  // borrador (en preparación) | archivado (borrado lógico). Al archivarse se
+  // guarda la fecha; si a los N días no tiene ventas, se borra definitivamente.
+  archivadoEn      DateTime?
+  // Revisión: un instructor no publica solo. Pide la publicación (se guarda la
+  // fecha) y el admin lo publica o se lo devuelve con un comentario.
+  revisionSolicitadaEn DateTime?
+  comentarioRevision   String?
 
   adminCreador   Usuario        @relation("CursosCreadosPorAdmin", fields: [idAdminCreador], references: [id])
+  // Instructores/colaboradores con acceso de edición a este curso puntual.
+  // Cada fila decide, por persona, si aparece como instructor en la página
+  // pública (visible), con qué etiqueta y en qué orden.
+  colaboradores  CursoColaborador[]
   modulos        Modulo[]
   inscripciones  Inscripcion[]
   carritoItems   CarritoItem[]
   favoritos      Favorito[]
+  consultas      ConsultaClase[]
+  mensajesRevision MensajeRevision[]
+}
+
+// Un instructor o colaborador de un curso puntual. Estar en esta lista alcanza
+// para poder editar el curso (ver permisosCurso.js); que además se muestre
+// como instructor en la página pública del curso lo decide "visible".
+model CursoColaborador {
+  id        Int      @id @default(autoincrement())
+  idCurso   Int
+  idUsuario Int
+  // Si es true, aparece como instructor en la página pública del curso. Si es
+  // false, tiene acceso de edición pero queda solo como colaborador interno
+  // (por ejemplo, alguien a quien se le pidió una revisión).
+  visible   Boolean  @default(true)
+  // Texto corto a mostrar debajo del nombre en la página pública del curso
+  // (ej: "Productor Musical"). La palabra "Instructor" de arriba no depende
+  // de este campo: siempre se muestra fija.
+  etiqueta  String?
+  // Orden en el que aparece entre los demás instructores visibles del curso.
+  orden     Int      @default(0)
+  creadoEn  DateTime @default(now())
+
+  curso    Curso   @relation(fields: [idCurso], references: [id], onDelete: Cascade)
+  usuario  Usuario @relation(fields: [idUsuario], references: [id])
+
+  @@unique([idCurso, idUsuario])
 }
 
 model Modulo {
@@ -83,13 +192,45 @@ model Contenido {
   titulo              String
   orden               Int
   tipo                String
+  // Si es false, la clase no se muestra a los alumnos (ni cuenta para el
+  // progreso ni para el certificado) aunque el curso esté activo. El admin
+  // siempre la sigue viendo y editando igual.
+  visible             Boolean @default(true)
   contenidoTexto      String?
   urlVideo            String?
   archivoDescargable  String?
+  nombreArchivo       String?
 
-  modulo     Modulo     @relation(fields: [idModulo], references: [id])
+  modulo     Modulo             @relation(fields: [idModulo], references: [id])
   progresos  Progreso[]
+  consultas  ConsultaClase[]
+  archivos   ArchivoContenido[]
+  bloques    Bloque[]
+}
+
+// Una clase de tipo "bloques" se arma con una lista ordenada de Bloques, cada
+// uno de tipo 'texto' o 'quiz'. Las clases de video NO tienen bloques.
+model Bloque {
+  id             Int     @id @default(autoincrement())
+  idContenido    Int
+  tipo           String  // 'texto' | 'quiz'
+  orden          Int
+  contenidoTexto String? // solo se usa cuando tipo = 'texto'
+
+  contenido  Contenido  @relation(fields: [idContenido], references: [id], onDelete: Cascade)
   preguntas  Pregunta[]
+}
+
+// Archivos adjuntos de una clase (una clase puede tener varios: PDFs, ZIPs, audio, etc.)
+model ArchivoContenido {
+  id          Int      @id @default(autoincrement())
+  idContenido Int
+  url         String
+  nombre      String
+  orden       Int      @default(0)
+  creadoEn    DateTime @default(now())
+
+  contenido   Contenido @relation(fields: [idContenido], references: [id], onDelete: Cascade)
 }
 
 model Inscripcion {
@@ -98,6 +239,10 @@ model Inscripcion {
   idCurso           Int
   fechaInscripcion  DateTime @default(now())
   completado        Boolean  @default(false)
+  // true cuando se creó automáticamente para que un admin o el instructor dueño
+  // del curso puedan verlo/probarlo como lo vería un alumno, sin comprarlo. No
+  // cuenta en las estadísticas de ventas/alumnos (se filtra explícitamente).
+  esVistaPrevia     Boolean  @default(false)
 
   usuario      Usuario      @relation(fields: [idUsuario], references: [id])
   curso        Curso        @relation(fields: [idCurso], references: [id])
@@ -116,6 +261,93 @@ model Pago {
   idTransaccionExterna   String?
 
   inscripcion  Inscripcion @relation(fields: [idInscripcion], references: [id])
+
+  @@index([fechaPago])
+}
+
+// Una operación de Mercado Pago (un pago real). Puede cubrir varios cursos si el
+// alumno pagó el carrito completo: cada curso queda como un Pago con el mismo
+// idTransaccionExterna. Acá se guarda lo que informa Mercado Pago: cuánto se
+// cobró, la comisión, lo que le queda al vendedor y el medio de pago.
+model OperacionPago {
+  id                 Int       @id @default(autoincrement())
+  idExterno          String    @unique // número de operación de Mercado Pago
+  idUsuario          Int?
+  estado             String    // aprobado | reembolsado | contracargo
+  montoTotal         Decimal
+  comision           Decimal?  // null = no se conoce (operaciones anteriores al registro)
+  neto               Decimal?
+  montoReembolsado   Decimal   @default(0)
+  medioPago          String?   // visa, master, account_money...
+  tipoMedio          String?   // credit_card, debit_card, account_money, ticket...
+  cuotas             Int?
+  fechaAprobacion    DateTime
+  fechaAcreditacion  DateTime? // cuándo queda disponible la plata en Mercado Pago
+  actualizadoEn      DateTime  @default(now()) @updatedAt
+
+  usuario  Usuario? @relation(fields: [idUsuario], references: [id], onDelete: SetNull)
+
+  @@index([fechaAprobacion])
+}
+
+// Pedidos hechos con el "Botón de arrepentimiento" (obligatorio para vender
+// online en Argentina). Se puede usar sin tener cuenta; si el email coincide
+// con un usuario, queda vinculado.
+model SolicitudArrepentimiento {
+  id          Int       @id @default(autoincrement())
+  codigo      String    @unique // se le envía a la persona como comprobante
+  nombre      String
+  email       String
+  referencia  String?   // curso o número de operación, si lo indicó
+  motivo      String?
+  idUsuario   Int?
+  estado      String    @default("pendiente") // pendiente | aceptada | rechazada
+  creadaEn    DateTime  @default(now())
+  resueltaEn  DateTime?
+
+  usuario  Usuario? @relation(fields: [idUsuario], references: [id], onDelete: SetNull)
+
+  @@index([estado, creadaEn])
+}
+
+// Avisos de la campana del panel (admin e instructores)
+model Notificacion {
+  id         Int      @id @default(autoincrement())
+  idUsuario  Int      // a quién le llega
+  tipo       String   // venta | arrepentimiento | revision_curso | curso_publicado | curso_devuelto | consulta
+  titulo     String
+  mensaje    String?
+  enlace     String?  // a dónde lleva al hacer clic (ruta del panel)
+  leida      Boolean  @default(false)
+  creadaEn   DateTime @default(now())
+
+  usuario  Usuario @relation(fields: [idUsuario], references: [id], onDelete: Cascade)
+
+  @@index([idUsuario, leida, creadaEn])
+}
+
+// Preguntas privadas de un alumno sobre una clase: solo las ven el alumno,
+// los instructores del curso y el admin. Una pregunta, una respuesta.
+model ConsultaClase {
+  id             Int       @id @default(autoincrement())
+  idContenido    Int
+  idCurso        Int
+  idAlumno       Int
+  texto          String
+  creadaEn       DateTime  @default(now())
+  respuesta      String?
+  respondidaEn   DateTime?
+  idRespondedor  Int?
+  // El alumno ya vio la respuesta (para avisarle que tiene respuestas nuevas)
+  respuestaVista Boolean   @default(false)
+
+  contenido    Contenido @relation(fields: [idContenido], references: [id], onDelete: Cascade)
+  curso        Curso     @relation(fields: [idCurso], references: [id], onDelete: Cascade)
+  alumno       Usuario   @relation("ConsultasHechas", fields: [idAlumno], references: [id], onDelete: Cascade)
+  respondedor  Usuario?  @relation("ConsultasRespondidas", fields: [idRespondedor], references: [id], onDelete: SetNull)
+
+  @@index([idContenido, idAlumno])
+  @@index([idCurso, respondidaEn])
 }
 
 model Progreso {
@@ -124,27 +356,50 @@ model Progreso {
   idContenido    Int
   completado     Boolean  @default(false)
   fecha          DateTime @default(now())
+  // Clases de video: qué tramos de 5 segundos se vieron ("0101..."), cuánto
+  // dura el video y cuándo llegó el último aviso del reproductor
+  tramosVistos   String?
+  duracionVideo  Float?
+  ultimoAvisoVideo DateTime?
 
   inscripcion  Inscripcion @relation(fields: [idInscripcion], references: [id])
-  contenido    Contenido   @relation(fields: [idContenido], references: [id])
+  contenido    Contenido   @relation(fields: [idContenido], references: [id], onDelete: Cascade)
   @@unique([idInscripcion, idContenido])
 }
 
 model Pregunta {
   id                  Int     @id @default(autoincrement())
-  idContenido         Int
+  idBloque            Int
   enunciado           String
   opcionA             String
   opcionB             String
-  opcionC             String
-  opcionD             String
+  opcionC             String?
+  opcionD             String?
   respuestaCorrecta   String
   explicacionA        String?
   explicacionB        String?
   explicacionC        String?
   explicacionD        String?
 
-  contenido  Contenido @relation(fields: [idContenido], references: [id])
+  bloque     Bloque @relation(fields: [idBloque], references: [id], onDelete: Cascade)
+  respuestas RespuestaPregunta[]
+}
+
+// Registra la respuesta que cada alumno dio a cada pregunta de un quiz,
+// para que no se le vuelva a presentar como "sin responder" al volver a
+// entrar a la clase.
+model RespuestaPregunta {
+  id             Int      @id @default(autoincrement())
+  idUsuario      Int
+  idPregunta     Int
+  opcionElegida  String
+  correcta       Boolean
+  fecha          DateTime @default(now())
+
+  usuario   Usuario  @relation(fields: [idUsuario], references: [id])
+  pregunta  Pregunta @relation(fields: [idPregunta], references: [id])
+
+  @@unique([idUsuario, idPregunta])
 }
 
 model Certificado {
@@ -155,4 +410,45 @@ model Certificado {
   urlPdf               String?
 
   inscripcion  Inscripcion @relation(fields: [idInscripcion], references: [id])
+}
+
+// Comentarios que el administrador le deja al instructor al devolverle un curso
+// (historial con fecha; comentarioRevision en Curso guarda solo el último pendiente)
+model MensajeRevision {
+  id       Int      @id @default(autoincrement())
+  idCurso  Int
+  idAutor  Int?
+  texto    String
+  creadoEn DateTime @default(now())
+  // El instructor lo marcó como leído
+  leidoEn    DateTime?
+  // El admin lo marcó como realizado (deja de figurar como pendiente)
+  resueltoEn DateTime?
+
+  curso Curso    @relation(fields: [idCurso], references: [id], onDelete: Cascade)
+  autor Usuario? @relation(fields: [idAutor], references: [id], onDelete: SetNull)
+
+  @@index([idCurso, creadoEn])
+}
+
+// Una fila por dispositivo con la sesión iniciada. El navegador guarda el
+// token de renovación en una cookie httpOnly; acá solo queda su hash.
+model SesionUsuario {
+  id                Int       @id @default(autoincrement())
+  idUsuario         Int
+  tokenHash         String    @unique
+  // Hash del token anterior: si se vuelve a usar pasados unos segundos,
+  // alguien lo copió y la sesión se corta.
+  tokenAnteriorHash String?
+  rotadaEn          DateTime?
+  creadaEn          DateTime  @default(now())
+  ultimoUso         DateTime  @default(now())
+  expiraEn          DateTime
+  revocadaEn        DateTime?
+  agente            String?
+
+  usuario Usuario @relation(fields: [idUsuario], references: [id], onDelete: Cascade)
+
+  @@index([idUsuario])
+  @@index([tokenAnteriorHash])
 }

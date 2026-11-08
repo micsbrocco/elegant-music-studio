@@ -1,0 +1,331 @@
+/* ============================================================
+ * Panel de administrador: modo oscuro
+ * Se activa con la clase .admin-tema-oscuro en .admin-shell.
+ * Paleta neutra (sin tinte azulado), igual que la cursada.
+ * ============================================================ */
+
+/* Los colores oscuros también valen para las ventanas que se abren encima del
+   panel ("Mi cuenta"), que se dibujan fuera de .admin-shell */
+.admin-shell.admin-tema-oscuro,
+.modal-pagina-overlay.modal-tema-oscuro {
+  color-scheme: dark;
+
+  --ui-ink: #ececee;
+  --ui-text: #ececee;
+  --ui-text-2: #a1a1aa;
+  --ui-bg: #121214;
+  --ui-gold-text: #e2bb4a;
+  --ui-gold-tint: rgba(201, 162, 39, 0.16);
+  --ui-halo-gold: rgba(201, 162, 39, 0.07);
+  --ui-halo-cool: rgba(255, 255, 255, 0.025);
+
+  --ui-line: rgba(255, 255, 255, 0.09);
+  --ui-fill: rgba(255, 255, 255, 0.06);
+  --ui-fill-hover: rgba(255, 255, 255, 0.1);
+
+  --ui-glass-bg: rgba(30, 30, 33, 0.78);
+  --ui-glass-bg-fuerte: rgba(30, 30, 33, 0.92);
+  --ui-glass-border: 1px solid rgba(255, 255, 255, 0.09);
+
+  --ui-success: #4ade80;
+  --ui-success-tint: rgba(74, 222, 128, 0.1);
+  --ui-danger: #f87171;
+  --ui-danger-tint: rgba(248, 113, 113, 0.12);
+
+  --ui-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 32px -8px rgba(0, 0, 0, 0.5);
+  --ui-shadow-card-hover: 0 2px 4px rgba(0, 0, 0, 0.45), 0 20px 44px -10px rgba(0, 0, 0, 0.6);
+  --ui-shadow-pop: 0 2px 6px rgba(0, 0, 0, 0.5), 0 24px 48px -12px rgba(0, 0, 0, 0.7);
+  --ui-focus: 0 0 0 2px #121214, 0 0 0 4px var(--ui-gold);
+}
+.admin-shell.admin-tema-oscuro {
+  background: var(--ui-bg);
+  color: var(--ui-text);
+}
+
+/* Editores: tienen colores propios que no salen de --ui-* */
+.admin-tema-oscuro .editor-curso-page {
+  --ed-border: rgba(255, 255, 255, 0.11);
+  --ed-canvas: #1c1c1f;
+  --ed-surface: #232326;
+}
+
+/* Fondos blancos fijos */
+.admin-tema-oscuro .admin-dash-periodo-boton.activo,
+.admin-tema-oscuro .admin-modal,
+.admin-tema-oscuro .admin-orden-boton,
+.admin-tema-oscuro .admin-orden-menu,
+.admin-tema-oscuro .admin-input,
+.admin-tema-oscuro .admin-landing-subir label.admin-tabla-accion,
+.admin-tema-oscuro .admin-landing-equipo-grid .admin-landing-bloque,
+.admin-tema-oscuro .editor-curso-tipo-readonly-icono {
+  background: #1c1c1f;
+  color: var(--ui-text);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+.admin-tema-oscuro .editor-curso-preview-card-tag,
+.admin-tema-oscuro .editor-curso-navegador--modulos .editor-curso-modulo-numero {
+  background: rgba(40, 40, 44, 0.9);
+  color: var(--ui-text);
+}
+.admin-tema-oscuro .admin-switch-thumb,
+.admin-tema-oscuro .editor-curso-cert-toggle-perilla::after {
+  background: #fff;
+}
+
+/* Rellenos "ink" con texto claro: en oscuro pasan a relleno claro + texto oscuro */
+.admin-tema-oscuro .admin-dash-grafico-tooltip,
+.admin-tema-oscuro .admin-card form button[type='submit'],
+.admin-tema-oscuro .editor-curso-ver-como-alumno:hover,
+.admin-tema-oscuro .editor-curso-tab.activo,
+.admin-tema-oscuro .editor-curso-add-plus,
+.admin-tema-oscuro .editor-curso-navegador-chip.activo,
+.admin-tema-oscuro .editor-curso-volver:hover {
+  background: #ececee;
+  color: #121214;
+}
+.admin-tema-oscuro .editor-curso-tab.activo {
+  box-shadow: none;
+}
+.admin-tema-oscuro .editor-curso-add-card:hover .editor-curso-add-plus {
+  background: var(--ui-gold);
+  color: #121214;
+}
+.admin-tema-oscuro .admin-landing-preview-fondo {
+  background: #0b0b0c;
+}
+
+/* Inputs, selects y textareas del panel */
+.admin-tema-oscuro :where(input, select, textarea):where(:not([type='checkbox'], [type='radio'], [type='range'], [type='file'])) {
+  background-color: #1c1c1f;
+  color: var(--ui-text);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+.admin-tema-oscuro ::placeholder {
+  color: #71717a;
+}
+
+/* Gráfico y detalles con negro translúcido */
+.admin-tema-oscuro .admin-dash-grafico-eje line { stroke: rgba(255, 255, 255, 0.18); }
+.admin-tema-oscuro .admin-dash-grafico-crosshair { stroke: rgba(255, 255, 255, 0.25); }
+.admin-tema-oscuro .admin-dash-progreso-track { background: rgba(255, 255, 255, 0.1); }
+.admin-tema-oscuro .admin-switch-track { background: rgba(255, 255, 255, 0.18); }
+.admin-tema-oscuro .admin-input { border-color: rgba(255, 255, 255, 0.14); }
+
+
+/* Buscadores en forma de píldora: el input es transparente y el fondo lo da el contenedor */
+.admin-tema-oscuro .admin-busqueda input,
+.admin-tema-oscuro .admin-tabla-busqueda input {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+/* ============================================================
+ * Modo oscuro para las pantallas nuevas del panel
+ * (filtros, editor de cursos con panel lateral, página de inicio)
+ * ============================================================ */
+
+/* Botón principal y marcas de "activo": en oscuro pasan a dorado con texto
+   oscuro (igual que en la cursada), porque el negro no se distingue del fondo */
+.admin-shell.admin-tema-oscuro,
+.modal-pagina-overlay.modal-tema-oscuro {
+  --ui-btn-bg: var(--ui-gold);
+  --ui-btn-bg-hover: #d9b440;
+  --ui-btn-text: #121214;
+}
+.admin-tema-oscuro .admin-sidebar-link.active svg {
+  color: #121214;
+}
+.admin-tema-oscuro .portal-segmento-indicador {
+  background: var(--ui-gold);
+  box-shadow: none;
+}
+.admin-tema-oscuro .portal-segmento.activo {
+  color: #121214;
+}
+
+/* Lo que era negro con texto dorado/blanco pasa a gris oscuro */
+.admin-tema-oscuro :is(
+  .admin-persona-avatar,
+  .admin-alumno-avatar,
+  .landing-chip,
+  .landing-video-destacado,
+  .editor-panel-paso-num,
+  .editor-modulo.abierto .editor-modulo-num,
+  .editor-estructura-modulo.abierto .editor-estructura-modulo-num
+) {
+  background: #2e2e33;
+  color: var(--ui-gold);
+}
+.admin-tema-oscuro .landing-chip input {
+  color: #ececee;
+}
+.admin-tema-oscuro .editor-modulo-num {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* Superficies que eran blancas fijas */
+.admin-tema-oscuro :is(
+  .editor-panel-cabecera,
+  .editor-panel-paso,
+  .editor-panel-pie,
+  .editor-panel-tipo.activo,
+  .editor-estructura-agregar-opciones,
+  .editor-contenido-resumen > span:not(.editor-contenido-resumen-ayuda)
+) {
+  background: #1c1c1f;
+}
+.admin-tema-oscuro .editor-panel {
+  background: #121214;
+  box-shadow: -24px 0 48px -16px rgba(0, 0, 0, 0.7);
+}
+.admin-tema-oscuro .editor-panel-fondo {
+  background: rgba(0, 0, 0, 0.55);
+}
+.admin-tema-oscuro .editor-panel-tipo.activo {
+  box-shadow: inset 0 0 0 2px var(--ui-gold);
+}
+.admin-tema-oscuro :is(
+  .editor-clase-fila:hover,
+  .editor-clase-fila-visible:hover,
+  .editor-clase-fila-borrar:hover,
+  .editor-estructura-clase:hover,
+  .editor-estructura-clase.activa,
+  .editor-estructura-agregar-clase:hover,
+  .editor-estructura-modulo-acciones button:hover,
+  .editor-modulo.abierto .editor-estructura-modulo-cant
+) {
+  background: rgba(255, 255, 255, 0.07);
+}
+.admin-tema-oscuro .editor-clase-nueva .admin-input:focus,
+.admin-tema-oscuro .editor-modulo-nuevo .admin-input:focus {
+  background: #1c1c1f;
+}
+.admin-tema-oscuro .editor-curso-page .editor-modulo-nuevo.admin-card {
+  border-color: rgba(255, 255, 255, 0.14);
+}
+.admin-tema-oscuro :is(.landing-video, .landing-persona) .admin-input {
+  background: #1c1c1f;
+}
+.admin-tema-oscuro .landing-persona--grande {
+  background: none;
+}
+/* Botones blancos sobre la foto: el texto queda oscuro */
+.admin-tema-oscuro .landing-foto-boton {
+  color: #121214;
+}
+.admin-tema-oscuro .landing-foto-boton--quitar {
+  color: #c0392b;
+}
+
+/* Etiquetas de tipo y estados: un poco más luminosas sobre fondo oscuro */
+.admin-tema-oscuro :is(.editor-clase-fila-tipo--video, .editor-estructura-clase-tipo--video, .editor-panel-tipo-icono--video) {
+  background: rgba(96, 150, 240, 0.16);
+  color: #7fb0ff;
+}
+.admin-tema-oscuro :is(.editor-clase-fila-tipo--bloques, .editor-estructura-clase-tipo--bloques, .editor-panel-tipo-icono--bloques) {
+  background: rgba(160, 130, 240, 0.16);
+  color: #b9a2ff;
+}
+.admin-tema-oscuro .admin-tabla-pill--pendiente {
+  color: #f0b44c;
+}
+.admin-tema-oscuro .admin-dash-stat-icono {
+  background: color-mix(in srgb, var(--stat-color, var(--ui-gold)) 22%, transparent);
+  filter: brightness(1.35);
+}
+
+/* Botones "outline" globales dentro del panel (Subir imagen, + Agregar ítem...) */
+.admin-tema-oscuro .btn-outline,
+.admin-tema-oscuro .btn.btn-outline {
+  background: transparent;
+  color: var(--ui-text);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+.admin-tema-oscuro .btn-outline:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Lista de control y cartel de bienvenida */
+.admin-tema-oscuro .editor-lista-control-item.ok .editor-lista-control-marca {
+  color: #121214;
+}
+.admin-tema-oscuro .editor-bienvenida {
+  box-shadow: inset 0 0 0 1px rgba(74, 222, 128, 0.25);
+}
+.admin-tema-oscuro .editor-bienvenida-icono {
+  color: #121214 !important;
+}
+
+/* Ventanita de nuevo curso y popover de fechas */
+.admin-tema-oscuro .modal-nuevo-curso-chip--nueva {
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
+}
+.admin-tema-oscuro .admin-filtro-pop {
+  background: #1c1c1f;
+}
+.admin-tema-oscuro .admin-filtro-rango input[type='date'],
+.admin-tema-oscuro .admin-filtro-rango input[type='number'] {
+  color-scheme: dark;
+}
+.admin-tema-oscuro .admin-filtro-boton.activo,
+.admin-tema-oscuro .admin-filtro-select.activo {
+  box-shadow: inset 0 0 0 1.5px var(--ui-gold);
+}
+
+/* ---- Menús desplegables nativos (select) en modo oscuro ---- */
+.admin-tema-oscuro select {
+  color-scheme: dark;
+}
+.admin-tema-oscuro select option {
+  background: #1c1c1f;
+  color: #ececee;
+}
+.admin-tema-oscuro select option:checked {
+  background: #3a3220;
+  color: #fff;
+}
+
+/* ---- "Mi cuenta" abierta desde el panel en modo oscuro ---- */
+.modal-tema-oscuro {
+  background: rgba(0, 0, 0, 0.6);
+}
+.modal-tema-oscuro .modal-pagina {
+  background: #1c1c1f;
+  color: var(--ui-text);
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+.modal-tema-oscuro :is(.modal-boton-secundario, .acordeon-lapiz) {
+  background: #232326;
+}
+.modal-tema-oscuro .label {
+  color: var(--ui-text-2);
+}
+.modal-tema-oscuro :is(.input, textarea.input, select.input) {
+  background: #232326;
+  border-color: rgba(255, 255, 255, 0.12);
+  color: var(--ui-text);
+}
+.modal-tema-oscuro .input::placeholder {
+  color: #71717a;
+}
+
+/* ============================================================
+ * Panel de administrador / instructor: modo claro
+ * Un poco más gris que el blanco puro para que no canse la vista
+ * (mismo criterio que la cursada en claro). Solo cambia variables.
+ * ============================================================ */
+.admin-shell:not(.admin-tema-oscuro) {
+  --ui-bg: #e6e7eb;
+  --ui-line: rgba(18, 18, 20, 0.09);
+  --ui-fill: rgba(18, 18, 20, 0.055);
+  --ui-fill-hover: rgba(18, 18, 20, 0.085);
+  --ui-glass-bg: rgba(241, 242, 245, 0.8);
+  --ui-glass-bg-fuerte: rgba(243, 244, 246, 0.94);
+  --ui-glass-border: 1px solid rgba(255, 255, 255, 0.5);
+}
+.admin-shell:not(.admin-tema-oscuro) .editor-curso-page {
+  --ed-canvas: #f4f5f7;
+  --ed-surface: #eaebee;
+  --ed-border: rgba(18, 18, 20, 0.1);
+}

@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import RutaProtegida from './components/RutaProtegida';
 
@@ -7,40 +7,73 @@ import Cursos from './pages/Cursos';
 import CursoDetalle from './pages/CursoDetalle';
 import CursoAprender from './pages/CursoAprender';
 import MisCursos from './pages/MisCursos';
-import Perfil from './pages/Perfil';
 import Carrito from './pages/Carrito';
 import Favoritos from './pages/Favoritos';
 import Login from './pages/Login';
 import Registro from './pages/Registro';
 import RecuperarPassword from './pages/RecuperarPassword';
 import ResetearPassword from './pages/ResetearPassword';
+import VerificarEmail from './pages/VerificarEmail';
+import PagoResultado from './pages/PagoResultado';
+import VerificarCertificado from './pages/VerificarCertificado';
+import Proximamente from './pages/Proximamente';
+import { useSitio } from './context/SitioContext';
 
+import AdminLayout from './pages/admin/AdminLayout';
 import AdminCursos from './pages/admin/AdminCursos';
-import CursoForm from './pages/admin/CursoForm';
-import AdminModulos from './pages/admin/AdminModulos';
-import ModuloForm from './pages/admin/ModuloForm';
-import AdminContenidos from './pages/admin/AdminContenidos';
-import ContenidoForm from './pages/admin/ContenidoForm';
-import AdminPreguntas from './pages/admin/AdminPreguntas';
-import PreguntaForm from './pages/admin/PreguntaForm';
+import EditorCursoVivo from './pages/admin/EditorCursoVivo';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminVentas from './pages/admin/AdminVentas';
+import AdminPreguntas from './pages/admin/AdminPreguntas';
+import AdminAlumnos from './pages/admin/AdminAlumnos';
+import AdminInstructores from './pages/admin/AdminInstructores';
+import AdminLandingEditor from './pages/admin/AdminLandingEditor';
 import Footer from './components/Footer';
+import Arrepentimiento from './pages/Arrepentimiento';
+import ModalCuenta from './components/ModalCuenta';
+import ModalCompras from './components/ModalCompras';
 
 function App() {
+  const location = useLocation();
+  // Modo "Próximamente": catálogo, carrito y registro quedan cerrados al público
+  const { cursosCerrados } = useSitio();
+  const backgroundLocation = location.state && location.state.backgroundLocation;
+  // Cuando hay una ventana abierta (login, Mi cuenta, Mis compras), la página de
+  // fondo es la que decide si se muestra navbar/footer, no la URL de la ventana.
+  const rutaFondo = (backgroundLocation || location).pathname;
+  const enPanelAdmin = rutaFondo.startsWith('/admin') || rutaFondo.startsWith('/panel-instructor');
+  // En la vista de cursada (/cursos/:id/aprender) no se muestra el footer.
+  const enCursada = /^\/cursos\/[^/]+\/aprender/.test(rutaFondo);
+  // Mi cuenta y Mis compras son ventanas: se abren siempre encima de otra página.
+  const esVentanaCuenta = location.pathname === '/perfil' || location.pathname === '/mis-compras';
+  // Páginas que usan todo el ancho (con margen lateral): la navbar y el footer
+  // se alinean con su contenido en vez de quedar centrados.
+  const anchoCompleto = /^\/cursos\/[^/]+$/.test(rutaFondo);
   return (
-    <div>
-      <Navbar />
-      <Routes>
+    <div className={`app-shell ${anchoCompleto ? 'app-shell--ancho' : ''}`}>
+      {!enPanelAdmin && <Navbar />}
+      <main className="app-main">
+      <Routes location={backgroundLocation || location}>
         {/* Públicas */}
         <Route path="/" element={<Home />} />
-        <Route path="/cursos" element={<Cursos />} />
+        <Route path="/cursos" element={cursosCerrados ? <Proximamente /> : <Cursos />} />
         <Route path="/cursos/:id" element={<CursoDetalle />} />
+        <Route path="/carrito" element={cursosCerrados ? <Proximamente /> : <Carrito />} />
 
         {/* Auth */}
         <Route path="/login" element={<Login />} />
-        <Route path="/registro" element={<Registro />} />
+        <Route path="/registro" element={cursosCerrados ? <Proximamente /> : <Registro />} />
         <Route path="/recuperar-password" element={<RecuperarPassword />} />
         <Route path="/resetear-password" element={<ResetearPassword />} />
+        <Route path="/verificar-email" element={<VerificarEmail />} />
+        <Route path="/arrepentimiento" element={<Arrepentimiento />} />
+        <Route path="/verificar" element={<VerificarCertificado />} />
+        <Route path="/verificar/:codigo" element={<VerificarCertificado />} />
+
+        {/* Retorno de Mercado Pago */}
+        <Route path="/pago/exito" element={<RutaProtegida><PagoResultado estado="exito" /></RutaProtegida>} />
+        <Route path="/pago/pendiente" element={<RutaProtegida><PagoResultado estado="pendiente" /></RutaProtegida>} />
+        <Route path="/pago/error" element={<RutaProtegida><PagoResultado estado="error" /></RutaProtegida>} />
 
         {/* Alumno (logueado) */}
         <Route
@@ -59,22 +92,14 @@ function App() {
             </RutaProtegida>
           }
         />
-        <Route
-          path="/perfil"
-          element={
-            <RutaProtegida>
-              <Perfil />
-            </RutaProtegida>
-          }
-        />
-        <Route
-          path="/carrito"
-          element={
-            <RutaProtegida>
-              <Carrito />
-            </RutaProtegida>
-          }
-        />
+        {/* Mi cuenta y Mis compras se abren como ventana (ver abajo). Si alguien entra
+            directo por la URL, de fondo se muestra Mis cursos. */}
+        <Route path="/perfil" element={<RutaProtegida><MisCursos /></RutaProtegida>} />
+        <Route path="/mis-compras" element={<RutaProtegida><MisCursos /></RutaProtegida>} />
+        {/* Certificados y Configuración se integraron a Mis cursos y a Mi cuenta:
+            las direcciones viejas redirigen para que no queden links rotos. */}
+        <Route path="/mis-certificados" element={<Navigate to="/mis-cursos" replace />} />
+        <Route path="/configuracion" element={<Navigate to="/perfil" replace />} />
         <Route
           path="/favoritos"
           element={
@@ -84,97 +109,58 @@ function App() {
           }
         />
 
-        {/* Panel Admin - Cursos */}
-        <Route
-          path="/admin/cursos"
-          element={
-            <RutaProtegida soloAdmin={true}>
-              <AdminCursos />
-            </RutaProtegida>
-          }
-        />
-        <Route
-          path="/admin/cursos/nuevo"
-          element={
-            <RutaProtegida soloAdmin={true}>
-              <CursoForm />
-            </RutaProtegida>
-          }
-        />
-        <Route
-          path="/admin/cursos/:id/editar"
-          element={
-            <RutaProtegida soloAdmin={true}>
-              <CursoForm />
-            </RutaProtegida>
-          }
-        />
-        <Route
-          path="/admin/cursos/:cursoId/modulos"
-          element={
-            <RutaProtegida soloAdmin={true}>
-              <AdminModulos />
-            </RutaProtegida>
-          }
-        />
-
-        {/* Panel Admin - Módulos */}
-        <Route
-          path="/admin/modulos/:id/editar"
-          element={
-            <RutaProtegida soloAdmin={true}>
-              <ModuloForm />
-            </RutaProtegida>
-          }
-        />
-        <Route
-          path="/admin/modulos/:moduloId/contenidos"
-          element={
-            <RutaProtegida soloAdmin={true}>
-              <AdminContenidos />
-            </RutaProtegida>
-          }
-        />
-
-        {/* Panel Admin - Contenidos */}
-        <Route
-          path="/admin/contenidos/:id/editar"
-          element={
-            <RutaProtegida soloAdmin={true}>
-              <ContenidoForm />
-            </RutaProtegida>
-          }
-        />
-        <Route
-          path="/admin/contenidos/:contenidoId/preguntas"
-          element={
-            <RutaProtegida soloAdmin={true}>
-              <AdminPreguntas />
-            </RutaProtegida>
-          }
-        />
-
-        {/* Panel Admin - Preguntas */}
-        <Route
-          path="/admin/preguntas/:id/editar"
-          element={
-            <RutaProtegida soloAdmin={true}>
-              <PreguntaForm />
-            </RutaProtegida>
-          }
-        />
-
+        {/* Panel Admin - layout con sidebar + topbar, todo dentro de una sola rama protegida */}
         <Route
           path="/admin"
           element={
             <RutaProtegida soloAdmin={true}>
-              <AdminDashboard />
+              <AdminLayout />
             </RutaProtegida>
           }
-        />
-        
+        >
+          <Route index element={<AdminDashboard />} />
+          <Route path="ventas" element={<AdminVentas />} />
+          <Route path="pagos" element={<Navigate to="../ventas" replace />} />
+          <Route path="alumnos" element={<AdminAlumnos />} />
+          <Route path="preguntas" element={<AdminPreguntas />} />
+          <Route path="instructores" element={<AdminInstructores />} />
+          <Route path="landing" element={<AdminLandingEditor />} />
+          <Route path="cursos" element={<AdminCursos />} />
+          <Route path="cursos/nuevo" element={<Navigate to="../cursos?nuevo=1" replace />} />
+          <Route path="cursos/:id/editar" element={<EditorCursoVivo />} />
+          <Route path="cursos/:id/editor" element={<EditorCursoVivo />} />
+        </Route>
+
+        {/* Panel del instructor - mismo layout, recortado a "Mis Cursos" */}
+        <Route
+          path="/panel-instructor"
+          element={
+            <RutaProtegida rolesPermitidos={['profesor']}>
+              <AdminLayout modoInstructor />
+            </RutaProtegida>
+          }
+        >
+          <Route index element={<AdminCursos />} />
+          <Route path="cursos" element={<AdminCursos />} />
+          <Route path="preguntas" element={<AdminPreguntas />} />
+          <Route path="cursos/nuevo" element={<Navigate to="../cursos?nuevo=1" replace />} />
+          <Route path="cursos/:id/editar" element={<EditorCursoVivo />} />
+          <Route path="cursos/:id/editor" element={<EditorCursoVivo />} />
+        </Route>
+
       </Routes>
-      <Footer />
+      </main>
+      {!enPanelAdmin && !enCursada && <Footer />}
+      {/* Ventanas que se abren encima de la página de fondo */}
+      {(backgroundLocation || esVentanaCuenta) && (
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/registro" element={cursosCerrados ? <Navigate to="/registro" replace /> : <Registro />} />
+          <Route path="/perfil" element={<RutaProtegida><ModalCuenta /></RutaProtegida>} />
+          <Route path="/mis-compras" element={<RutaProtegida><ModalCompras /></RutaProtegida>} />
+          <Route path="*" element={null} />
+        </Routes>
+      )}
     </div>
   );
 }

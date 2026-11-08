@@ -1,0 +1,344 @@
+/* ============================================================
+ * Cuenta del usuario: Mis compras, Mis certificados y Configuración
+ * Reusa .portal-page / .portal-header (mis-cursos.css) y los tokens
+ * de base.css; dorado solo como acento.
+ * ============================================================ */
+
+/* ---------- Panel de la cuenta ---------- */
+.cuenta-shell {
+  background: linear-gradient(180deg, var(--color-cream), var(--color-warm-white) 240px);
+  min-height: calc(100vh - 84px);
+  padding: 48px 0 80px;
+}
+.cuenta-shell-inner {
+  max-width: 1040px;
+}
+
+/* Identidad del usuario: siempre arriba y centrada */
+.cuenta-hero {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  margin-bottom: 32px;
+}
+.cuenta-hero .perfil-avatar {
+  flex-shrink: 0;
+}
+.cuenta-hero-info {
+  min-width: 0;
+  text-align: left;
+}
+.cuenta-hero-eyebrow {
+  margin: 0 0 4px;
+}
+.cuenta-hero-nombre {
+  font-size: clamp(24px, 3vw, 30px);
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+.cuenta-hero-email {
+  font-size: 13px;
+  color: var(--color-muted);
+  margin: 0;
+}
+
+.cuenta-panel {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr);
+  background: #fff;
+  border: 1px solid var(--color-warm-gray);
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(26, 21, 16, 0.08);
+  overflow: hidden;
+  min-height: 460px;
+}
+
+.cuenta-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 20px 14px;
+  background: #fff;
+  border-right: 1px solid var(--color-warm-gray);
+}
+.cuenta-nav-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-ink);
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.cuenta-nav-link:hover {
+  background: var(--color-cream);
+}
+/* Activo: dorado como acento (tinte + barrita + ícono), igual que el panel admin */
+.cuenta-nav-link.active {
+  background: rgba(201, 162, 39, 0.1);
+  font-weight: 600;
+}
+.cuenta-nav-link.active svg {
+  color: var(--color-gold-dim);
+}
+.cuenta-nav-link.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 3px;
+  background: var(--color-gold);
+}
+
+.cuenta-contenido {
+  padding: 32px 40px 40px;
+  min-width: 0;
+}
+
+.cuenta-seccion-cab {
+  margin-bottom: 24px;
+}
+.cuenta-seccion-titulo {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+.cuenta-seccion-sub {
+  font-size: 14px;
+  color: var(--color-muted);
+  margin: 0;
+}
+
+/* Foto en el modo edición del perfil */
+.perfil-foto-edicion {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+.perfil-foto-edicion .perfil-avatar {
+  width: 64px;
+  height: 64px;
+  font-size: 24px;
+  border-width: 2px;
+}
+
+.cuenta-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cuenta-fila {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #fff;
+  border: 1px solid var(--color-warm-gray);
+  border-radius: 14px;
+  padding: 14px 20px 14px 14px;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+.cuenta-fila:hover {
+  border-color: var(--color-gold);
+  box-shadow: 0 8px 24px rgba(26, 21, 16, 0.07);
+}
+
+.cuenta-thumb {
+  flex-shrink: 0;
+  width: 84px;
+  height: 56px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--color-cream);
+}
+.cuenta-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cuenta-info {
+  flex: 1;
+  min-width: 0;
+}
+.cuenta-titulo {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-ink);
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cuenta-titulo:hover {
+  color: var(--color-gold-dim);
+}
+.cuenta-meta {
+  margin: 4px 0 0;
+  font-size: 12.5px;
+  color: var(--color-muted);
+  overflow-wrap: anywhere;
+}
+
+.cuenta-lado {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+.cuenta-monto {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+.cuenta-pill {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--color-cream);
+  color: var(--color-muted);
+}
+.cuenta-pill--ok {
+  background: rgba(21, 128, 61, 0.08);
+  color: var(--color-success);
+}
+
+.cuenta-card {
+  background: #fff;
+  border: 1px solid var(--color-warm-gray);
+  border-radius: 14px;
+  padding: 24px 26px 26px;
+  margin-bottom: 20px;
+}
+.cuenta-card:last-child {
+  margin-bottom: 0;
+}
+.cuenta-card-titulo {
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0;
+  margin: 0 0 18px;
+}
+.cuenta-nota {
+  font-size: 13px;
+  color: var(--color-muted);
+  margin: 18px 0 0;
+  line-height: 1.5;
+}
+.cuenta-link {
+  color: var(--color-gold-dim);
+  font-weight: 600;
+}
+
+@media (max-width: 560px) {
+  .cuenta-hero {
+    flex-direction: column;
+    text-align: center;
+  }
+  .cuenta-hero-info {
+    text-align: center;
+  }
+}
+
+@media (max-width: 800px) {
+  .cuenta-panel {
+    grid-template-columns: 1fr;
+  }
+  .cuenta-nav {
+    flex-direction: row;
+    gap: 6px;
+    padding: 12px;
+    overflow-x: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--color-warm-gray);
+  }
+  .cuenta-nav-link {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .cuenta-nav-link.active::before {
+    display: none;
+  }
+  .cuenta-contenido {
+    padding: 24px 20px 28px;
+  }
+}
+
+@media (max-width: 640px) {
+  .cuenta-fila {
+    flex-wrap: wrap;
+  }
+  .cuenta-lado {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+  .cuenta-card {
+    padding: 20px 18px;
+  }
+}
+
+/* Fila de opción de Configuración: texto a la izquierda, botón a la derecha */
+.cuenta-opcion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.cuenta-opcion .cuenta-card-titulo {
+  margin: 0 0 2px;
+}
+.cuenta-opcion-desc {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-muted);
+}
+.cuenta-opcion-form {
+  margin-top: 22px;
+  padding-top: 22px;
+  border-top: 1px solid var(--color-warm-gray);
+}
+
+/* Título de sección con un botón de acción (lápiz) al lado */
+.cuenta-titulo-con-accion {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.cuenta-icono-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--color-warm-gray);
+  background: #fff;
+  color: var(--color-ink);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+.cuenta-icono-btn:hover {
+  border-color: var(--color-gold);
+  color: var(--color-gold-dim);
+  background: rgba(201, 162, 39, 0.08);
+}
+
+/* Contraseña dentro de "Mi cuenta" (Configuracion embebida en Perfil) */
+.cuenta-seccion-embebida {
+  margin-top: 28px;
+}

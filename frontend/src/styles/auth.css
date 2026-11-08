@@ -1,0 +1,542 @@
+/* ============================================================
+ * Auth: Login / Registro / overlay de auth (ver nota de duplicación al final del archivo)
+ * (parte de index.css, separado para que sea más fácil de ubicar)
+ * ============================================================ */
+
+/* ---------- Auth (Login / Registro) ---------- */
+.auth-page {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-ink);
+  padding: 72px 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.auth-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 460px;
+  background: var(--color-warm-white);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.45);
+}
+
+.auth-card-accent {
+  height: 5px;
+  background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+}
+
+.auth-card-body {
+  padding: 40px 36px 32px;
+}
+
+.auth-card-body-centrado {
+  text-align: center;
+}
+
+.auth-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.auth-brand-mark {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-ink);
+  color: var(--color-gold);
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-brand-nombre {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  margin: 0;
+}
+
+.auth-brand-sub {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-gold-dim);
+  margin: 0;
+}
+
+.auth-tabs {
+  display: flex;
+  background: var(--color-cream);
+  border: 1px solid var(--color-warm-gray);
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 28px;
+}
+
+.auth-tab {
+  flex: 1;
+  text-align: center;
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--color-muted);
+  border-radius: 7px;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.auth-tab-activo {
+  background: #fff;
+  color: var(--color-ink);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.auth-titulo {
+  font-size: 26px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.auth-subtitulo {
+  font-size: 13px;
+  margin-bottom: 24px;
+}
+
+.auth-field-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 7px;
+}
+.auth-field-header .label {
+  margin-bottom: 0;
+}
+
+.auth-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.auth-link-sm {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-gold-dim);
+  text-decoration: none;
+}
+.auth-link-sm:hover {
+  text-decoration: underline;
+}
+
+.auth-link {
+  color: var(--color-gold-dim);
+  font-weight: 600;
+  text-decoration: none;
+}
+.auth-link:hover {
+  text-decoration: underline;
+}
+
+.input-icon-wrap {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  transform: translateY(-50%);
+  color: var(--color-gold-dim);
+  pointer-events: none;
+}
+
+.input-with-icon {
+  padding-left: 40px;
+}
+
+.input-with-toggle {
+  padding-right: 40px;
+}
+
+.input-toggle {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 4px;
+  color: var(--color-muted);
+  cursor: pointer;
+  display: flex;
+}
+.input-toggle:hover {
+  color: var(--color-ink);
+}
+
+/* ---------- Auth (Login / Registro) ---------- */
+/* ---------- Auth (Login / Registro) ---------- */
+.auth-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(18, 18, 20, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  overflow-y: auto;
+}
+
+.auth-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--color-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  transition: background 0.2s, color 0.2s;
+}
+.auth-close:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: var(--color-ink);
+}
+
+.auth-card {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  background: var(--color-warm-white);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.45);
+}
+
+.auth-card-accent {
+  height: 5px;
+  background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+}
+
+.auth-card-body {
+  padding: 40px 36px 32px;
+}
+
+.auth-card-body-centrado {
+  text-align: center;
+}
+
+.auth-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.auth-logo {
+  height: 64px;
+  width: auto;
+  margin: 0 auto 20px;
+  display: block;
+}
+
+.auth-tabs {
+  display: flex;
+  background: var(--color-cream);
+  border: 1px solid var(--color-warm-gray);
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 28px;
+}
+
+.auth-tab {
+  flex: 1;
+  text-align: center;
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--color-muted);
+  border-radius: 7px;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.auth-tab-activo {
+  background: #fff;
+  color: var(--color-ink);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.auth-titulo {
+  font-size: 26px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.auth-subtitulo {
+  font-size: 13px;
+  margin-bottom: 24px;
+}
+
+.auth-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.auth-link-sm {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-gold-dim);
+  text-decoration: none;
+}
+.auth-link-sm:hover {
+  text-decoration: underline;
+}
+
+.auth-link-sm-debajo {
+  display: inline-block;
+  margin-top: 8px;
+}
+
+.auth-link {
+  color: var(--color-gold-dim);
+  font-weight: 600;
+  text-decoration: none;
+}
+.auth-link:hover {
+  text-decoration: underline;
+}
+
+.input-icon-wrap {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  transform: translateY(-50%);
+  color: var(--color-gold-dim);
+  pointer-events: none;
+}
+
+.input-with-icon {
+  padding-left: 40px;
+}
+
+.input-with-toggle {
+  padding-right: 40px;
+}
+
+.input-toggle {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 4px;
+  color: var(--color-muted);
+  cursor: pointer;
+  display: flex;
+}
+.input-toggle:hover {
+  color: var(--color-ink);
+}
+
+.auth-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--color-muted);
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+.auth-checkbox input {
+  accent-color: var(--color-gold);
+  width: 15px;
+  height: 15px;
+}
+
+.auth-submit {
+  width: 100%;
+  padding: 13px 24px;
+}
+
+.auth-divider {
+  position: relative;
+  text-align: center;
+  margin: 24px 0 18px;
+}
+.auth-divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  border-top: 1px solid var(--color-warm-gray);
+}
+.auth-divider span {
+  position: relative;
+  background: var(--color-warm-white);
+  padding: 0 12px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.auth-google-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 11px 20px;
+  background: var(--color-cream);
+  border: 1px solid var(--color-warm-gray);
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-ink);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.auth-google-btn:hover {
+  background: var(--color-warm-gray);
+}
+.auth-google-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.auth-google-wrap {
+  display: flex;
+  justify-content: center;
+  min-height: 44px;
+}
+
+.auth-footer-text {
+  text-align: center;
+  font-size: 13px;
+  color: var(--color-muted);
+  margin-top: 24px;
+  margin-bottom: 0;
+}
+
+.auth-success-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--color-gold);
+  color: var(--color-ink);
+  font-size: 22px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+
+.auth-redirect-nota {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+}
+
+/* Variante de auth-card para páginas de ruta propia (recuperar/resetear contraseña),
+   con Navbar y Footer visibles alrededor, en vez del overlay fijo con fondo oscuro. */
+.auth-page-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 64px 24px 96px;
+}
+
+@media (max-width: 480px) {
+  .auth-card-body {
+    padding: 32px 24px 28px;
+  }
+  .auth-field-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+
+
+
+/* ------------------------------------------------------------------
+ * NOTA: este archivo tiene un bloque "Auth (Login / Registro)" viejo
+ * (el de arriba, con .auth-page / .auth-wrapper) y otro más nuevo que
+ * lo pisa parcialmente (el de .auth-overlay, usado hoy por Login y
+ * Registro). No lo toqué para no romper nada, pero convendría revisar
+ * si el bloque viejo todavía se usa en algún componente antes de
+ * borrarlo.
+ * ------------------------------------------------------------------ */
+
+/* ---------- Botón de arrepentimiento ---------- */
+.arrepentimiento-card {
+  max-width: 500px;
+}
+.arrepentimiento-card textarea.input {
+  resize: vertical;
+  min-height: 84px;
+}
+.arrepentimiento-opcional {
+  font-weight: 400;
+  color: var(--color-muted);
+}
+.arrepentimiento-listo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: center;
+}
+.arrepentimiento-listo-titulo {
+  margin: 8px 0 0;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+.arrepentimiento-codigo {
+  margin: 0;
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(201, 162, 39, 0.12);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+.arrepentimiento-listo .auth-submit {
+  margin-top: 8px;
+  text-align: center;
+  text-decoration: none;
+}

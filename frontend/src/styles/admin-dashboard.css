@@ -1,0 +1,3159 @@
+/* ============================================================
+ * Panel de Administrador: shell (sidebar + topbar), dashboard y tablas
+ * Sistema "ui" (ver ui-variables.css): Manrope, fondo frío con halos,
+ * cards de vidrio, radios 10 / 16 / 24 + píldora.
+ * Breakpoints unificados: 640 / 1024 / 1280.
+ * ============================================================ */
+
+/* ==================== Shell ==================== */
+
+.admin-shell {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+  isolation: isolate;
+  background: var(--ui-bg);
+  color: var(--ui-text);
+  font-family: var(--ui-font);
+}
+
+/* Dos halos muy tenues (dorado cálido y gris azulado frío) detrás de todo,
+   para que la transparencia del vidrio se perciba. */
+.admin-shell::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(560px 440px at 82% -6%, var(--ui-halo-gold), transparent 70%),
+    radial-gradient(680px 540px at 6% 98%, var(--ui-halo-cool), transparent 70%);
+}
+
+/* Foco visible y consistente en toda la botonera del panel */
+.admin-sidebar :is(a, button):focus-visible,
+.admin-topbar :is(a, button):focus-visible,
+.admin-dash :is(a, button, select):focus-visible,
+.admin-card :is(a, button, select):focus-visible {
+  outline: none;
+  box-shadow: var(--ui-focus);
+}
+
+/* ---- Sidebar ---- */
+.admin-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  background: var(--ui-glass-bg-fuerte);
+  box-shadow: 1px 0 0 var(--ui-line), 8px 0 32px -16px rgba(18, 18, 20, 0.1);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  z-index: 20;
+}
+
+/* Heredado de la versión anterior (curva que "abría" el link activo hacia un
+   contenido crema): con el sidebar de vidrio ya no tiene sentido. */
+.admin-sidebar-activo-bleed {
+  display: none;
+}
+
+/* Misma altura que .admin-topbar para que ambos queden alineados */
+.admin-sidebar-marca {
+  height: 80px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--ui-s-3);
+  padding: 0 var(--ui-s-5);
+}
+.admin-sidebar-logo-img {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--ui-r-md);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.admin-sidebar-marca-nombre {
+  font-size: var(--ui-fs-16);
+  font-weight: var(--ui-fw-bold);
+  letter-spacing: var(--ui-tracking-titulo);
+  color: var(--ui-text);
+  line-height: 1.2;
+}
+
+.admin-sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--ui-s-2) var(--ui-s-3) var(--ui-s-4);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(18, 18, 20, 0.2) transparent;
+}
+.admin-sidebar-nav::-webkit-scrollbar {
+  width: 6px;
+}
+.admin-sidebar-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+.admin-sidebar-nav::-webkit-scrollbar-thumb {
+  background: rgba(18, 18, 20, 0.2);
+  border-radius: var(--ui-r-pill);
+}
+.admin-sidebar-grupo {
+  margin-bottom: var(--ui-s-5);
+}
+.admin-sidebar-grupo-titulo {
+  font-size: var(--ui-fs-12);
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text-2);
+  margin: 0 0 var(--ui-s-2) var(--ui-s-3);
+}
+.admin-sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-s-3);
+  width: 100%;
+  text-align: left;
+  padding: 10px var(--ui-s-3);
+  border-radius: var(--ui-r-md);
+  font-family: inherit;
+  font-size: var(--ui-fs-14);
+  font-weight: var(--ui-fw-medium);
+  color: var(--ui-text);
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  transition: background var(--ui-t-fast) var(--ui-ease);
+}
+.admin-sidebar-link:hover {
+  background: var(--ui-fill);
+}
+/* Estado activo: dorado como acento (tinte + ícono), sin fondos grandes */
+.admin-sidebar-link.active {
+  background: var(--ui-gold-tint);
+  font-weight: var(--ui-fw-semibold);
+}
+.admin-sidebar-link.active svg {
+  color: var(--ui-gold-text);
+}
+.admin-sidebar-link.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 3px;
+  background: var(--ui-gold);
+}
+.admin-sidebar-footer {
+  padding: var(--ui-s-4) var(--ui-s-5) var(--ui-s-5);
+}
+.admin-usuario-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--ui-gold-tint);
+  color: var(--ui-gold-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--ui-fs-14);
+  font-weight: var(--ui-fw-bold);
+  flex-shrink: 0;
+  overflow: hidden;
+  /* Aro dorado nítido en lugar de borde: se ve más limpio sobre fotos claras */
+  box-shadow: 0 0 0 1px var(--ui-gold);
+  transform: translateZ(0);
+}
+.admin-usuario-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  image-rendering: -webkit-optimize-contrast;
+}
+.admin-usuario-avatar--chico {
+  width: 40px;
+  height: 40px;
+}
+.admin-usuario-nombre {
+  font-size: var(--ui-fs-14);
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text);
+}
+.admin-usuario-rol {
+  font-size: var(--ui-fs-12);
+  color: var(--ui-text-2);
+}
+
+/* ---- Contenido / topbar ---- */
+.admin-contenido {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-topbar {
+  height: 80px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-s-4);
+  background: var(--ui-glass-bg);
+  -webkit-backdrop-filter: var(--ui-glass-blur);
+  backdrop-filter: var(--ui-glass-blur);
+  box-shadow: 0 1px 0 var(--ui-line);
+  padding: 0 var(--ui-s-8);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.admin-menu-toggle {
+  display: none;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--ui-r-md);
+  background: var(--ui-fill);
+  color: var(--ui-text);
+  cursor: pointer;
+}
+.admin-menu-toggle:hover {
+  background: var(--ui-fill-hover);
+}
+.admin-backdrop {
+  display: none;
+}
+
+.admin-busqueda,
+.admin-tabla-busqueda {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-s-2);
+  background: var(--ui-fill);
+  border-radius: var(--ui-r-pill);
+  padding: 10px var(--ui-s-4);
+  color: var(--ui-text-2);
+  transition: box-shadow var(--ui-t-fast) var(--ui-ease);
+}
+.admin-busqueda {
+  flex: 1;
+  max-width: 380px;
+}
+.admin-tabla-busqueda {
+  width: 240px;
+  flex-shrink: 0;
+}
+.admin-busqueda:focus-within,
+.admin-tabla-busqueda:focus-within {
+  box-shadow: var(--ui-focus);
+}
+.admin-busqueda input,
+.admin-tabla-busqueda input {
+  border: none;
+  background: none;
+  outline: none;
+  font-family: inherit;
+  font-size: var(--ui-fs-14);
+  color: var(--ui-text);
+  width: 100%;
+}
+.admin-busqueda input::placeholder,
+.admin-tabla-busqueda input::placeholder {
+  color: var(--ui-text-2);
+}
+
+.admin-topbar-acciones {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-s-2);
+  flex-shrink: 0;
+}
+.admin-topbar-menu {
+  position: relative;
+}
+.admin-icono-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: var(--ui-fill);
+  color: var(--ui-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background var(--ui-t-fast) var(--ui-ease);
+}
+.admin-icono-btn:hover {
+  background: var(--ui-fill-hover);
+}
+.admin-usuario-chip {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-s-3);
+  padding: 4px 4px 4px 14px;
+  border: none;
+  border-radius: var(--ui-r-pill);
+  background: none;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background var(--ui-t-fast) var(--ui-ease);
+}
+.admin-usuario-chip:hover,
+.admin-usuario-chip[aria-expanded='true'] {
+  background: var(--ui-fill);
+}
+.admin-usuario-chip:focus-visible {
+  outline: none;
+  box-shadow: var(--ui-focus);
+}
+/* Nombre y rol a la izquierda del avatar, alineados a la derecha */
+.admin-usuario-chip-texto {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+@media (max-width: 640px) {
+  .admin-usuario-chip {
+    padding: 0;
+  }
+  .admin-usuario-chip-texto {
+    display: none;
+  }
+}
+.admin-topbar-dropdown {
+  position: absolute;
+  top: calc(100% + var(--ui-s-2));
+  right: 0;
+  min-width: 220px;
+  background: var(--ui-glass-bg-fuerte);
+  -webkit-backdrop-filter: var(--ui-glass-blur);
+  backdrop-filter: var(--ui-glass-blur);
+  border: var(--ui-glass-border);
+  border-radius: var(--ui-r-lg);
+  box-shadow: var(--ui-shadow-pop);
+  z-index: 30;
+  overflow: hidden;
+  padding: var(--ui-s-2) 0;
+}
+.admin-topbar-dropdown--notif {
+  padding: var(--ui-s-4);
+  width: 240px;
+}
+.admin-topbar-dropdown-head {
+  padding: var(--ui-s-1) var(--ui-s-4) var(--ui-s-3);
+  margin-bottom: var(--ui-s-1);
+  box-shadow: 0 1px 0 var(--ui-line);
+}
+.admin-topbar-dropdown-nombre {
+  font-size: var(--ui-fs-14);
+  font-weight: var(--ui-fw-semibold);
+}
+.admin-topbar-dropdown-sub {
+  font-size: var(--ui-fs-12);
+  color: var(--ui-text-2);
+}
+.admin-topbar-dropdown-vacio {
+  margin: 0;
+  font-size: var(--ui-fs-14);
+  color: var(--ui-text-2);
+}
+.admin-topbar-dropdown button,
+.admin-topbar-dropdown a {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 10px var(--ui-s-4);
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: var(--ui-fs-14);
+  color: var(--ui-text);
+  text-decoration: none;
+  cursor: pointer;
+}
+.admin-topbar-dropdown button:hover,
+.admin-topbar-dropdown a:hover {
+  background: var(--ui-fill);
+}
+
+.admin-main {
+  flex: 1;
+  padding: var(--ui-s-8) var(--ui-s-8) 56px;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+/* "Gestionar Cursos" usa más ancho que el resto de las pantallas de admin,
+   para que la tabla de cursos respire. */
+.admin-main:has(.admin-gestionar-cursos) {
+  max-width: 1680px;
+}
+.admin-main:has(.admin-dash) {
+  max-width: 1760px;
+}
+
+/* ---- Sidebar colapsable (menos de 1024px) ---- */
+@media (max-width: 1024px) {
+  .admin-menu-toggle {
+    display: inline-flex;
+  }
+  .admin-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 50;
+    background: var(--ui-glass-bg-fuerte);
+    transform: translateX(-100%);
+    transition: transform var(--ui-t-med) var(--ui-ease);
+    box-shadow: var(--ui-shadow-pop);
+  }
+  .admin-sidebar.abierto {
+    transform: translateX(0);
+  }
+  .admin-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    border: none;
+    padding: 0;
+    background: rgba(18, 18, 20, 0.4);
+    cursor: pointer;
+  }
+  .admin-topbar {
+    padding: 0 var(--ui-s-4);
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-main {
+    padding: var(--ui-s-4) var(--ui-s-4) var(--ui-s-10);
+  }
+}
+
+/* ==================== Cards de vidrio ==================== */
+
+.admin-card,
+.admin-dash-card,
+.admin-dash-stat {
+  background: var(--ui-glass-bg-fuerte);
+  border: var(--ui-glass-border);
+  box-shadow: var(--ui-shadow-card);
+}
+
+.admin-card,
+.admin-dash-card {
+  border-radius: var(--ui-r-xl);
+  padding: var(--ui-s-6) var(--ui-s-8);
+  margin-bottom: var(--ui-s-4);
+}
+
+.admin-card-header,
+.admin-dash-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-s-3);
+  margin-bottom: var(--ui-s-5);
+  flex-wrap: wrap;
+}
+.admin-card-titulo,
+.admin-dash-card-titulo {
+  font-family: inherit;
+  font-size: var(--ui-fs-16);
+  font-weight: var(--ui-fw-bold);
+  letter-spacing: var(--ui-tracking-titulo);
+  color: var(--ui-text);
+  margin: 0;
+}
+.admin-dash-card-titulo-extra {
+  font-weight: var(--ui-fw-regular);
+  font-size: var(--ui-fs-14);
+  color: var(--ui-text-2);
+}
+/* Marca dorada al inicio del título de cada card */
+.admin-dash-card-titulo::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 14px;
+  margin-right: 10px;
+  border-radius: 2px;
+  background: var(--ui-gold);
+  vertical-align: -2px;
+}
+/* Título que va solo, sin header con acciones al lado */
+.admin-dash-card-titulo--solo {
+  margin-bottom: var(--ui-s-4);
+}
+.admin-dash-storage .admin-dash-card-titulo--solo {
+  margin-bottom: var(--ui-s-1);
+}
+.admin-ver-tabla-link,
+.admin-dash-ver-tabla-link {
+  background: none;
+  border: none;
+  color: var(--ui-gold-text);
+  font-family: inherit;
+  font-size: var(--ui-fs-14);
+  font-weight: var(--ui-fw-semibold);
+  cursor: pointer;
+  text-decoration: none;
+  border-radius: var(--ui-r-md);
+}
+.admin-ver-tabla-link:hover,
+.admin-dash-ver-tabla-link:hover {
+  text-decoration: underline;
+}
+
+.admin-volver-link {
+  font-size: var(--ui-fs-14);
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-gold-text);
+  text-decoration: none;
+}
+
+/* ==================== Tablas ==================== */
+
+.admin-tabla-wrap {
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(18, 18, 20, 0.25) transparent;
+}
+.admin-tabla-wrap::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+.admin-tabla-wrap::-webkit-scrollbar-track {
+  background: transparent;
+}
+.admin-tabla-wrap::-webkit-scrollbar-thumb {
+  background: rgba(18, 18, 20, 0.25);
+  border-radius: var(--ui-r-pill);
+}
+
+.admin-tabla-cursos {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--ui-fs-14);
+  font-variant-numeric: tabular-nums;
+}
+.admin-tabla-cursos th {
+  text-align: left;
+  font-size: var(--ui-fs-12);
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text-2);
+  padding: 0 var(--ui-s-3) var(--ui-s-3);
+  box-shadow: inset 0 -1px 0 var(--ui-line);
+  white-space: nowrap;
+}
+.admin-tabla-cursos td {
+  padding: var(--ui-s-4) var(--ui-s-3);
+  box-shadow: inset 0 -1px 0 var(--ui-line);
+  vertical-align: middle;
+}
+.admin-tabla-cursos tbody tr {
+  transition: background var(--ui-t-fast) var(--ui-ease);
+}
+.admin-tabla-cursos tbody tr:hover {
+  background: rgba(18, 18, 20, 0.025);
+}
+.admin-tabla-cursos tr:last-child td {
+  box-shadow: none;
+}
+.admin-tabla-curso-celda {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-s-3);
+}
+.admin-tabla-curso-thumb {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--ui-r-md);
+  background: var(--ui-fill);
+  color: var(--ui-text-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.admin-tabla-curso-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.admin-tabla-curso-titulo {
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text);
+}
+.admin-tabla-curso-meta {
+  font-size: var(--ui-fs-12);
+  color: var(--ui-text-2);
+}
+
+/* "Gestionar Cursos": versión agrandada de la tabla y la tarjeta que la contiene */
+.admin-gestionar-cursos {
+  padding: var(--ui-s-8);
+}
+.admin-gestionar-cursos .admin-card-titulo {
+  font-size: var(--ui-fs-20);
+}
+.admin-gestionar-cursos .admin-tabla-cursos td {
+  padding: var(--ui-s-5) var(--ui-s-3);
+}
+.admin-gestionar-cursos .admin-tabla-curso-thumb {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--ui-r-md);
+}
+.admin-gestionar-cursos .admin-tabla-curso-titulo {
+  font-size: var(--ui-fs-16);
+}
+
+.admin-tabla-pill {
+  display: inline-flex;
+  align-items: center;
+  background: var(--ui-fill);
+  color: var(--ui-text);
+  font-size: var(--ui-fs-12);
+  font-weight: var(--ui-fw-semibold);
+  padding: 4px var(--ui-s-3);
+  border-radius: var(--ui-r-pill);
+  white-space: nowrap;
+}
+.admin-tabla-pill--borrador {
+  background: var(--ui-gold-tint);
+  color: var(--ui-text);
+}
+/* Estado de lectura (sin switch/Publicar): el instructor, en "Mis Cursos" */
+.admin-tabla-pill--activo {
+  background: var(--ui-success-tint);
+  color: var(--ui-success);
+}
+
+.admin-tabla-acciones {
+  display: flex;
+  gap: var(--ui-s-2);
+  flex-wrap: wrap;
+}
+.admin-tabla-accion {
+  display: inline-flex;
+  align-items: center;
+  font-family: inherit;
+  font-size: var(--ui-fs-14);
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text);
+  background: var(--ui-fill);
+  border: none;
+  border-radius: var(--ui-r-md);
+  padding: var(--ui-s-2) var(--ui-s-4);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--ui-t-fast) var(--ui-ease), filter var(--ui-t-fast) var(--ui-ease);
+}
+.admin-tabla-accion:hover {
+  background: var(--ui-fill-hover);
+}
+.admin-tabla-accion:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.admin-tabla-accion--destacada {
+  background: var(--ui-gold);
+  color: var(--ui-ink);
+}
+.admin-tabla-accion--destacada:hover {
+  background: var(--ui-gold-hover);
+}
+.admin-tabla-accion--peligro {
+  background: var(--ui-danger-tint);
+  color: var(--ui-danger);
+}
+.admin-tabla-accion--peligro:hover {
+  background: rgba(192, 57, 43, 0.14);
+}
+.admin-tabla-accion--exito {
+  background: var(--ui-success);
+  color: #fff;
+}
+.admin-tabla-accion--exito:hover {
+  background: var(--ui-success);
+  filter: brightness(1.1);
+}
+
+/* ---- Switch Activo/Oculto ---- */
+.admin-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ui-s-2);
+  cursor: pointer;
+}
+.admin-switch input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.admin-switch-track {
+  width: 36px;
+  height: 20px;
+  border-radius: var(--ui-r-pill);
+  background: rgba(18, 18, 20, 0.18);
+  position: relative;
+  transition: background var(--ui-t-fast) var(--ui-ease);
+  flex-shrink: 0;
+}
+.admin-switch-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform var(--ui-t-fast) var(--ui-ease);
+  box-shadow: 0 1px 3px rgba(18, 18, 20, 0.25);
+}
+.admin-switch input:checked + .admin-switch-track {
+  background: var(--ui-success);
+}
+.admin-switch input:checked + .admin-switch-track .admin-switch-thumb {
+  transform: translateX(16px);
+}
+.admin-switch input:focus-visible + .admin-switch-track {
+  box-shadow: var(--ui-focus);
+}
+.admin-switch input:disabled + .admin-switch-track {
+  opacity: 0.5;
+}
+.admin-switch-label {
+  font-size: var(--ui-fs-14);
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text);
+}
+
+/* ==================== Dashboard ==================== */
+
+.admin-dash {
+  background: transparent;
+}
+
+.admin-dash-header,
+.admin-page-header {
+  margin-bottom: var(--ui-s-6);
+}
+.admin-dash-header h2,
+.admin-page-header h2 {
+  font-family: inherit;
+  font-size: var(--ui-fs-24);
+  font-weight: var(--ui-fw-bold);
+  letter-spacing: var(--ui-tracking-titulo);
+  color: var(--ui-text);
+  margin: 0;
+}
+
+.admin-dash-vacio {
+  font-size: var(--ui-fs-14);
+  color: var(--ui-text-2);
+  padding: var(--ui-s-8) 0;
+  text-align: center;
+  margin: 0;
+}
+.admin-dash-vacio--izq {
+  padding: 0;
+  text-align: left;
+}
+/* Estados de carga / error de pantalla completa */
+.admin-dash-estado {
+  padding: 60px var(--ui-s-4);
+  text-align: center;
+  font-size: var(--ui-fs-14);
+  color: var(--ui-text-2);
+}
+.admin-dash-estado--error {
+  max-width: 480px;
+  margin: 60px auto;
+  padding: var(--ui-s-4);
+  color: var(--ui-danger);
+  background: var(--ui-danger-tint);
+  border-radius: var(--ui-r-lg);
+}
+
+/* ---- Stat tiles ---- */
+.admin-dash-stats {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ui-s-4);
+  margin-bottom: var(--ui-s-4);
+}
+@media (min-width: 640px) {
+  .admin-dash-stats,
+  .admin-dash-stats--3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 1280px) {
+  .admin-dash-stats {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .admin-dash-stats--3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.admin-dash-stat {
+  border-radius: var(--ui-r-lg);
+  padding: var(--ui-s-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-s-3);
+}
+.admin-dash-stat-top {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-s-4);
+}
+/* Íconos con tinte dorado: el color no distingue una métrica de otra */
+.admin-dash-stat-icono {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--ui-r-md);
+  background: var(--ui-gold-tint);
+  color: var(--ui-gold-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.admin-dash-stat-texto {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-s-1);
+  min-width: 0;
+}
+.admin-dash-stat-valor {
+  font-size: var(--ui-fs-32);
+  font-weight: var(--ui-fw-bold);
+  letter-spacing: var(--ui-tracking-titulo);
+  font-variant-numeric: tabular-nums;
+  color: var(--ui-text);
+  margin: 0;
+  line-height: 1.15;
+}
+.admin-dash-stat-valor-sub {
+  font-size: var(--ui-fs-14);
+  font-weight: var(--ui-fw-medium);
+  letter-spacing: 0;
+  color: var(--ui-text-2);
+}
+.admin-dash-stat-titulo {
+  font-size: var(--ui-fs-14);
+  font-weight: var(--ui-fw-medium);
+  color: var(--ui-text-2);
+  margin: 0;
+}
+.admin-dash-stat-nota {
+  font-size: var(--ui-fs-12);
+  color: var(--ui-text-2);
+  margin: 0;
+}
+
+/* La primera card (ingresos) lleva el ícono en dorado sólido */
+.admin-dash-stat--principal .admin-dash-stat-icono {
+  background: var(--ui-gold);
+  color: var(--ui-ink);
+}
+
+/* ---- Paneles ---- */
+.admin-dash-panel-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--ui-s-4);
+  margin-bottom: var(--ui-s-4);
+  align-items: stretch;
+}
+@media (min-width: 1280px) {
+  .admin-dash-panel-grid {
+    grid-template-columns: minmax(0, 0.68fr) minmax(0, 1fr);
+  }
+}
+.admin-dash-panel-grid > .admin-dash-card {
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+}
+/* Ventas: el gráfico queda centrado en el espacio bajo el encabezado */
+.admin-dash-panel-grid > .admin-dash-card:first-child .admin-dash-grafico {
+  margin-block: auto;
+}
+
+/* ---- Selector de período (segmentado) ---- */
+.admin-dash-periodo-selector {
+  display: flex;
+  gap: var(--ui-s-1);
+  background: var(--ui-fill);
+  border-radius: var(--ui-r-pill);
+  padding: var(--ui-s-1);
+}
+.admin-dash-periodo-boton {
+  background: none;
+  border: none;
+  padding: 6px var(--ui-s-4);
+  font-family: inherit;
+  font-size: var(--ui-fs-12);
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text-2);
+  border-radius: var(--ui-r-pill);
+  cursor: pointer;
+  transition: background var(--ui-t-fast) var(--ui-ease), color var(--ui-t-fast) var(--ui-ease);
+}
+.admin-dash-periodo-boton:hover {
+  color: var(--ui-text);
+}
+.admin-dash-periodo-boton.activo {
+  background: #fff;
+  color: var(--ui-gold-text);
+  box-shadow: 0 1px 2px rgba(18, 18, 20, 0.08), 0 2px 8px rgba(18, 18, 20, 0.06);
+}
+
+/* ---- Gráfico de ventas ---- */
+.admin-dash-grafico {
+  position: relative;
+}
+.admin-dash-grafico-svg {
+  width: 100%;
+  height: 260px;
+  display: block;
+  overflow: visible;
+}
+.admin-dash-grafico-grid line {
+  stroke: var(--ui-line);
+  stroke-width: 1;
+}
+.admin-dash-grafico-eje line {
+  stroke: rgba(18, 18, 20, 0.14);
+  stroke-width: 1;
+}
+.admin-dash-grafico-ytick,
+.admin-dash-grafico-xtick {
+  font-family: var(--ui-font);
+  font-size: var(--ui-fs-12);
+  font-variant-numeric: tabular-nums;
+  fill: var(--ui-text-2);
+}
+.admin-dash-grafico-xtick {
+  text-anchor: middle;
+}
+.admin-dash-grafico-area {
+  fill: rgba(201, 162, 39, 0.1);
+}
+.admin-dash-grafico-linea {
+  fill: none;
+  stroke: var(--ui-gold);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.admin-dash-grafico-punto {
+  fill: #fff;
+  stroke: var(--ui-gold);
+  stroke-width: 2.5;
+  transition: r var(--ui-t-fast) var(--ui-ease);
+}
+.admin-dash-grafico-punto--activo {
+  fill: var(--ui-gold);
+}
+.admin-dash-grafico-crosshair {
+  stroke: rgba(18, 18, 20, 0.18);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+.admin-dash-grafico-overlay {
+  fill: transparent;
+  cursor: crosshair;
+}
+.admin-dash-grafico-tooltip {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  background: var(--ui-ink);
+  color: var(--ui-text-on-dark);
+  padding: 6px var(--ui-s-3);
+  border-radius: var(--ui-r-md);
+  font-size: var(--ui-fs-12);
+  font-weight: var(--ui-fw-semibold);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: var(--ui-shadow-pop);
+}
+.admin-dash-grafico-tooltip-sub {
+  font-weight: var(--ui-fw-medium);
+  color: var(--ui-text-2-on-dark);
+  margin-left: 6px;
+}
+
+/* ---- Cursos más vendidos ---- */
+.admin-dash-vendidos-lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-s-5);
+}
+.admin-dash-vendidos-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ui-s-3);
+}
+.admin-dash-rank {
+  flex-shrink: 0;
+  width: 20px;
+  font-size: var(--ui-fs-14);
+  font-weight: var(--ui-fw-semibold);
+  font-variant-numeric: tabular-nums;
+  color: var(--ui-text-2);
+}
+.admin-dash-vendidos-item:first-child .admin-dash-rank {
+  color: var(--ui-gold-text);
+}
+.admin-dash-vendidos-cuerpo {
+  flex: 1;
+  min-width: 0;
+}
+.admin-dash-vendidos-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: var(--ui-s-2);
+  gap: var(--ui-s-2);
+}
+.admin-dash-vendidos-titulo {
+  font-size: var(--ui-fs-14);
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text);
+}
+.admin-dash-vendidos-inscripciones {
+  font-size: var(--ui-fs-12);
+  font-variant-numeric: tabular-nums;
+  color: var(--ui-text-2);
+  white-space: nowrap;
+}
+.admin-dash-vendidos-recaudado {
+  font-size: var(--ui-fs-12);
+  font-variant-numeric: tabular-nums;
+  color: var(--ui-text-2);
+  margin: var(--ui-s-2) 0 0;
+}
+
+/* El progreso es uno de los usos permitidos del dorado */
+.admin-dash-progreso-track {
+  width: 100%;
+  height: 6px;
+  background: var(--ui-fill);
+  border-radius: var(--ui-r-pill);
+  overflow: hidden;
+}
+.admin-dash-progreso-fill {
+  height: 100%;
+  background: var(--ui-gold);
+  border-radius: var(--ui-r-pill);
+  transition: width var(--ui-t-med) var(--ui-ease);
+}
+
+/* ---- Tabla de acceso rápido ---- */
+.admin-dash-tabla {
+  overflow-x: auto;
+}
+
+/* ---- Almacenamiento ---- */
+.admin-dash-storage {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-s-5);
+  flex-wrap: wrap;
+}
+.admin-dash-storage-sub {
+  font-size: var(--ui-fs-12);
+  color: var(--ui-text-2);
+  margin: 0;
+}
+.admin-dash-storage-gauge {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-s-3);
+  min-width: 220px;
+  flex: 1;
+  max-width: 320px;
+}
+.admin-dash-storage-gauge .admin-dash-progreso-track {
+  flex: 1;
+}
+.admin-dash-storage-texto {
+  font-size: var(--ui-fs-12);
+  font-weight: var(--ui-fw-semibold);
+  font-variant-numeric: tabular-nums;
+  color: var(--ui-text-2);
+  white-space: nowrap;
+}
+
+.admin-proximamente-card {
+  text-align: center;
+  padding: 50px var(--ui-s-5);
+}
+
+/* ==================== Instructores ==================== */
+
+/* El layout depende del ancho disponible del contenido (no del viewport):
+   con el sidebar abierto, una pantalla de 1440px solo deja ~1100px útiles. */
+.admin-instructores {
+  container-type: inline-size;
+}
+.admin-instructores-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--ui-s-4);
+  align-items: stretch;
+}
+@container (min-width: 1280px) {
+  .admin-instructores-grid {
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  }
+}
+.admin-instructores-grid > .admin-card {
+  margin-bottom: 0;
+}
+.admin-instructores-alta {
+  padding: var(--ui-s-8);
+}
+
+/* Alumnos candidatos a instructor: lista compacta, nombre a la izquierda y
+   la acción pegada a la derecha, sin columnas que se estiren. */
+.admin-alumnos-lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-s-1);
+  margin: 0 calc(var(--ui-s-3) * -1);
+}
+.admin-alumno-fila {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-s-3);
+  padding: var(--ui-s-3);
+  border-radius: var(--ui-r-md);
+  transition: background var(--ui-t-fast) var(--ui-ease);
+}
+.admin-alumno-fila:hover {
+  background: var(--ui-fill);
+}
+.admin-alumno-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--ui-gold-tint);
+  color: var(--ui-gold-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--ui-fs-12);
+  font-weight: var(--ui-fw-bold);
+  flex-shrink: 0;
+}
+.admin-alumno-datos {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.admin-alumno-nombre {
+  font-size: var(--ui-fs-14);
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.admin-alumno-meta {
+  font-size: var(--ui-fs-12);
+  font-variant-numeric: tabular-nums;
+  color: var(--ui-text-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.admin-alumno-fila .admin-tabla-accion {
+  flex-shrink: 0;
+}
+
+/* ---- Formularios dentro del admin (compatibilidad con markup viejo) ---- */
+.admin-card form div {
+  margin-bottom: var(--ui-s-3);
+}
+.admin-card form label {
+  display: block;
+  font-size: var(--ui-fs-12);
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text-2);
+  margin-bottom: var(--ui-s-1);
+}
+.admin-card form input[type='text'],
+.admin-card form input[type='number'],
+.admin-card form select,
+.admin-card form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: none;
+  border-radius: var(--ui-r-md);
+  padding: 10px var(--ui-s-3);
+  font-size: var(--ui-fs-14);
+  font-family: inherit;
+  background: var(--ui-fill);
+  color: var(--ui-text);
+}
+.admin-card form textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+.admin-card form button[type='submit'] {
+  background: var(--ui-ink);
+  color: #fff;
+  border: none;
+  border-radius: var(--ui-r-md);
+  padding: 10px var(--ui-s-5);
+  font-size: var(--ui-fs-14);
+  font-weight: var(--ui-fw-semibold);
+  cursor: pointer;
+  font-family: inherit;
+}
+.admin-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--ui-s-5);
+}
+.admin-card ul li {
+  padding: var(--ui-s-3) 0;
+  box-shadow: inset 0 -1px 0 var(--ui-line);
+  font-size: var(--ui-fs-14);
+}
+.admin-card ul li:last-child {
+  box-shadow: none;
+}
+.admin-card h3 {
+  font-family: inherit;
+  font-size: var(--ui-fs-16);
+  font-weight: var(--ui-fw-bold);
+  margin: var(--ui-s-5) 0 var(--ui-s-3);
+}
+
+/* ---------- Instructores: detalle de cursos (doble click) ---------- */
+.admin-instr-fila { cursor: default; }
+.admin-instr-fila:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--ui-gold); }
+.admin-modal-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ui-s-4);
+  background: rgba(18, 18, 20, 0.45);
+}
+.admin-modal {
+  width: 100%;
+  max-width: 560px;
+  max-height: min(80vh, 680px);
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: var(--ui-r-xl);
+  box-shadow: var(--ui-shadow-pop);
+  padding: var(--ui-s-6);
+  font-family: var(--ui-font);
+}
+.admin-modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--ui-s-4);
+  margin-bottom: var(--ui-s-5);
+}
+.admin-modal-titulo {
+  margin: 0;
+  font-size: var(--ui-fs-20);
+  font-weight: var(--ui-fw-bold);
+  letter-spacing: var(--ui-tracking-titulo);
+  color: var(--ui-text);
+}
+.admin-modal-cerrar {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: var(--ui-r-pill);
+  background: var(--ui-fill);
+  color: var(--ui-text);
+  cursor: pointer;
+  transition: background var(--ui-t-fast) var(--ui-ease);
+}
+.admin-modal-cerrar:hover { background: var(--ui-fill-hover); }
+.admin-modal-cerrar:focus-visible { outline: none; box-shadow: var(--ui-focus); }
+.admin-modal-cuerpo { overflow-y: auto; display: grid; gap: var(--ui-s-6); }
+.admin-instr-seccion-titulo {
+  margin: 0 0 var(--ui-s-2);
+  font-size: var(--ui-fs-14);
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text);
+}
+.admin-card .admin-instr-cursos, .admin-instr-cursos { list-style: none; margin: 0; padding: 0; }
+.admin-instr-curso {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-s-3);
+  padding: var(--ui-s-3) 0;
+  box-shadow: inset 0 -1px 0 var(--ui-line);
+}
+.admin-instr-curso:last-child { box-shadow: none; }
+.admin-instr-curso-datos { display: flex; flex-direction: column; min-width: 0; }
+.admin-instr-estado {
+  flex: none;
+  padding: 2px var(--ui-s-3);
+  border-radius: var(--ui-r-pill);
+  font-size: var(--ui-fs-12);
+  font-weight: var(--ui-fw-medium);
+  background: var(--ui-fill);
+  color: var(--ui-text-2);
+}
+.admin-instr-estado--activo { background: var(--ui-success-tint); color: var(--ui-success); }
+
+.admin-tabla-accion--dorada {
+  background: transparent;
+  color: var(--ui-gold-text);
+  box-shadow: inset 0 0 0 1px var(--ui-gold);
+}
+.admin-tabla-accion--dorada:hover {
+  background: var(--ui-gold-tint);
+}
+.admin-modal--confirmar {
+  max-width: 420px;
+  gap: var(--ui-s-2);
+  z-index: 101;
+}
+.admin-modal-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--ui-s-2);
+  margin-top: var(--ui-s-5);
+}
+.admin-tabla-accion:focus-visible { outline: none; box-shadow: var(--ui-focus); }
+
+/* Carteles: borde dorado sutil, títulos en Manrope, texto legible */
+.admin-modal {
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 39, 0.4), var(--ui-shadow-pop);
+}
+.admin-modal-titulo {
+  font-family: var(--ui-font);
+  font-size: var(--ui-fs-20);
+  font-weight: var(--ui-fw-bold);
+  line-height: 1.3;
+}
+.admin-modal-texto {
+  margin: var(--ui-s-2) 0 0;
+  font-family: var(--ui-font);
+  font-size: var(--ui-fs-16);
+  font-weight: var(--ui-fw-regular);
+  line-height: 1.5;
+  color: var(--ui-text);
+}
+
+.admin-modal-resaltado {
+  color: var(--ui-gold-text);
+  font-weight: var(--ui-fw-bold);
+  overflow-wrap: anywhere;
+}
+
+/* Buscador de tablas: fila propia, a todo el ancho de la tarjeta */
+.admin-tabla-busqueda--ancha {
+  order: 3;
+  flex: 1 1 100%;
+  width: 100%;
+}
+.admin-tabla-accion svg { margin-right: var(--ui-s-2); }
+
+/* Botón "Ordenar" dentro del buscador */
+.admin-tabla-busqueda--ancha { position: relative; }
+.admin-orden { position: relative; margin-left: auto; flex: none; }
+.admin-orden-boton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ui-s-2);
+  padding: 6px var(--ui-s-3);
+  border: 0;
+  border-radius: var(--ui-r-pill);
+  background: #fff;
+  box-shadow: inset 0 0 0 1px var(--ui-line);
+  font: inherit;
+  font-size: var(--ui-fs-14);
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text);
+  cursor: pointer;
+  transition: background var(--ui-t-fast) var(--ui-ease);
+}
+.admin-orden-boton:hover { background: var(--ui-gold-tint); }
+.admin-orden-boton:focus-visible { outline: none; box-shadow: var(--ui-focus); }
+.admin-orden-boton.activo { box-shadow: inset 0 0 0 1px var(--ui-gold); color: var(--ui-gold-text); }
+.admin-orden-menu {
+  position: absolute;
+  top: calc(100% + var(--ui-s-2));
+  right: 0;
+  z-index: 20;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  padding: var(--ui-s-2);
+  background: #fff;
+  border-radius: var(--ui-r-lg);
+  box-shadow: inset 0 0 0 1px var(--ui-line), var(--ui-shadow-pop);
+}
+.admin-orden-opcion {
+  text-align: left;
+  padding: var(--ui-s-2) var(--ui-s-3);
+  border: 0;
+  border-radius: var(--ui-r-md);
+  background: none;
+  font: inherit;
+  font-size: var(--ui-fs-14);
+  color: var(--ui-text);
+  cursor: pointer;
+}
+.admin-orden-opcion:hover { background: var(--ui-fill); }
+.admin-orden-opcion:focus-visible { outline: none; box-shadow: var(--ui-focus); }
+.admin-orden-opcion.activa { background: var(--ui-gold-tint); color: var(--ui-gold-text); font-weight: var(--ui-fw-semibold); }
+.admin-orden-quitar { color: var(--ui-text-2); box-shadow: inset 0 1px 0 var(--ui-line); border-radius: 0 0 var(--ui-r-md) var(--ui-r-md); margin-top: var(--ui-s-1); }
+
+/* Botón de ordenar: solo ícono, tamaño fijo */
+.admin-tabla-busqueda .admin-orden-boton {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  padding: 0;
+  justify-content: center;
+  gap: 0;
+  flex: none;
+}
+.admin-orden-icono { display: block; flex: none; width: 22px; height: 22px; }
+
+/* Cabecera de card con acciones a la derecha + botón primario dorado */
+.admin-card-acciones {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-s-3);
+}
+.admin-card-acciones .admin-orden-boton {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  padding: 0;
+  justify-content: center;
+  gap: 0;
+}
+.admin-boton-primario {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ui-s-2);
+  height: 40px;
+  padding: 0 var(--ui-s-5);
+  border-radius: var(--ui-r-pill);
+  background: var(--ui-gold);
+  color: var(--ui-ink);
+  font-family: var(--ui-font);
+  font-size: var(--ui-fs-14);
+  font-weight: var(--ui-fw-semibold);
+  text-decoration: none;
+  transition: background var(--ui-t-fast) var(--ui-ease);
+}
+.admin-boton-primario:hover { background: var(--ui-gold-hover); }
+.admin-boton-primario:focus-visible { outline: none; box-shadow: var(--ui-focus); }
+.admin-card-nota {
+  margin: calc(var(--ui-s-2) * -1) 0 var(--ui-s-5);
+  font-size: var(--ui-fs-14);
+  color: var(--ui-text-2);
+}
+
+/* Ventas por curso */
+.admin-curso-ventas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--ui-s-4);
+}
+.admin-curso-venta {
+  padding: var(--ui-s-6);
+  border-radius: var(--ui-r-lg);
+  background: var(--ui-fill);
+  min-width: 0;
+}
+.admin-curso-venta-titulo {
+  margin: 0 0 var(--ui-s-4);
+  font-size: var(--ui-fs-16);
+  font-weight: var(--ui-fw-bold);
+  color: var(--ui-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.admin-curso-venta-total {
+  margin: 0;
+  font-size: var(--ui-fs-32);
+  font-weight: var(--ui-fw-bold);
+  line-height: 1.1;
+  letter-spacing: var(--ui-tracking-titulo);
+  font-variant-numeric: tabular-nums;
+  color: var(--ui-text);
+}
+.admin-curso-venta-total-label {
+  margin: var(--ui-s-1) 0 0;
+  font-size: var(--ui-fs-14);
+  color: var(--ui-text-2);
+}
+.admin-curso-venta-cifras {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--ui-s-3);
+  margin-top: var(--ui-s-5);
+  padding-top: var(--ui-s-5);
+  box-shadow: inset 0 1px 0 var(--ui-line);
+}
+.admin-curso-venta-cifras > div {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-s-1);
+  min-width: 0;
+}
+.admin-curso-venta-cifra {
+  font-size: var(--ui-fs-24);
+  font-weight: var(--ui-fw-bold);
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  color: var(--ui-text);
+}
+.admin-curso-venta-cifra-label {
+  font-size: var(--ui-fs-14);
+  line-height: 1.3;
+  color: var(--ui-text-2);
+}
+
+/* Detalles dorados en las tarjetas de curso */
+.admin-curso-venta {
+  background: var(--ui-gold-tint);
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 39, 0.45);
+}
+.admin-curso-venta-titulo::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 16px;
+  margin-right: 10px;
+  border-radius: 2px;
+  background: var(--ui-gold);
+  vertical-align: -3px;
+}
+.admin-curso-venta-cifras {
+  box-shadow: inset 0 1px 0 rgba(201, 162, 39, 0.35);
+}
+
+/* ============================================================
+ * Modernización del panel (misma línea que Mis cursos y la cursada)
+ * ============================================================ */
+
+/* ---- Encabezado de cada pantalla: título + bajada ---- */
+.admin-dash-header,
+.admin-page-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.admin-page-sub {
+  margin: 0;
+  font-size: var(--ui-fs-14);
+  color: var(--ui-text-2);
+}
+
+/* ---- Sidebar: el link activo es una pastilla negra con ícono dorado ---- */
+.admin-sidebar-link.active {
+  background: var(--ui-btn-bg);
+  color: var(--ui-btn-text);
+}
+.admin-sidebar-link.active svg {
+  color: var(--ui-gold);
+}
+.admin-sidebar-link.active::before {
+  display: none;
+}
+.admin-sidebar-link:not(.active) svg {
+  color: var(--ui-text-2);
+}
+.admin-sidebar-grupo-titulo {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 11px;
+}
+
+/* ---- Títulos de las cards sin la rayita dorada ---- */
+.admin-dash-card-titulo::before,
+.admin-curso-venta-titulo::before {
+  display: none;
+}
+
+/* ---- Tarjetas de métricas: ícono al lado del número, un color por métrica ---- */
+.admin-dash-stat {
+  gap: var(--ui-s-2);
+  padding: var(--ui-s-5) var(--ui-s-6);
+}
+.admin-dash-stat-top {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--ui-s-4);
+}
+.admin-dash-stat-icono,
+.admin-dash-stat--principal .admin-dash-stat-icono {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  color: var(--stat-color, var(--ui-gold-text));
+  background: color-mix(in srgb, var(--stat-color, var(--ui-gold)) 13%, transparent);
+}
+.admin-dash-stat-valor {
+  font-size: 26px;
+}
+.admin-dash-stat-titulo {
+  font-size: var(--ui-fs-12);
+  font-weight: var(--ui-fw-semibold);
+}
+.admin-dash-stat-nota {
+  padding-top: var(--ui-s-3);
+  box-shadow: inset 0 1px 0 var(--ui-line);
+}
+.admin-dash-stat--ingresos { --stat-color: #a67c12; }      /* dorado */
+.admin-dash-stat--alumnos { --stat-color: #2f6fd6; }       /* azul */
+.admin-dash-stat--cursos { --stat-color: #6d4fc2; }        /* violeta */
+.admin-dash-stat--inscripciones { --stat-color: #2f8a4c; } /* verde */
+.admin-dash-stat--ticket { --stat-color: #0f8a7a; }        /* verde azulado */
+
+/* ---- Selector de período: el mismo segmentado de pastilla negra ---- */
+.portal-segmentado.admin-segmentado {
+  margin: 0;
+  background: var(--ui-fill);
+  box-shadow: none;
+}
+.portal-segmentado.admin-segmentado .portal-segmento {
+  padding: 6px 14px;
+  font-size: var(--ui-fs-12);
+}
+
+/* ---- Botones: primario negro, secundarios neutros ---- */
+.admin-boton-primario {
+  background: var(--ui-btn-bg);
+  color: var(--ui-btn-text);
+}
+.admin-boton-primario:hover {
+  background: var(--ui-btn-bg-hover);
+}
+.admin-tabla-accion--dorada {
+  background: transparent;
+  color: var(--ui-text);
+  box-shadow: inset 0 0 0 1px var(--ui-line);
+  border: none;
+}
+.admin-tabla-accion--dorada:hover {
+  background: var(--ui-fill);
+}
+.admin-tabla-accion--contorno {
+  background: transparent;
+  color: var(--ui-text);
+  box-shadow: inset 0 0 0 1.5px var(--ui-ink);
+}
+.admin-tabla-accion--contorno:hover {
+  background: var(--ui-btn-bg);
+  color: var(--ui-btn-text);
+}
+.admin-tabla-accion {
+  border-radius: var(--ui-r-pill);
+  font-size: 13px;
+}
+.admin-tabla-accion--destacada {
+  background: var(--ui-btn-bg);
+  color: var(--ui-btn-text);
+}
+.admin-tabla-accion--destacada:hover {
+  background: var(--ui-btn-bg-hover);
+}
+
+/* ---- Tablas ---- */
+.admin-tabla-cursos th {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 11px;
+}
+.admin-tabla-monto {
+  font-weight: var(--ui-fw-semibold);
+  font-variant-numeric: tabular-nums;
+}
+.admin-tabla-tenue {
+  color: var(--ui-text-2);
+}
+/* Estados de pago con color */
+.admin-tabla-pill--ok {
+  background: var(--ui-success-tint);
+  color: var(--ui-success);
+}
+.admin-tabla-pill--error {
+  background: var(--ui-danger-tint);
+  color: var(--ui-danger);
+}
+.admin-tabla-pill--pendiente {
+  background: rgba(217, 141, 20, 0.13);
+  color: #a8650b;
+}
+.admin-tabla-pill--ok::before,
+.admin-tabla-pill--error::before,
+.admin-tabla-pill--pendiente::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* Persona: iniciales (o foto) + nombre */
+.admin-persona {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-s-3);
+  min-width: 0;
+}
+.admin-persona-avatar {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--ui-ink);
+  color: var(--ui-gold);
+  font-size: 11px;
+  font-weight: var(--ui-fw-bold);
+  letter-spacing: 0.02em;
+}
+.admin-persona-avatar img,
+.admin-alumno-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.admin-alumno-avatar {
+  overflow: hidden;
+  background: var(--ui-ink);
+  color: var(--ui-gold);
+}
+.admin-persona-datos {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.admin-persona-nombre {
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text);
+  white-space: nowrap;
+}
+.admin-persona-detalle {
+  font-size: var(--ui-fs-12);
+  color: var(--ui-text-2);
+}
+
+/* Portada del curso en la tabla (imagen o degradé generado) */
+.admin-tabla-curso-thumb.portada-curso {
+  width: 64px;
+  height: 44px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ui-gold);
+  background-color: var(--ui-fill);
+}
+.admin-tabla-curso-thumb.portada-curso img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.admin-tabla-curso-thumb.portada-curso svg {
+  width: 18px;
+  height: 18px;
+}
+.admin-gestionar-cursos .admin-tabla-curso-thumb.portada-curso {
+  width: 80px;
+  height: 54px;
+}
+
+/* ---- Ventas por curso: tarjetas blancas, la más vendida con borde dorado ---- */
+.admin-curso-venta {
+  background: var(--ui-glass-bg-fuerte);
+  box-shadow: inset 0 0 0 1px var(--ui-line);
+}
+.admin-curso-venta--top {
+  box-shadow: inset 0 0 0 1.5px var(--ui-gold);
+}
+.admin-curso-venta-cifras {
+  box-shadow: inset 0 1px 0 var(--ui-line);
+}
+.admin-curso-venta-total {
+  font-size: 28px;
+}
+.admin-curso-venta-cifra {
+  font-size: 20px;
+}
+.admin-curso-venta-cifra-label {
+  font-size: var(--ui-fs-12);
+}
+
+/* El título de cada card queda alineado con sus acciones (sin margen extra arriba) */
+.admin-card .admin-card-header h3 {
+  margin: 0;
+  font-size: var(--ui-fs-16);
+}
+
+/* ============================================================
+ * Filtros de las tablas: período, selects, paginación
+ * ============================================================ */
+.admin-filtros-barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ui-s-2);
+  margin-bottom: var(--ui-s-4);
+}
+.admin-filtros-barra--card {
+  margin-bottom: var(--ui-s-3);
+}
+.admin-filtros-cargando {
+  font-size: var(--ui-fs-12);
+  color: var(--ui-text-2);
+  margin-left: var(--ui-s-2);
+}
+/* Mientras llega la página nueva, lo anterior queda tenue (no salta el layout) */
+.admin-actualizando {
+  opacity: 0.55;
+  transition: opacity var(--ui-t-fast) var(--ui-ease);
+}
+
+.admin-filtro-fechas {
+  position: relative;
+}
+.admin-filtro-boton,
+.admin-filtro-select {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 14px;
+  border: none;
+  border-radius: var(--ui-r-pill);
+  background: var(--ui-glass-bg-fuerte);
+  box-shadow: inset 0 0 0 1px var(--ui-line);
+  font-family: var(--ui-font);
+  font-size: 13px;
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text);
+  cursor: pointer;
+  transition: box-shadow var(--ui-t-fast) var(--ui-ease), background var(--ui-t-fast) var(--ui-ease);
+}
+.admin-filtro-boton:hover,
+.admin-filtro-select:hover {
+  background: var(--ui-fill);
+}
+.admin-filtro-boton.activo,
+.admin-filtro-select.activo {
+  box-shadow: inset 0 0 0 1.5px var(--ui-ink);
+}
+.admin-filtro-boton svg {
+  color: var(--ui-text-2);
+}
+.admin-filtro-boton-etiqueta {
+  font-weight: var(--ui-fw-medium);
+  color: var(--ui-text-2);
+}
+.admin-filtro-select select {
+  border: none;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  max-width: 220px;
+  cursor: pointer;
+  padding-right: 2px;
+}
+.admin-filtro-select select:focus {
+  outline: none;
+}
+.admin-filtro-select:focus-within,
+.admin-filtro-boton:focus-visible {
+  outline: none;
+  box-shadow: var(--ui-focus);
+}
+
+.admin-filtro-pop {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 30;
+  display: grid;
+  grid-template-columns: 180px 220px;
+  background: var(--ui-glass-bg-fuerte);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border: var(--ui-glass-border);
+  border-radius: var(--ui-r-lg);
+  box-shadow: var(--ui-shadow-pop);
+  overflow: hidden;
+}
+.admin-filtro-atajos {
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  box-shadow: inset -1px 0 0 var(--ui-line);
+}
+.admin-filtro-atajo {
+  text-align: left;
+  padding: 9px 12px;
+  border: none;
+  border-radius: var(--ui-r-md);
+  background: none;
+  font-family: var(--ui-font);
+  font-size: 13px;
+  color: var(--ui-text);
+  cursor: pointer;
+}
+.admin-filtro-atajo:hover {
+  background: var(--ui-fill);
+}
+.admin-filtro-atajo.activo {
+  background: var(--ui-btn-bg);
+  color: var(--ui-btn-text);
+  font-weight: var(--ui-fw-semibold);
+}
+.admin-filtro-rango {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px 16px;
+}
+.admin-filtro-rango-titulo {
+  margin: 0;
+  font-size: var(--ui-fs-12);
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text-2);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.admin-filtro-rango label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: var(--ui-fs-12);
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text-2);
+}
+.admin-filtro-rango input[type='date'] {
+  height: 36px;
+  padding: 0 10px;
+  border: none;
+  border-radius: var(--ui-r-md);
+  background: var(--ui-fill);
+  font-family: var(--ui-font);
+  font-size: 13px;
+  color: var(--ui-text);
+}
+.admin-filtro-rango input[type='date']:focus {
+  outline: none;
+  box-shadow: var(--ui-focus);
+}
+.admin-filtro-error {
+  margin: 0;
+  font-size: var(--ui-fs-12);
+  color: var(--ui-danger);
+}
+.admin-filtro-aplicar {
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  margin-top: 4px;
+}
+.admin-filtro-aplicar:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Buscador debajo de los filtros, dentro de la card */
+.admin-card > .admin-tabla-busqueda--ancha {
+  margin-bottom: var(--ui-s-3);
+}
+
+.admin-paginacion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-s-3);
+  padding-top: var(--ui-s-4);
+  margin-top: var(--ui-s-2);
+  box-shadow: inset 0 1px 0 var(--ui-line);
+}
+.admin-paginacion-texto {
+  font-size: 13px;
+  color: var(--ui-text-2);
+  font-variant-numeric: tabular-nums;
+}
+.admin-paginacion-botones {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.admin-paginacion-botones button {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: var(--ui-fill);
+  color: var(--ui-text);
+  cursor: pointer;
+}
+.admin-paginacion-botones button:hover:not(:disabled) {
+  background: var(--ui-btn-bg);
+  color: var(--ui-btn-text);
+}
+.admin-paginacion-botones button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.admin-paginacion-botones button:focus-visible {
+  outline: none;
+  box-shadow: var(--ui-focus);
+}
+.admin-paginacion-actual {
+  min-width: 56px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: var(--ui-fw-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Variación contra el mes anterior en la tarjeta de ventas */
+.admin-dash-variacion {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 10px;
+  padding: 3px 8px;
+  border-radius: var(--ui-r-pill);
+  font-size: 12px;
+  font-weight: var(--ui-fw-bold);
+  letter-spacing: 0;
+  vertical-align: middle;
+}
+.admin-dash-variacion--sube {
+  background: var(--ui-success-tint);
+  color: var(--ui-success);
+}
+.admin-dash-variacion--baja {
+  background: var(--ui-danger-tint);
+  color: var(--ui-danger);
+}
+
+/* Cursos archivados */
+.admin-tabla-pill--archivado {
+  background: var(--ui-fill);
+  color: var(--ui-text-2);
+}
+.admin-tabla-nota-archivo {
+  margin-top: 6px;
+  font-size: 12px;
+}
+
+@media (max-width: 640px) {
+  .admin-filtro-pop {
+    grid-template-columns: 1fr;
+    width: min(92vw, 320px);
+  }
+  .admin-filtro-atajos {
+    box-shadow: inset 0 -1px 0 var(--ui-line);
+  }
+}
+
+.admin-filtros-barra--card + .admin-card-nota {
+  margin: 0 0 var(--ui-s-4);
+}
+
+/* ---- Ventanita "Nuevo curso" ---- */
+.modal-nuevo-curso {
+  width: min(540px, 94vw);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.modal-nuevo-curso-sub {
+  margin: 4px 0 0;
+  font-size: 13.5px;
+  color: var(--ui-text-2);
+}
+.modal-nuevo-curso-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.modal-nuevo-curso-campo > span {
+  font-size: 13px;
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text);
+}
+.modal-nuevo-curso .admin-input {
+  width: 100%;
+  height: 44px;
+  padding: 0 14px;
+  border: none;
+  border-radius: var(--ui-r-md);
+  background: var(--ui-fill);
+  font-family: var(--ui-font);
+  font-size: 15px;
+  color: var(--ui-text);
+  box-sizing: border-box;
+}
+.modal-nuevo-curso .admin-input:focus {
+  outline: none;
+  box-shadow: var(--ui-focus);
+}
+.modal-nuevo-curso-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.modal-nuevo-curso-chip {
+  padding: 8px 14px;
+  border: none;
+  border-radius: var(--ui-r-pill);
+  background: var(--ui-fill);
+  font-family: var(--ui-font);
+  font-size: 13px;
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text);
+  cursor: pointer;
+}
+.modal-nuevo-curso-chip:hover {
+  background: var(--ui-fill-hover);
+}
+.modal-nuevo-curso-chip.activo {
+  background: var(--ui-btn-bg);
+  color: var(--ui-btn-text);
+}
+.modal-nuevo-curso-chip--nueva {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--ui-line);
+  color: var(--ui-text-2);
+}
+.modal-nuevo-curso-chip:focus-visible {
+  outline: none;
+  box-shadow: var(--ui-focus);
+}
+.modal-nuevo-curso-nueva {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.modal-nuevo-curso-nueva .admin-tabla-accion {
+  white-space: nowrap;
+}
+.modal-nuevo-curso-error {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ui-danger);
+}
+.modal-nuevo-curso .admin-modal-acciones {
+  align-items: center;
+}
+.modal-nuevo-curso-nota {
+  margin: 0 auto 0 0;
+  font-size: 12px;
+  color: var(--ui-text-2);
+  max-width: 200px;
+}
+.modal-nuevo-curso-crear {
+  border: none;
+  cursor: pointer;
+}
+.modal-nuevo-curso-crear:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.modal-nuevo-curso-crear {
+  white-space: nowrap;
+}
+
+/* Alumnos y Compras lado a lado (en pantallas angostas, una abajo de la otra) */
+.admin-alumnos-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--ui-s-4);
+  align-items: stretch;
+}
+/* Lado a lado desde 1440px: más angosto no entran las columnas de cada tabla */
+@media (min-width: 1440px) {
+  .admin-alumnos-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.admin-alumnos-grid > .admin-card {
+  margin-bottom: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+/* Las dos tarjetas terminan a la misma altura: la paginación va al fondo */
+.admin-alumnos-grid > .admin-card > * { flex: 0 0 auto; order: 0; }
+.admin-alumnos-grid > .admin-card > .admin-paginacion { margin-top: auto; }
+/* Mismo alto de fila en las dos tablas (la de alumnos tiene nombre + email) */
+.admin-alumnos-grid .admin-tabla-cursos tbody tr:not(.admin-fila-detalle) td { height: 68px; box-sizing: border-box; }
+
+/* Cantidad de cursos con flechita: despliega qué cursos compró */
+.admin-alumno-cursos-boton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 10px 0 12px;
+  border: 1px solid var(--ui-line);
+  border-radius: var(--ui-r-pill);
+  background: var(--ui-fill);
+  color: var(--ui-text);
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.admin-alumno-cursos-boton:hover:not(:disabled) { background: var(--ui-gold-tint); color: var(--ui-gold-text); border-color: transparent; }
+.admin-alumno-cursos-boton[aria-expanded='true'] { background: var(--ui-gold-tint); color: var(--ui-gold-text); border-color: transparent; }
+.admin-alumno-cursos-boton:disabled { cursor: default; background: transparent; border-color: transparent; color: var(--ui-text-2); }
+.admin-fila-abierta td { border-bottom-color: transparent !important; }
+.admin-fila-detalle td { padding-top: 0 !important; padding-bottom: 14px !important; }
+.admin-card ul.admin-alumno-cursos {
+  list-style: none;
+  margin: 0 0 0 46px;
+  padding: 4px 16px;
+  border-radius: 12px;
+  background: var(--ui-fill);
+}
+.admin-card .admin-alumno-cursos li {
+  box-shadow: none;
+  font-size: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 9px 0;
+}
+.admin-card .admin-alumno-cursos li + li { border-top: 1px solid var(--ui-line); }
+.admin-alumno-curso-datos { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.admin-alumno-curso-titulo { font-size: 13.5px; font-weight: 600; color: var(--ui-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.admin-alumno-curso-fecha { font-size: 12px; color: var(--ui-text-2); }
+
+/* Barra de avance de un alumno en un curso */
+.admin-avance { display: inline-flex; align-items: center; gap: 10px; flex: 0 0 auto; }
+.admin-avance-barra { width: 110px; height: 6px; border-radius: 3px; background: var(--ui-fill-hover); overflow: hidden; }
+.admin-avance-barra > span { display: block; height: 100%; border-radius: 3px; background: var(--ui-gold); }
+.admin-avance.completo .admin-avance-barra > span { background: var(--ui-success); }
+.admin-avance-texto { min-width: 66px; font-size: 12.5px; font-weight: 600; color: var(--ui-text-2); }
+.admin-avance.completo .admin-avance-texto { color: var(--ui-success); }
+.admin-alumnos-curso-resumen { font-size: 12.5px; color: var(--ui-success); font-weight: 600; }
+.admin-alumnos-grid .admin-filtro-select { flex: 1 1 280px; min-width: 0; }
+.admin-alumnos-grid .admin-filtro-select select { flex: 1; min-width: 0; max-width: none; text-overflow: ellipsis; }
+.admin-alumno-curso-ver {
+  flex: 0 0 auto;
+  border: none;
+  background: none;
+  padding: 6px 8px;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ui-gold-text);
+  cursor: pointer;
+}
+.admin-alumno-curso-ver:hover { background: var(--ui-gold-tint); }
+.admin-alumnos-grid .admin-tabla-cursos td,
+.admin-alumnos-grid .admin-tabla-cursos th {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.admin-alumnos-grid .admin-persona-nombre {
+  white-space: normal;
+}
+.admin-alumnos-grid .admin-persona-detalle {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.admin-tabla-curso-corto {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.admin-alumnos-grid .admin-tabla-acciones {
+  flex-wrap: nowrap;
+}
+.admin-alumnos-grid .admin-persona-detalle {
+  max-width: 170px;
+}
+.admin-alumnos-grid .admin-tabla-accion {
+  padding: 6px 12px;
+  white-space: nowrap;
+}
+
+/* Registro de instructores (ventana) */
+.admin-modal.admin-modal-historial {
+  width: min(860px, 94vw);
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.admin-modal-historial .admin-tabla-wrap {
+  overflow: auto;
+}
+.admin-historial-exportar {
+  margin-left: auto;
+}
+.admin-modal.admin-modal-historial {
+  max-width: none;
+}
+
+/* ---- Instructores activos: tabla compacta, sin scroll horizontal ---- */
+.admin-instr-cabecera-acciones {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.admin-instr-cabecera-acciones .admin-tabla-busqueda {
+  width: 260px;
+}
+.admin-instructores .admin-gestionar-cursos .admin-tabla-wrap {
+  overflow-x: visible;
+}
+.admin-instructores .admin-gestionar-cursos .admin-tabla-cursos {
+  width: 100%;
+}
+.admin-instructores .admin-gestionar-cursos .admin-tabla-cursos td {
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+.admin-tabla-num {
+  text-align: center;
+}
+.admin-tabla-cursos th.admin-tabla-derecha {
+  text-align: right;
+}
+.admin-instr-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+.admin-instr-boton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border: none;
+  border-radius: var(--ui-r-pill);
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--ui-line);
+  font-family: var(--ui-font);
+  font-size: 12.5px;
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--ui-t-fast) var(--ui-ease), color var(--ui-t-fast) var(--ui-ease), box-shadow var(--ui-t-fast) var(--ui-ease);
+}
+.admin-instr-boton:hover {
+  background: var(--ui-fill);
+}
+.admin-instr-boton--quitar {
+  color: var(--ui-text-2);
+}
+.admin-instr-boton--quitar:hover {
+  background: var(--ui-danger-tint);
+  color: var(--ui-danger);
+  box-shadow: inset 0 0 0 1px transparent;
+}
+.admin-instr-boton:focus-visible {
+  outline: none;
+  box-shadow: var(--ui-focus);
+}
+.admin-instr-boton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.admin-alumno-fila .admin-tabla-accion--contorno {
+  height: 32px;
+  padding: 0 14px;
+  font-size: 12.5px;
+}
+/* En pantallas angostas la tabla sí puede desplazarse, para no romperse */
+@media (max-width: 1100px) {
+  .admin-instructores .admin-gestionar-cursos .admin-tabla-wrap {
+    overflow-x: auto;
+  }
+}
+
+/* ---- Ventas: desglose de lo recaudado ---- */
+.admin-recaudado-desglose {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--ui-text-2);
+}
+.admin-recaudado-desglose > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.admin-recaudado-neto {
+  color: var(--ui-text);
+  font-weight: var(--ui-fw-semibold);
+}
+
+/* ---- Filas que abren un detalle ---- */
+.admin-fila-clic {
+  cursor: pointer;
+}
+.admin-fila-clic:hover td {
+  background: var(--ui-fill);
+}
+.admin-fila-clic:focus-visible {
+  outline: none;
+}
+.admin-fila-clic:focus-visible td {
+  background: var(--ui-fill);
+  box-shadow: inset 0 1px 0 var(--ui-gold), inset 0 -1px 0 var(--ui-gold);
+}
+.admin-fila-clic-flecha {
+  width: 32px;
+  color: var(--ui-text-2);
+  text-align: right;
+}
+.admin-fila-clic-flecha svg {
+  vertical-align: middle;
+  transition: transform var(--ui-t-fast) var(--ui-ease);
+}
+.admin-fila-clic:hover .admin-fila-clic-flecha svg {
+  transform: translateX(2px);
+  color: var(--ui-text);
+}
+
+/* ---- Panel lateral de detalle ---- */
+.admin-detalle-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  justify-content: flex-end;
+  background: rgba(18, 18, 20, 0.32);
+  animation: admin-detalle-fondo-entra 180ms ease;
+}
+.admin-detalle {
+  width: min(440px, 100vw);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--ui-bg);
+  box-shadow: -24px 0 48px -16px rgba(0, 0, 0, 0.25);
+  font-family: var(--ui-font);
+  animation: admin-detalle-entra 260ms cubic-bezier(0.2, 0, 0, 1);
+}
+@keyframes admin-detalle-entra {
+  from { transform: translateX(40px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+@keyframes admin-detalle-fondo-entra {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .admin-detalle, .admin-detalle-fondo { animation: none; }
+}
+.admin-detalle-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--ui-line);
+}
+.admin-detalle-cabecera h3 {
+  margin: 0;
+  font-family: var(--ui-font);
+  letter-spacing: var(--ui-tracking-titulo, -0.01em);
+  font-size: 17px;
+  font-weight: var(--ui-fw-bold, 700);
+  color: var(--ui-text);
+}
+.admin-detalle-cargando {
+  padding: 24px;
+  color: var(--ui-text-2);
+}
+.admin-detalle-cuerpo {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 24px 24px;
+}
+.admin-detalle-bloque {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--ui-line);
+}
+.admin-detalle-bloque:last-child {
+  border-bottom: none;
+}
+.admin-detalle-curso {
+  margin: 12px 0 0;
+  font-size: 14px;
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text);
+}
+.admin-detalle-subtitulo {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: var(--ui-fw-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ui-text-2);
+}
+.admin-detalle-fila {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 6px 0;
+  font-size: 14px;
+}
+.admin-detalle-etiqueta {
+  color: var(--ui-text-2);
+}
+.admin-detalle-valor {
+  color: var(--ui-text);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.admin-detalle-fila--destacada .admin-detalle-etiqueta,
+.admin-detalle-fila--destacada .admin-detalle-valor {
+  color: var(--ui-text);
+  font-weight: var(--ui-fw-bold, 700);
+  font-size: 15px;
+}
+.admin-detalle-copiar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 4px 4px 10px;
+  border: none;
+  border-radius: var(--ui-r-pill);
+  background: var(--ui-fill);
+  font: inherit;
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text);
+  cursor: pointer;
+}
+.admin-detalle-copiar-aviso {
+  padding: 2px 8px;
+  border-radius: var(--ui-r-pill);
+  background: var(--ui-bg);
+  font-size: 11.5px;
+  color: var(--ui-text-2);
+}
+.admin-detalle-copiar:hover .admin-detalle-copiar-aviso {
+  color: var(--ui-text);
+}
+.admin-detalle-copiar:focus-visible {
+  outline: none;
+  box-shadow: var(--ui-focus);
+}
+
+/* ---- Filtro de monto ---- */
+.admin-filtro-pop.admin-filtro-pop--simple {
+  grid-template-columns: 220px;
+}
+.admin-filtro-rango input[type='number'] {
+  height: 36px;
+  padding: 0 10px;
+  border: none;
+  border-radius: var(--ui-r-md);
+  background: var(--ui-fill);
+  font-family: var(--ui-font);
+  font-size: 13px;
+  color: var(--ui-text);
+  font-variant-numeric: tabular-nums;
+}
+.admin-filtro-rango input[type='number']:focus {
+  outline: none;
+  box-shadow: var(--ui-focus);
+}
+.admin-filtro-quitar {
+  border: none;
+  background: none;
+  padding: 2px 0;
+  font-family: var(--ui-font);
+  font-size: 13px;
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text-2);
+  cursor: pointer;
+}
+.admin-filtro-quitar:hover {
+  color: var(--ui-text);
+}
+@media (max-width: 640px) {
+  .admin-filtro-pop.admin-filtro-pop--simple {
+    width: min(92vw, 260px);
+  }
+}
+.admin-filtro-rango input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+.admin-filtro-rango input[type='number']::-webkit-outer-spin-button,
+.admin-filtro-rango input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* ---- Detalle de venta: avance y arrepentimiento ---- */
+.admin-detalle-barra {
+  height: 6px;
+  margin: 2px 0 8px;
+  border-radius: var(--ui-r-pill);
+  background: var(--ui-fill);
+  overflow: hidden;
+}
+.admin-detalle-barra span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--ui-gold);
+}
+.admin-detalle-nota {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+  color: var(--ui-text-2);
+  text-align: right;
+}
+
+/* ---- Solicitudes de arrepentimiento ---- */
+.admin-arrep-contador {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  margin-left: 8px;
+  padding: 0 7px;
+  border-radius: var(--ui-r-pill);
+  background: var(--ui-danger);
+  color: #fff;
+  font-size: 12px;
+  font-weight: var(--ui-fw-bold, 700);
+  vertical-align: middle;
+}
+.admin-arrep-politica {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--ui-text-2);
+}
+.admin-arrep-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.admin-arrep-item {
+  padding: 16px 0;
+  border-top: 1px solid var(--ui-line);
+}
+.admin-arrep-cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.admin-arrep-nombre {
+  margin: 0;
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text);
+}
+.admin-arrep-codigo {
+  margin-left: 6px;
+  padding: 2px 8px;
+  border-radius: var(--ui-r-pill);
+  background: var(--ui-fill);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--ui-text-2);
+}
+.admin-arrep-sub {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--ui-text-2);
+}
+.admin-arrep-texto {
+  margin: 10px 0 0;
+  font-size: 13.5px;
+  color: var(--ui-text);
+}
+.admin-arrep-compras {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+}
+.admin-arrep-compra {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  border-radius: var(--ui-r-md);
+  background: var(--ui-fill);
+  font-family: var(--ui-font);
+  font-size: 13.5px;
+  color: var(--ui-text);
+  text-align: left;
+  cursor: pointer;
+}
+.admin-arrep-compra:hover {
+  box-shadow: inset 0 0 0 1px var(--ui-line);
+}
+.admin-arrep-compra:focus-visible {
+  outline: none;
+  box-shadow: var(--ui-focus);
+}
+.admin-arrep-compra-curso {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: var(--ui-fw-semibold);
+}
+.admin-arrep-compra-dato {
+  color: var(--ui-text-2);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 760px) {
+  .admin-arrep-compra {
+    grid-template-columns: 1fr auto;
+  }
+}
+
+/* ---- Tarjeta de historial con pestañas: Ventas / Arrepentimientos ---- */
+.admin-pestanas-titulo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 24px;
+}
+.admin-pestana-titulo {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 0;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+  font-family: var(--ui-font);
+  font-size: 17px;
+  font-weight: var(--ui-fw-bold, 700);
+  letter-spacing: var(--ui-tracking-titulo, -0.01em);
+  color: var(--ui-text-2);
+  cursor: pointer;
+  transition: color var(--ui-t-fast) var(--ui-ease), border-color var(--ui-t-fast) var(--ui-ease);
+}
+.admin-pestana-titulo:hover {
+  color: var(--ui-text);
+}
+.admin-pestana-titulo.activa {
+  color: var(--ui-text);
+  border-bottom-color: var(--ui-gold);
+}
+.admin-pestana-titulo .admin-dash-card-titulo-extra {
+  margin-left: 4px;
+}
+.admin-pestana-titulo:focus-visible {
+  outline: none;
+  box-shadow: var(--ui-focus);
+  border-radius: 6px;
+}
+.admin-arrep-barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin-bottom: 8px;
+}
+.admin-arrep-barra .admin-arrep-politica {
+  margin: 0;
+}
+.admin-arrep-estado {
+  margin-left: 8px;
+  vertical-align: middle;
+}
+.admin-arrep-acciones {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.admin-arrep-aceptar {
+  background: var(--ui-btn-bg);
+  color: var(--ui-btn-text);
+  box-shadow: none;
+}
+.admin-arrep-aceptar:hover {
+  background: var(--ui-btn-bg-hover);
+}
+.admin-arrep-item:first-child {
+  border-top: none;
+}
+
+/* ---- Campana de notificaciones ---- */
+.admin-campana {
+  position: relative;
+}
+.admin-campana-contador {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: var(--ui-r-pill);
+  background: var(--ui-danger);
+  box-shadow: 0 0 0 2px var(--ui-bg);
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: var(--ui-fw-bold, 700);
+  line-height: 17px;
+  text-align: center;
+}
+.admin-topbar-dropdown.admin-notif {
+  width: min(380px, 92vw);
+  padding: 0;
+  overflow: hidden;
+}
+.admin-notif-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px 10px;
+  box-shadow: 0 1px 0 var(--ui-line);
+}
+.admin-notif-cabecera p {
+  margin: 0;
+  font-weight: var(--ui-fw-bold, 700);
+  color: var(--ui-text);
+}
+.admin-topbar-dropdown .admin-notif-todas {
+  width: auto;
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: var(--ui-font);
+  font-size: 12.5px;
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text-2);
+  cursor: pointer;
+}
+.admin-topbar-dropdown .admin-notif-todas:hover {
+  color: var(--ui-text);
+  background: none;
+}
+.admin-notif-vacio {
+  padding: 16px;
+}
+.admin-notif-lista {
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+  max-height: min(440px, 70vh);
+  overflow-y: auto;
+}
+.admin-topbar-dropdown .admin-notif-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: var(--ui-r-md);
+  background: none;
+  font-family: var(--ui-font);
+  text-align: left;
+  cursor: pointer;
+}
+.admin-topbar-dropdown .admin-notif-item:hover,
+.admin-topbar-dropdown .admin-notif-item:focus-visible {
+  outline: none;
+  background: var(--ui-fill);
+}
+.admin-notif-icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--ui-fill);
+  color: var(--ui-text-2);
+}
+.admin-notif-icono--venta {
+  background: var(--ui-success-tint);
+  color: var(--ui-success);
+}
+.admin-notif-icono--arrepentimiento {
+  background: var(--ui-danger-tint);
+  color: var(--ui-danger);
+}
+.admin-notif-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+.admin-notif-titulo {
+  font-size: 13.5px;
+  color: var(--ui-text-2);
+}
+.admin-notif-item.sin-leer .admin-notif-titulo {
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text);
+}
+.admin-notif-mensaje {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12.5px;
+  color: var(--ui-text-2);
+}
+.admin-notif-fecha {
+  font-size: 11.5px;
+  color: var(--ui-text-3, var(--ui-text-2));
+}
+.admin-notif-punto {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: var(--ui-gold);
+}
+.admin-curso-revision {
+  margin-top: 4px;
+}
+
+/* ---- Preguntas de los alumnos ---- */
+.admin-sidebar-contador {
+  margin-left: auto;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--ui-r-pill);
+  background: var(--ui-danger);
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: var(--ui-fw-bold, 700);
+  line-height: 20px;
+  text-align: center;
+}
+.admin-preguntas-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.admin-pregunta {
+  padding: 18px 0;
+  border-top: 1px solid var(--ui-line);
+}
+.admin-pregunta:first-child {
+  border-top: none;
+  padding-top: 4px;
+}
+.admin-pregunta-cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.admin-pregunta-donde {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  font-size: 13px;
+  color: var(--ui-text-2);
+  text-align: right;
+}
+.admin-pregunta-curso {
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text);
+}
+.admin-pregunta-texto {
+  margin: 12px 0 0;
+  padding: 12px 14px;
+  border-radius: var(--ui-r-md);
+  background: var(--ui-fill);
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--ui-text);
+  white-space: pre-wrap;
+}
+.admin-pregunta-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+.admin-pregunta-form textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+.admin-pregunta-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.admin-pregunta-respuesta {
+  margin-top: 10px;
+  padding: 10px 14px;
+  border-left: 3px solid var(--ui-gold);
+}
+.admin-pregunta-quien {
+  font-size: 12.5px;
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text-2);
+}
+.admin-pregunta-respuesta p {
+  margin: 4px 0 6px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ui-text);
+  white-space: pre-wrap;
+}
+@media (max-width: 640px) {
+  .admin-pregunta-donde {
+    align-items: flex-start;
+    text-align: left;
+  }
+}
+
+/* ---- "Volver al sitio" al pie del menú, sobre los datos del usuario ---- */
+.admin-sidebar-volver {
+  /* alineado con los links del menú de arriba */
+  margin: 0 calc(var(--ui-s-3) - var(--ui-s-5));
+  width: auto;
+  color: var(--ui-text-2);
+}
+.admin-sidebar-volver svg {
+  width: 17px;
+  height: 17px;
+}
+.admin-sidebar-volver:hover {
+  color: var(--ui-text);
+}
+
+/* Filtros de la campana (admin): Últimas / Ventas / Gestión / Preguntas */
+.admin-notif-filtros {
+  display: flex;
+  gap: 4px;
+  padding: 8px 10px;
+  box-shadow: 0 1px 0 var(--ui-line);
+  overflow-x: auto;
+}
+.admin-topbar-dropdown .admin-notif-filtros button {
+  flex: 1 1 auto;
+  justify-content: center;
+  width: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 28px;
+  padding: 0 10px;
+  border: none;
+  border-radius: var(--ui-r-pill);
+  background: transparent;
+  color: var(--ui-text-2);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.admin-topbar-dropdown .admin-notif-filtros button:hover { background: var(--ui-fill); color: var(--ui-text); }
+.admin-topbar-dropdown .admin-notif-filtros button.activo { background: var(--ui-ink); color: var(--ui-bg); }
+.admin-notif-filtro-cantidad {
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: #e5484d;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.admin-pregunta-nota { font-size: 12px; color: var(--ui-text-2); font-style: italic; }
+
+/* Botón de guardar (por ejemplo "Guardar respuesta" al editar una respuesta): verde */
+.admin-boton-primario.admin-boton-guardar {
+  background: #1f9d55;
+  border-color: #1f9d55;
+  color: #fff;
+}
+.admin-boton-primario.admin-boton-guardar:hover:not(:disabled) {
+  background: #188a49;
+  border-color: #188a49;
+}

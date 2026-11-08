@@ -24,3 +24,8 @@ export async function reordenarModuloRequest(id, direccion) {
   const response = await api.put(`/modulos/${id}/reordenar`, { direccion });
   return response.data;
 }
+
+export async function reordenarModulosLoteRequest(idsOrdenados) {
+  const response = await api.put('/modulos/reordenar-lote', { ids: idsOrdenados });
+  return response.data;
+}

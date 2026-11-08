@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { verFavoritosRequest, quitarFavoritoRequest } from '../services/favoritoService';
+import { SkeletonLista } from '../components/Skeleton';
 
 function Favoritos() {
   const [favoritos, setFavoritos] = useState([]);
@@ -31,7 +32,7 @@ function Favoritos() {
     }
   }
 
-  if (cargando) return <p>Cargando favoritos...</p>;
+  if (cargando) return <SkeletonLista filas={3} />;
 
   return (
     <div>

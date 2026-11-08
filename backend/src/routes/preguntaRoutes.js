@@ -2,21 +2,21 @@ const express = require('express');
 const router = express.Router({ mergeParams: true });
 const {
   crearPregunta,
-  listarPreguntasPorContenido,
+  listarPreguntasPorBloque,
   listarPreguntasAdmin,
   obtenerPregunta,
   editarPregunta,
   eliminarPregunta,
   responderPregunta,
 } = require('../controllers/preguntaController');
-const { verificarToken, verificarAdmin } = require('../middlewares/authMiddleware');
+const { verificarToken, verificarTokenOpcional, verificarAdminOInstructor } = require('../middlewares/authMiddleware');
 
 router.post('/:id/responder', verificarToken, responderPregunta);
-router.get('/', listarPreguntasPorContenido);
-router.get('/admin', verificarToken, verificarAdmin, listarPreguntasAdmin);
-router.get('/:id', verificarToken, verificarAdmin, obtenerPregunta);
-router.post('/', verificarToken, verificarAdmin, crearPregunta);
-router.put('/:id', verificarToken, verificarAdmin, editarPregunta);
-router.delete('/:id', verificarToken, verificarAdmin, eliminarPregunta);
+router.get('/', verificarToken, listarPreguntasPorBloque);
+router.get('/admin', verificarToken, verificarAdminOInstructor, listarPreguntasAdmin);
+router.get('/:id', verificarToken, verificarAdminOInstructor, obtenerPregunta);
+router.post('/', verificarToken, verificarAdminOInstructor, crearPregunta);
+router.put('/:id', verificarToken, verificarAdminOInstructor, editarPregunta);
+router.delete('/:id', verificarToken, verificarAdminOInstructor, eliminarPregunta);
 
 module.exports = router;

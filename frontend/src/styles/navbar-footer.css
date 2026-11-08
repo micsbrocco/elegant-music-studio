@@ -1,0 +1,229 @@
+/* ============================================================
+ * Navbar y Footer
+ * (parte de index.css, separado para que sea más fácil de ubicar)
+ * ============================================================ */
+
+/* Navbar más alta */
+.navbar-inner {
+  height: 84px !important;
+}
+
+
+/* FOOTER */
+.footer {
+  position: relative;
+  overflow: hidden;
+  background: #141416;
+  color: #c8c6c8;
+  padding-top: 44px;
+}
+
+.footer-inner {
+  position: relative;
+  z-index: 1;
+}
+
+.footer-top {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr 1.2fr;
+  gap: 28px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid #2b2925;
+}
+
+.footer-logo {
+  color: #f9f7f2;
+  font-size: 19px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.footer-tagline {
+  font-size: 13px;
+  color: #c8c6c8;
+  margin-bottom: 14px;
+}
+
+.footer-social {
+  display: flex;
+  gap: 10px;
+}
+
+.footer-col-titulo {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #77767b;
+  margin-bottom: 12px;
+}
+
+.footer-link {
+  display: block;
+  font-size: 13px;
+  color: #c8c6c8;
+  text-decoration: none;
+  margin-bottom: 8px;
+  transition: color 200ms ease;
+}
+
+.footer-link:hover {
+  color: #c99738;
+}
+
+/* "Cerrar sesión" es un botón, pero se ve igual que los links del footer */
+.footer-link-boton {
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.footer-link-static {
+  color: #77767b;
+  cursor: default;
+}
+
+.footer-link-static:hover {
+  color: #77767b;
+}
+
+.footer-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px 0;
+}
+
+.footer-copy {
+  font-size: 12px;
+  color: #77767b;
+}
+
+.footer-legal {
+  display: flex;
+  gap: 20px;
+}
+
+.footer-link-sm {
+  margin-bottom: 0;
+  font-size: 12px;
+  color: #77767b;
+}
+
+@media (max-width: 900px) {
+  .footer-top {
+    grid-template-columns: 1fr 1fr;
+    row-gap: 32px;
+  }
+}
+
+@media (max-width: 560px) {
+  .footer-top {
+    grid-template-columns: 1fr;
+  }
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* ---------- Footer compacto (portal de cursos: catálogo, detalle y clases) ----------
+ * Una sola franja baja: marca a la izquierda, contacto en línea y redes a la derecha. */
+.footer-compacto {
+  padding-top: 18px;
+}
+.footer-compacto-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px 32px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #2b2925;
+}
+.footer-compacto-marca {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.footer-compacto .footer-logo {
+  font-size: 15px;
+  margin: 0;
+}
+.footer-compacto .footer-tagline {
+  font-size: 12px;
+  margin: 0;
+}
+.footer-compacto-contacto {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-left: auto;
+}
+.footer-compacto-contacto .footer-link {
+  margin: 0;
+}
+.footer-compacto .footer-social .social-icon {
+  width: 30px;
+  height: 30px;
+}
+.footer-compacto .footer-bottom {
+  padding: 10px 0;
+}
+
+@media (max-width: 720px) {
+  .footer-compacto-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* En las páginas a todo el ancho (ver App.jsx) la navbar y el footer usan el
+   mismo margen lateral que el contenido, así todo queda alineado. */
+.app-shell--ancho .navbar-inner.container,
+.app-shell--ancho .footer-inner.container {
+  max-width: none;
+  padding-left: var(--ui-margen-lateral);
+  padding-right: var(--ui-margen-lateral);
+}
+
+/* Íconos de redes del footer: el fondo es oscuro, así que van en blanco */
+.footer-social .social-icon {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.4);
+}
+.footer-social .social-icon:hover {
+  color: var(--color-gold);
+  border-color: var(--color-gold);
+}
+
+/* Botón de arrepentimiento: tiene que verse bien (lo exige la norma), en gris
+   más claro y en negrita para que se distinga de Términos y Privacidad */
+.footer-link-arrepentimiento {
+  font-weight: 600;
+  color: #c8c6c8;
+}
+.footer-link-arrepentimiento:hover {
+  text-decoration: underline;
+}
+@media (max-width: 640px) {
+  .footer-legal {
+    flex-wrap: wrap;
+    gap: 8px 20px;
+  }
+}
+
+/* Carrito: "Ir a pagar" en verde */
+.navbar-ir-a-pagar {
+  background: #1f9d55;
+  color: #fff;
+  border: none;
+}
+.navbar-ir-a-pagar:hover { background: #188a49; color: #fff; }

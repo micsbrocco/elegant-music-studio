@@ -1,0 +1,980 @@
+/* ============================================================
+ * Panel de administrador: editor de landing
+ * Sistema "ui" (ui-variables.css): Manrope, dorado solo como acento,
+ * radios 10/16, espaciado en múltiplos de 4.
+ * ============================================================ */
+
+/* ---- Campos ---- */
+.admin-input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid rgba(18, 18, 20, 0.14);
+  border-radius: var(--ui-r-md);
+  padding: var(--ui-s-2) var(--ui-s-3);
+  font-family: var(--ui-font);
+  font-size: var(--ui-fs-14);
+  line-height: 1.5;
+  background: #fff;
+  color: var(--ui-text);
+  transition: border-color var(--ui-t-fast) var(--ui-ease), box-shadow var(--ui-t-fast) var(--ui-ease);
+}
+.admin-input::placeholder {
+  color: var(--ui-text-2);
+  opacity: 0.8;
+}
+.admin-input:focus-visible {
+  outline: none;
+  border-color: var(--ui-gold);
+  box-shadow: var(--ui-focus);
+}
+textarea.admin-input {
+  resize: vertical;
+}
+.admin-landing-campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-s-1);
+  margin: 0;
+}
+.admin-landing-campo-etiqueta {
+  font-size: var(--ui-fs-12);
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text-2);
+}
+.admin-landing-campos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-s-4);
+}
+
+/* ---- Bloques repetibles (foto, video, integrante) ---- */
+.admin-landing-lista-bloques {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-s-4);
+}
+.admin-landing-bloque {
+  background: var(--ui-fill);
+  border-radius: var(--ui-r-lg);
+  padding: var(--ui-s-5);
+  min-width: 0;
+}
+.admin-landing-bloque-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-s-3);
+  margin-bottom: var(--ui-s-4);
+}
+.admin-landing-bloque-titulo {
+  font-size: var(--ui-fs-14);
+  font-weight: var(--ui-fw-bold);
+  color: var(--ui-text);
+  margin: 0;
+}
+.admin-landing-bloque > .admin-landing-bloque-titulo {
+  margin-bottom: var(--ui-s-4);
+}
+.admin-landing-bloque-head .admin-landing-bloque-titulo {
+  margin-bottom: 0;
+}
+.admin-landing-foto-fila {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-s-4);
+  align-items: flex-start;
+}
+.admin-landing-foto-prev {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--ui-r-md);
+  background: var(--ui-fill-hover);
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--ui-fs-12);
+  color: var(--ui-text-2);
+}
+.admin-landing-foto-prev img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.admin-landing-foto-campos {
+  flex: 1;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-s-3);
+}
+.admin-landing-subir {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--ui-s-3);
+}
+/* Jerarquía: "Subir/Cambiar foto" es secundario (contorno visible); "Quitar" es destructivo (rojo) */
+.admin-landing-subir .admin-tabla-accion {
+  position: relative;
+  margin: 0;
+}
+.admin-landing-subir label.admin-tabla-accion {
+  background: #fff;
+  box-shadow: inset 0 0 0 1px rgba(18, 18, 20, 0.28);
+}
+.admin-landing-subir label.admin-tabla-accion:hover {
+  background: var(--ui-fill);
+  box-shadow: inset 0 0 0 1px var(--ui-ink);
+}
+.admin-landing-subir .admin-tabla-accion:focus-within {
+  box-shadow: var(--ui-focus);
+}
+.admin-landing-archivo {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  width: 100%;
+  cursor: pointer;
+}
+.admin-landing-archivo:disabled {
+  cursor: not-allowed;
+}
+.admin-landing-ayuda {
+  font-size: var(--ui-fs-12);
+  color: var(--ui-text-2);
+}
+.admin-landing-etiqueta-fila {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-s-3);
+}
+.admin-landing-etiqueta-fila {
+  align-items: stretch;
+}
+.admin-landing-etiqueta-fila .admin-input {
+  flex: 1;
+}
+/* Integrantes: de a dos por fila; el que queda solo ocupa media fila */
+.admin-landing-equipo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ui-s-4);
+}
+.admin-landing-equipo-grid .admin-landing-bloque {
+  min-width: 0;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px rgba(18, 18, 20, 0.1);
+}
+@media (max-width: 1100px) {
+  .admin-landing-equipo-grid { grid-template-columns: 1fr; }
+}
+
+/* Vista previa de las etiquetas: mismo fondo oscuro y mismas clases que la home */
+.admin-landing-preview {
+  margin-bottom: var(--ui-s-5);
+}
+.admin-landing-preview-titulo {
+  font-size: var(--ui-fs-12);
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text-2);
+  margin: 0 0 var(--ui-s-2);
+}
+.admin-landing-preview-fondo {
+  background: var(--ui-ink);
+  border-radius: var(--ui-r-lg);
+  padding: var(--ui-s-6);
+}
+.admin-landing-preview-fondo .hero-etiquetas-row {
+  margin: 0;
+  max-width: none;
+}
+
+/* Barra de guardado al final del panel */
+.admin-landing-guardar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--ui-s-4);
+  margin-top: var(--ui-s-6);
+}
+
+/* ---- Layout maestro-detalle ----
+   Un segundo menú pegado al principal con las secciones, y a la derecha el
+   panel con la tarjeta activa y la barra de guardado. El margen negativo
+   cancela el padding de .admin-main:has(.editor-curso-page) (ver
+   admin-editor-curso.css) para que el menú quede pegado al principal. */
+.admin-landing-shell {
+  display: flex;
+  align-items: stretch;
+  margin: -30px -40px -56px -40px;
+  min-height: calc(100vh - 80px);
+}
+.admin-landing-sidebar {
+  flex: 0 0 260px;
+  display: flex;
+  flex-direction: column;
+  background: var(--ui-glass-bg-fuerte);
+  border-right: 1px solid var(--ui-line);
+  position: sticky;
+  top: 80px;
+  height: calc(100vh - 80px);
+  align-self: flex-start;
+}
+/* El menú principal dibuja una curva al lado del link activo (admin-sidebar-
+   activo-bleed) que asume que lo que toca es el fondo de la página. Acá toca
+   este segundo menú, así que se apaga y el link vuelve a la píldora normal. */
+.admin-shell:has(.admin-landing-shell) .admin-sidebar-activo-bleed {
+  display: none;
+}
+.admin-shell:has(.admin-landing-shell) .admin-sidebar-link.active {
+  border-radius: var(--ui-r-md);
+  margin-right: 0;
+  padding-right: 10px;
+}
+.admin-landing-sidebar-titulo {
+  flex-shrink: 0;
+  padding: var(--ui-s-6) var(--ui-s-5) var(--ui-s-4);
+}
+.admin-landing-sidebar-titulo h2 {
+  font-family: var(--ui-font);
+  font-size: var(--ui-fs-20);
+  font-weight: var(--ui-fw-bold);
+  letter-spacing: var(--ui-tracking-titulo);
+  color: var(--ui-text);
+  margin: 0;
+}
+.admin-landing-lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-s-1);
+  padding: 0 var(--ui-s-3) var(--ui-s-4);
+  overflow-y: auto;
+}
+.admin-landing-lista-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-s-3);
+  width: 100%;
+  background: none;
+  border: none;
+  border-radius: var(--ui-r-md);
+  padding: var(--ui-s-3) var(--ui-s-4);
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--ui-font);
+  transition: background var(--ui-t-fast) var(--ui-ease);
+}
+.admin-landing-lista-item:hover {
+  background: var(--ui-fill);
+}
+.admin-landing-lista-item:focus-visible {
+  outline: none;
+  box-shadow: var(--ui-focus);
+}
+.admin-landing-lista-item.activo {
+  background: var(--ui-gold-tint);
+}
+.admin-landing-lista-item.activo::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--ui-gold);
+}
+.admin-landing-lista-item-titulo {
+  font-size: var(--ui-fs-14);
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text);
+  min-width: 0;
+}
+.admin-landing-lista-item.activo .admin-landing-lista-item-titulo {
+  font-weight: var(--ui-fw-bold);
+}
+.admin-landing-lista-item-boton {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--ui-text-2);
+}
+.admin-landing-lista-item.activo .admin-landing-lista-item-boton {
+  color: var(--ui-gold-text);
+}
+.admin-landing-panel {
+  flex: 1;
+  min-width: 0;
+  padding: 30px 40px 56px;
+}
+.admin-landing-panel-top-mensajes {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-s-3);
+}
+.admin-landing-guardar .editor-curso-mensaje-ok {
+  font-size: var(--ui-fs-14);
+}
+.admin-landing-error {
+  font-size: var(--ui-fs-14);
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-danger);
+  background: var(--ui-danger-tint);
+  border-radius: var(--ui-r-md);
+  padding: var(--ui-s-2) var(--ui-s-3);
+}
+.admin-landing-error--bloque {
+  margin-bottom: var(--ui-s-4);
+}
+.editor-curso-page .admin-landing-panel .admin-card {
+  margin-bottom: 0;
+}
+@media (max-width: 900px) {
+  .admin-landing-shell {
+    flex-direction: column;
+    min-height: 0;
+  }
+  .admin-landing-sidebar {
+    position: static;
+    height: auto;
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--ui-line);
+  }
+  .admin-landing-panel {
+    padding: var(--ui-s-6) var(--ui-s-5) var(--ui-s-10);
+  }
+}
+
+.admin-accordion-header {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  font-family: var(--font-body);
+  text-align: left;
+}
+.admin-accordion-chevron {
+  display: flex;
+  color: var(--color-muted);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+.admin-accordion-chevron.abierto {
+  transform: rotate(180deg);
+}
+.admin-accordion-body {
+  margin-top: 16px;
+}
+
+.admin-curso-form-layout {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+@media (max-width: 1000px) {
+  .admin-curso-form-layout { grid-template-columns: 1fr; }
+}
+.admin-curso-preview {
+  position: sticky;
+  top: 20px;
+}
+.admin-curso-preview .course-card {
+  max-width: 340px;
+}
+.admin-curso-preview .course-card-cta {
+  cursor: default;
+}
+
+.admin-modulo-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.admin-orden-botones {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex-shrink: 0;
+}
+.admin-orden-boton {
+  width: 22px;
+  height: 18px;
+  background: #fff;
+  border: 1px solid var(--color-warm-gray);
+  border-radius: 4px;
+  font-size: 9px;
+  line-height: 1;
+  color: var(--color-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.admin-orden-boton:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.admin-contenido-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+
+
+/* ============================================================
+ * Editor de la página de inicio (versión nueva): pestañas arriba,
+ * mosaicos de fotos, etiquetas como chips y guardado automático.
+ * ============================================================ */
+.landing-editor .editor-curso-tabs-top {
+  margin-bottom: 20px;
+}
+.landing-seccion {
+  margin-bottom: 16px;
+}
+.editor-curso-page .landing-seccion.admin-card {
+  padding: 22px 24px;
+}
+.landing-seccion-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.landing-seccion-titulo {
+  margin: 0 0 16px;
+  font-family: var(--ui-font);
+  font-size: 15px;
+  font-weight: var(--ui-fw-bold);
+  color: var(--ui-text);
+}
+.landing-seccion-cabecera .landing-seccion-titulo {
+  margin: 0;
+}
+.landing-seccion-titulo span {
+  font-weight: var(--ui-fw-regular);
+  color: var(--ui-text-2);
+}
+.landing-boton {
+  border: none;
+  cursor: pointer;
+}
+
+.landing-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.landing-campo > span {
+  font-size: 12.5px;
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text-2);
+}
+.landing-editor .admin-input {
+  width: 100%;
+  box-sizing: border-box;
+}
+.landing-dos-col {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+/* ---- Mosaico de foto ---- */
+.landing-fotos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+.landing-foto {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.landing-foto-imagen {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--ui-fill);
+}
+.landing-foto--redonda {
+  flex-shrink: 0;
+  width: 120px;
+  align-items: center;
+}
+.landing-foto--redonda .landing-foto-imagen {
+  width: 120px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+}
+.landing-foto-imagen img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.landing-foto-vacia {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ui-text-2);
+}
+.landing-foto-acciones {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(18, 18, 20, 0.45);
+  opacity: 0;
+  transition: opacity var(--ui-t-fast) var(--ui-ease);
+}
+.landing-foto-imagen:hover .landing-foto-acciones,
+.landing-foto-acciones:focus-within,
+.landing-foto-imagen:not(:has(img)) .landing-foto-acciones {
+  opacity: 1;
+}
+.landing-foto-imagen:not(:has(img)) .landing-foto-acciones {
+  background: transparent;
+  align-items: flex-end;
+  padding-bottom: 14px;
+}
+.landing-foto-boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  padding: 0 14px;
+  border: none;
+  border-radius: var(--ui-r-pill);
+  background: #fff;
+  color: var(--ui-text);
+  font-family: var(--ui-font);
+  font-size: 13px;
+  font-weight: var(--ui-fw-semibold);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+.landing-foto-boton--quitar {
+  width: 34px;
+  padding: 0;
+  color: var(--ui-danger);
+}
+.landing-foto-boton:focus-within,
+.landing-foto-boton:focus-visible {
+  outline: none;
+  box-shadow: var(--ui-focus);
+}
+.landing-foto-etiqueta {
+  font-size: 13px;
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text);
+}
+.landing-foto-link {
+  align-self: flex-start;
+  border: none;
+  background: none;
+  padding: 0;
+  font-family: var(--ui-font);
+  font-size: 12px;
+  color: var(--ui-text-2);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.landing-foto--redonda .landing-foto-link {
+  align-self: center;
+}
+.landing-foto-url {
+  font-size: 12.5px;
+}
+
+/* ---- Etiquetas como chips ---- */
+.landing-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.landing-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 36px;
+  padding: 0 6px 0 14px;
+  border-radius: var(--ui-r-pill);
+  background: var(--ui-ink);
+}
+.landing-chip input {
+  border: none;
+  background: transparent;
+  color: #fff;
+  font-family: var(--ui-font);
+  font-size: 13px;
+  font-weight: var(--ui-fw-semibold);
+  min-width: 3ch;
+  padding: 0;
+}
+.landing-chip input:focus {
+  outline: none;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.landing-chip button {
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+}
+.landing-chip button:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+.landing-chip-nueva input {
+  height: 36px;
+  width: 170px;
+  padding: 0 14px;
+  border: 1.5px dashed var(--ui-line);
+  border-radius: var(--ui-r-pill);
+  background: transparent;
+  font-family: var(--ui-font);
+  font-size: 13px;
+  color: var(--ui-text);
+}
+.landing-chip-nueva input::placeholder {
+  color: var(--ui-gold-text);
+  font-weight: var(--ui-fw-semibold);
+}
+.landing-chip-nueva input:focus {
+  outline: none;
+  border-style: solid;
+  border-color: var(--ui-ink);
+}
+
+/* ---- Videos ---- */
+.landing-videos,
+.landing-equipo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.landing-video,
+.landing-persona {
+  position: relative;
+  display: flex;
+  gap: 18px;
+  padding: 16px;
+  border-radius: 16px;
+  background: var(--ui-fill);
+}
+.landing-video-miniatura {
+  position: relative;
+  flex-shrink: 0;
+  width: 220px;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--ui-fill-hover);
+}
+.landing-video-miniatura img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.landing-video-destacado {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 3px 10px;
+  border-radius: var(--ui-r-pill);
+  background: var(--ui-ink);
+  color: var(--ui-gold);
+  font-size: 11px;
+  font-weight: var(--ui-fw-bold);
+}
+.landing-video-campos,
+.landing-persona-campos {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.landing-video .admin-input,
+.landing-persona .admin-input {
+  background: #fff;
+}
+.landing-borrar {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 10px;
+  background: none;
+  color: var(--ui-text-2);
+  cursor: pointer;
+}
+.landing-borrar:hover {
+  background: var(--ui-danger-tint);
+  color: var(--ui-danger);
+}
+.landing-video .landing-video-campos,
+.landing-persona .landing-persona-campos {
+  padding-right: 36px;
+}
+.landing-persona--grande {
+  background: none;
+  padding: 0;
+}
+.landing-persona--grande .landing-persona-campos {
+  padding-right: 0;
+}
+
+@media (max-width: 760px) {
+  .landing-video,
+  .landing-persona {
+    flex-direction: column;
+  }
+  .landing-video-miniatura {
+    width: 100%;
+  }
+  .landing-dos-col {
+    grid-template-columns: 1fr;
+  }
+}
+.admin-card h3.landing-seccion-titulo {
+  margin-top: 0;
+}
+.landing-chip input {
+  field-sizing: content;
+}
+.landing-video-miniatura,
+.landing-foto--redonda {
+  align-self: flex-start;
+}
+
+/* Interruptor "Próximamente" en el encabezado de Página de inicio */
+.landing-interruptor {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-right: 6px;
+}
+.landing-interruptor-etiqueta {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ui-text-muted, #6b6b73);
+}
+.landing-interruptor-error {
+  font-size: 12px;
+  color: #dc2626;
+}
+
+/* ---- Fotos de la portada: las 5 en una fila, a todo el ancho ---- */
+.landing-fotos-grid--portada {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+@media (max-width: 1100px) {
+  .landing-fotos-grid--portada { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .landing-fotos-grid--portada { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* Botones sobre la foto: subir (con ícono), link y quitar.
+   relative: el input de archivo invisible queda solo sobre su botón */
+.landing-foto-boton { gap: 6px; position: relative; overflow: hidden; }
+.landing-foto-boton--icono {
+  width: 34px;
+  padding: 0;
+}
+
+/* Campo para pegar un link: aparece debajo de la foto y se aplica al confirmar */
+.landing-foto-link-panel {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 38px;
+  padding: 0 4px 0 10px;
+  border: 1px solid var(--ui-border-strong, rgba(0, 0, 0, 0.18));
+  border-radius: 10px;
+  background: var(--ui-surface, #fff);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  animation: landing-link-entrar 0.16s ease-out;
+}
+.landing-foto-link-panel:focus-within {
+  border-color: var(--ui-accent, #c9a227);
+  box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.18);
+}
+@keyframes landing-link-entrar {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.landing-foto-link-icono {
+  display: inline-flex;
+  color: var(--ui-text-2);
+}
+.landing-foto-link-panel input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--ui-font);
+  font-size: 12.5px;
+  color: var(--ui-text);
+}
+.landing-foto-link-ok,
+.landing-foto-link-cancelar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.landing-foto-link-ok { background: var(--ui-ink, #111); color: #fff; }
+.landing-foto-link-cancelar { background: transparent; color: var(--ui-text-2); }
+.landing-foto-link-cancelar:hover { background: var(--ui-fill); }
+.landing-foto--redonda .landing-foto-link-panel { width: 220px; }
+
+/* ---- Encabezado: interruptor arriba, botones debajo ---- */
+.landing-encabezado-derecha {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+.landing-interruptor { margin-right: 0; }
+
+/* Interruptor con colores: Abiertos en verde, Próximamente en amarillo */
+.landing-interruptor-seg--abiertos .portal-segmento-indicador { background: #1f9d55; }
+.landing-interruptor-seg--proximamente .portal-segmento-indicador { background: #f3c94a; }
+.landing-interruptor-seg--abiertos .portal-segmento.activo { color: #fff; }
+.landing-interruptor-seg--proximamente .portal-segmento.activo { color: #2a2104; }
+
+/* Botón Guardar cambios */
+.landing-guardar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 18px;
+  border: 1px solid var(--ui-border, rgba(0, 0, 0, 0.1));
+  border-radius: var(--ui-r-pill, 999px);
+  background: transparent;
+  color: var(--ui-text-2);
+  font-family: var(--ui-font);
+  font-size: 13px;
+  font-weight: var(--ui-fw-semibold, 600);
+  cursor: default;
+}
+.landing-guardar--activo {
+  border-color: transparent;
+  background: var(--ui-ink, #111);
+  color: #fff;
+  cursor: pointer;
+}
+.landing-guardar--activo:hover { filter: brightness(1.15); }
+.landing-guardar:disabled.landing-guardar--activo { opacity: 0.7; }
+.landing-descartar {
+  border: none;
+  background: none;
+  padding: 0 6px;
+  font-family: var(--ui-font);
+  font-size: 13px;
+  color: var(--ui-text-2);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.landing-guardar-error {
+  font-size: 12.5px;
+  color: var(--ui-danger, #dc2626);
+}
+
+/* Más específico que los estilos generales de inputs y botones del panel */
+.landing-foto .landing-foto-link-panel input[type="text"] {
+  height: 100%;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.landing-foto .landing-foto-link-panel .landing-foto-link-ok,
+.landing-foto .landing-foto-link-panel .landing-foto-link-cancelar {
+  width: 28px;
+  min-width: 0;
+  height: 28px;
+  padding: 0;
+}
+.landing-foto .landing-foto-link-panel .landing-foto-link-ok { color: #fff; }
+.landing-foto .landing-foto-link-panel svg { display: block; }
+.landing-interruptor .portal-segmentado { margin: 0; }
+
+/* Etiquetas que se arrastran para ordenarlas */
+.landing-chips .landing-chip { padding-left: 6px; touch-action: none; }
+.landing-chip-manija {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 26px;
+  margin-right: 4px;
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.45);
+  cursor: grab;
+}
+.landing-chip-manija:hover { color: #fff; background: rgba(255, 255, 255, 0.1); }
+.landing-chip--origen { opacity: 0.35; }
+.landing-chip--destino-antes { box-shadow: -4px 0 0 0 var(--ui-gold, #c9a227); }
+.landing-chip--destino-despues { box-shadow: 4px 0 0 0 var(--ui-gold, #c9a227); }
+.landing-chip--flotante {
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
+  cursor: grabbing;
+}
+.landing-chip--flotante .landing-chip-manija { cursor: grabbing; color: #fff; }
+.landing-chip-texto {
+  padding-right: 10px;
+  color: #fff;
+  font-family: var(--ui-font);
+  font-size: 13px;
+  font-weight: var(--ui-fw-semibold);
+  white-space: nowrap;
+}

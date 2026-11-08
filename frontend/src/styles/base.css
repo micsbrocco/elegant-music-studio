@@ -1,0 +1,500 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap');
+
+/* ============================================================
+ * Base: variables de marca, reset, layout helpers, tipografía,
+ * botones, cards, badges, forms, progress bar, responsive helpers
+ * y el armazón de la app (app-shell / app-main).
+ * ============================================================ */
+
+
+:root {
+  --color-ink: #121214;
+  /* Casi negro puro: lo usan el hero y el navbar para que peguen igual */
+  --color-hero: #060606;
+  --color-gold: #c9a227;
+  --color-gold-light: #e2bb4a;
+  --color-gold-dim: #8a6d16;
+  --color-cream: #f5f0e8;
+  --color-warm-white: #faf8f4;
+  --color-warm-gray: #e8e2d8;
+  --color-muted: #9a9088;
+  --color-danger: #c0392b;
+  --color-danger-bg: #fdf0ef;
+  --color-danger-border: #f5c6c2;
+  --color-success: #1f9d55; /* el mismo verde de "Guardar cambios" en todo el sitio */
+  --color-success-light: #188a49;
+
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'Outfit', system-ui, sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  /* Tipografía más "recta"/geométrica que Outfit, usada puntualmente en las tarjetas de curso */
+  --font-card: 'Source Sans 3', var(--font-body);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  background-color: var(--color-warm-white);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-cream);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-gold);
+  border-radius: 3px;
+}
+
+::selection {
+  background: #c9a22733;
+  color: var(--color-ink);
+}
+
+/* ---------- Anclas de navegación ---------- */
+/* El navbar es sticky (84px de alto): sin esto, al hacer click en un link
+   tipo "/#seccion" el navegador deja el título de la sección tapado atrás
+   del navbar, y da la sensación de que el scroll "se pasó" de largo. */
+#cursos-destacados,
+#producciones,
+#nosotros,
+#contacto {
+  scroll-margin-top: 100px;
+}
+
+/* ---------- Layout helpers ---------- */
+.container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding: 0 48px;
+  }
+}
+
+.section-dark {
+  background: var(--color-ink);
+  color: var(--color-warm-white);
+}
+
+.section-cream {
+  background: var(--color-cream);
+}
+
+/* ---------- Typography helpers ---------- */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-gold);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.eyebrow-muted {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+h1, h2, h3, .font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.text-muted {
+  color: var(--color-muted);
+}
+
+.italic-gold {
+  font-style: italic;
+  color: var(--color-gold);
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  cursor: pointer;
+  letter-spacing: 0.01em;
+  transition: background 0.2s, border 0.2s, color 0.2s, opacity 0.2s, transform 0.1s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--color-gold);
+  color: var(--color-ink);
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--color-gold-light);
+}
+
+/* Reservado para botones que guardan un cambio (editar, actualizar, confirmar
+   una edición ya existente): en todo el sitio, "guardar" se distingue de las
+   demás acciones primarias (dorado) usando este verde. */
+.btn-success {
+  background: var(--color-success);
+  color: #fff;
+}
+.btn-success:hover:not(:disabled) {
+  background: var(--color-success-light);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--color-ink);
+  border: 1.5px solid var(--color-warm-gray);
+}
+.btn-outline:hover:not(:disabled) {
+  border-color: var(--color-ink);
+}
+
+.btn-outline-gold {
+  background: transparent;
+  color: var(--color-gold);
+  border: 1.5px solid var(--color-gold);
+}
+.btn-outline-gold:hover:not(:disabled) {
+  background: #c9a2271a;
+}
+
+.btn-ghost {
+  background: none;
+  border: none;
+  color: var(--color-ink);
+  opacity: 0.7;
+}
+.btn-ghost:hover:not(:disabled) {
+  opacity: 1;
+}
+
+.btn-danger-outline {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  border: 1.5px solid var(--color-danger-border);
+}
+.btn-danger-outline:hover:not(:disabled) {
+  background: var(--color-danger);
+  color: #fff;
+  border-color: var(--color-danger);
+}
+
+.btn-sm {
+  font-size: 12px;
+  padding: 8px 16px;
+  border-radius: 6px;
+}
+
+/* Botón "+ Crear curso nuevo" de Gestionar Cursos: más grande y más
+   redondo (forma de píldora) que el botón primario estándar. */
+.btn-crear-curso {
+  font-size: 15px;
+  font-weight: 700;
+  padding: 14px 28px;
+  border-radius: 999px;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---------- Cards ---------- */
+.card {
+  background: #fff;
+  border: 1px solid var(--color-warm-gray);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: box-shadow 0.3s, transform 0.3s;
+}
+.card:hover {
+  box-shadow: 0 12px 40px rgba(26, 21, 16, 0.1);
+  transform: translateY(-4px);
+}
+
+.card-body {
+  padding: 20px 22px 24px;
+}
+
+/* ---------- Badge ---------- */
+.badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--color-ink);
+  background: var(--color-gold);
+  padding: 4px 10px;
+  border-radius: 3px;
+  letter-spacing: 0.05em;
+}
+
+.badge-outline {
+  background: transparent;
+  border: 1px solid var(--color-warm-gray);
+  color: var(--color-muted);
+}
+
+/* ---------- Forms ---------- */
+.field {
+  margin-bottom: 18px;
+}
+
+.label {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-ink);
+  display: block;
+  margin-bottom: 7px;
+  letter-spacing: 0.03em;
+}
+
+.input, textarea.input, select.input {
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-ink);
+  background: #fff;
+  border: 1.5px solid var(--color-warm-gray);
+  border-radius: 8px;
+  padding: 11px 14px;
+  outline: none;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+.input:focus {
+  border-color: var(--color-gold);
+  box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.12);
+}
+
+.error-box {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--color-danger);
+  background: var(--color-danger-bg);
+  border: 1px solid var(--color-danger-border);
+  border-radius: 7px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+}
+
+.success-box {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: #2e7d32;
+  background: #edf7ed;
+  border: 1px solid #b8dfb8;
+  border-radius: 7px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+}
+
+/* ---------- Notificación flotante (toast) ---------- */
+/* Para avisos cortos ("Curso agregado al carrito") que no deben quedar
+   pegados en la pantalla: flotan arriba a la derecha y se autodestruyen
+   (el auto-dismiss lo maneja el componente con un setTimeout). */
+.toast-notificacion {
+  position: fixed;
+  top: 100px;
+  right: 24px;
+  z-index: 300;
+  max-width: 320px;
+  box-shadow: 0 10px 30px rgba(26, 21, 16, 0.18);
+  animation: toast-entrada 0.25s ease-out;
+}
+@keyframes toast-entrada {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (max-width: 560px) {
+  .toast-notificacion {
+    left: 16px;
+    right: 16px;
+    max-width: none;
+    top: 90px;
+  }
+}
+
+/* ---------- Auth card (login/registro) ---------- */
+.auth-wrapper {
+  min-height: calc(100vh - 65px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-warm-white);
+  padding: 40px 20px;
+}
+
+.auth-card {
+  background: #fff;
+  border: 1px solid var(--color-warm-gray);
+  border-radius: 14px;
+  padding: 40px 36px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 20px 60px rgba(26, 21, 16, 0.08);
+}
+
+/* ---------- Progress bar ---------- */
+.progress-track {
+  height: 4px;
+  background: var(--color-cream);
+  border-radius: 2px;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--color-gold);
+  border-radius: 2px;
+  transition: width 0.4s;
+}
+
+/* ---------- Responsive helpers ---------- */
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.nav-links-desktop {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.nav-mobile-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+}
+
+.nav-mobile-menu {
+  display: none;
+}
+
+@media (max-width: 860px) {
+  .courses-grid {
+    grid-template-columns: 1fr;
+  }
+  .nav-links-desktop {
+    display: none;
+  }
+  .nav-mobile-toggle {
+    display: flex;
+  }
+  .nav-mobile-menu.open {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: #fff;
+    border-top: 1px solid var(--color-warm-gray);
+    padding: 12px 24px 20px;
+  }
+  .nav-mobile-menu a,
+  .nav-mobile-menu button {
+    padding: 10px 0;
+    text-align: left;
+    width: 100%;
+  }
+  .auth-card {
+    padding: 32px 24px;
+  }
+  .dashboard-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .dashboard-sidebar {
+    position: relative !important;
+    height: auto !important;
+    top: 0 !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 0 16px;
+  }
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 16px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--color-ink);
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+}
+.dropdown-item:hover {
+  background: var(--color-cream);
+}
+.dropdown-item-danger {
+  color: var(--color-danger);
+  border-top: 1px solid var(--color-warm-gray);
+}
+.dropdown-item-danger:hover {
+  background: var(--color-danger-bg);
+}
+
+
+html, body, #root {
+  height: 100%;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-main {
+  flex: 1 0 auto;
+}
+
+.footer {
+  flex-shrink: 0;
+}
+
+

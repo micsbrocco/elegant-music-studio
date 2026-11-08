@@ -1,188 +1,162 @@
-import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import {
-  listarPreguntasAdminRequest,
-  crearPreguntaRequest,
-  eliminarPreguntaRequest,
-} from '../../services/preguntaService';
+import { useCallback, useEffect, useState } from 'react';
+import { listarConsultasRequest, responderConsultaRequest } from '../../services/consultaService';
+import FiltroSegmentado from '../../components/FiltroSegmentado';
+import { CeldaPersona } from './tablaAdmin';
+import { Paginacion } from './filtrosAdmin';
+import { useAuth } from '../../context/AuthContext';
 
-function AdminPreguntas() {
-  const { contenidoId } = useParams();
-  const [preguntas, setPreguntas] = useState([]);
-  const [cargando, setCargando] = useState(true);
+function haceCuanto(fecha) {
+  const minutos = Math.floor((Date.now() - new Date(fecha).getTime()) / 60000);
+  if (minutos < 60) return minutos < 1 ? 'recién' : `hace ${minutos} min`;
+  const horas = Math.floor(minutos / 60);
+  if (horas < 24) return `hace ${horas} h`;
+  const dias = Math.floor(horas / 24);
+  return dias === 1 ? 'ayer' : `hace ${dias} días`;
+}
+
+// Una pregunta con su caja de respuesta (o la respuesta ya enviada, editable)
+function ItemPregunta({ consulta, idUsuario, onRespondida, onRecargar }) {
+  const [editando, setEditando] = useState(!consulta.respuesta);
+  const [texto, setTexto] = useState(consulta.respuesta || '');
+  const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState('');
 
-  const [enunciado, setEnunciado] = useState('');
-  const [opcionA, setOpcionA] = useState('');
-  const [opcionB, setOpcionB] = useState('');
-  const [opcionC, setOpcionC] = useState('');
-  const [opcionD, setOpcionD] = useState('');
-  const [respuestaCorrecta, setRespuestaCorrecta] = useState('A');
-  const [explicacionA, setExplicacionA] = useState('');
-  const [explicacionB, setExplicacionB] = useState('');
-  const [explicacionC, setExplicacionC] = useState('');
-  const [explicacionD, setExplicacionD] = useState('');
-
-  useEffect(() => {
-    cargarPreguntas();
-  }, [contenidoId]);
-
-  async function cargarPreguntas() {
-    try {
-      const data = await listarPreguntasAdminRequest(contenidoId);
-      setPreguntas(data);
-    } catch (err) {
-      setError('Error al cargar las preguntas');
-    } finally {
-      setCargando(false);
-    }
-  }
-
-  function limpiarFormulario() {
-    setEnunciado('');
-    setOpcionA('');
-    setOpcionB('');
-    setOpcionC('');
-    setOpcionD('');
-    setRespuestaCorrecta('A');
-    setExplicacionA('');
-    setExplicacionB('');
-    setExplicacionC('');
-    setExplicacionD('');
-  }
-
-  async function handleAgregarPregunta(e) {
+  async function enviar(e) {
     e.preventDefault();
-
+    if (!texto.trim()) return;
+    setEnviando(true);
+    setError('');
     try {
-      await crearPreguntaRequest(contenidoId, {
-        enunciado,
-        opcionA,
-        opcionB,
-        opcionC,
-        opcionD,
-        respuestaCorrecta,
-        explicacionA: explicacionA || undefined,
-        explicacionB: explicacionB || undefined,
-        explicacionC: explicacionC || undefined,
-        explicacionD: explicacionD || undefined,
-      });
-      limpiarFormulario();
-      cargarPreguntas();
+      const actualizada = await responderConsultaRequest(consulta.id, texto.trim());
+      onRespondida(consulta.id, actualizada);
+      setEditando(false);
     } catch (err) {
-      alert(err.response?.data?.error || 'Error al crear la pregunta');
+      setError(err.response?.data?.error || 'No se pudo enviar la respuesta');
+      // Otra persona la respondió mientras tanto: se actualiza la lista
+      if (err.response?.status === 409 || err.response?.status === 403) setTimeout(onRecargar, 2500);
+    } finally {
+      setEnviando(false);
     }
   }
 
-  async function handleEliminar(id) {
-    const confirmar = window.confirm('¿Eliminar esta pregunta?');
-    if (!confirmar) return;
-
-    try {
-      await eliminarPreguntaRequest(id);
-      cargarPreguntas();
-    } catch (err) {
-      alert('Error al eliminar la pregunta');
-    }
-  }
-
-  if (cargando) return <p>Cargando...</p>;
-  if (error) return <p style={{ color: 'red' }}>{error}</p>;
+  // Una respuesta la edita solo quien la escribió
+  const esMia = !consulta.respondedor || consulta.respondedor.id === idUsuario;
 
   return (
-    <div>
-      <Link to="/admin/cursos">← Volver a cursos</Link>
-      <h2>Preguntas del quiz</h2>
+    <li className="admin-pregunta">
+      <div className="admin-pregunta-cabecera">
+        <CeldaPersona
+          nombre={`${consulta.alumno.nombre} ${consulta.alumno.apellido}`}
+          detalle={consulta.alumno.email}
+          foto={consulta.alumno.fotoPerfil}
+        />
+        <div className="admin-pregunta-donde">
+          <span className="admin-pregunta-curso">{consulta.curso.titulo}</span>
+          <span>{consulta.contenido.titulo} · {haceCuanto(consulta.creadaEn)}</span>
+        </div>
+      </div>
+      <p className="admin-pregunta-texto">{consulta.texto}</p>
 
-      {preguntas.length === 0 ? (
-        <p>Todavía no hay preguntas cargadas.</p>
+      {editando ? (
+        <form className="admin-pregunta-form" onSubmit={enviar}>
+          <textarea
+            className="admin-input"
+            rows={3}
+            maxLength={2000}
+            aria-label={`Respuesta a ${consulta.alumno.nombre}`}
+            placeholder="Escribí tu respuesta. Le llega por mail al alumno."
+            value={texto}
+            onChange={(e) => setTexto(e.target.value)}
+          />
+          {error && <p className="modal-nuevo-curso-error">{error}</p>}
+          <div className="admin-pregunta-acciones">
+            {consulta.respuesta && (
+              <button type="button" className="admin-tabla-accion" onClick={() => { setTexto(consulta.respuesta); setEditando(false); }}>
+                Cancelar
+              </button>
+            )}
+            <button type="submit" className={`admin-boton-primario ${consulta.respuesta ? 'admin-boton-guardar' : ''}`} disabled={!texto.trim() || enviando}>
+              {enviando ? 'Enviando…' : consulta.respuesta ? 'Guardar respuesta' : 'Responder'}
+            </button>
+          </div>
+        </form>
       ) : (
-        <ul>
-          {preguntas.map((pregunta) => (
-            <li key={pregunta.id} style={{ marginBottom: '1rem' }}>
-              <strong>{pregunta.enunciado}</strong>
-              <br />
-              A) {pregunta.opcionA} {pregunta.respuestaCorrecta === 'A' && '✓'}
-              {pregunta.explicacionA && <div><em>↳ {pregunta.explicacionA}</em></div>}
-              B) {pregunta.opcionB} {pregunta.respuestaCorrecta === 'B' && '✓'}
-              {pregunta.explicacionB && <div><em>↳ {pregunta.explicacionB}</em></div>}
-              C) {pregunta.opcionC} {pregunta.respuestaCorrecta === 'C' && '✓'}
-              {pregunta.explicacionC && <div><em>↳ {pregunta.explicacionC}</em></div>}
-              D) {pregunta.opcionD} {pregunta.respuestaCorrecta === 'D' && '✓'}
-              {pregunta.explicacionD && <div><em>↳ {pregunta.explicacionD}</em></div>}
-              <br />
-              <Link to={`/admin/preguntas/${pregunta.id}/editar`}>Editar</Link>
-              {' '}
-              <button onClick={() => handleEliminar(pregunta.id)}>Eliminar</button>
-            </li>
-          ))}
-        </ul>
+        <div className="admin-pregunta-respuesta">
+          <span className="admin-pregunta-quien">
+            {consulta.respondedor
+              ? `Respondió ${esMia ? 'vos' : `${consulta.respondedor.nombre} ${consulta.respondedor.apellido}`.trim()}`
+              : 'Respuesta'}
+            {consulta.respondidaEn && ` · ${haceCuanto(consulta.respondidaEn)}`}
+          </span>
+          <p>{consulta.respuesta}</p>
+          {esMia ? (
+            <button type="button" className="admin-filtro-quitar" onClick={() => setEditando(true)}>Editar respuesta</button>
+          ) : (
+            <span className="admin-pregunta-nota">Solo quien la escribió puede editarla.</span>
+          )}
+        </div>
       )}
+    </li>
+  );
+}
 
-      <h3>Agregar nueva pregunta</h3>
-      <form onSubmit={handleAgregarPregunta}>
-        <div>
-          <label>Enunciado</label>
-          <textarea value={enunciado} onChange={(e) => setEnunciado(e.target.value)} required />
-        </div>
+// Preguntas privadas de los alumnos (admin: todas; instructor: las de sus cursos)
+function AdminPreguntas() {
+  const { usuario } = useAuth();
+  const [vista, setVista] = useState('pendientes');
+  const [pagina, setPagina] = useState(1);
+  const [datos, setDatos] = useState(null);
 
-        <div>
-          <label>Opción A</label>
-          <input type="text" value={opcionA} onChange={(e) => setOpcionA(e.target.value)} required />
-          <input
-            type="text"
-            placeholder="Explicación para esta opción (opcional)"
-            value={explicacionA}
-            onChange={(e) => setExplicacionA(e.target.value)}
+  const cargar = useCallback(() => {
+    listarConsultasRequest({ vista, pagina }).then(setDatos).catch(() => setDatos({ items: [], total: 0, pagina: 1, porPagina: 10, pendientes: 0 }));
+  }, [vista, pagina]);
+
+  useEffect(() => { cargar(); }, [cargar]);
+
+  function alResponder(id, actualizada) {
+    setDatos((d) => ({
+      ...d,
+      items: d.items.map((c) => (c.id === id ? { ...c, ...actualizada } : c)),
+    }));
+    // El número del menú se actualiza
+    window.dispatchEvent(new Event('consultas-actualizadas'));
+  }
+
+  return (
+    <>
+      <div className="admin-page-header">
+        <h2>Preguntas</h2>
+        <p className="admin-page-sub">Dudas privadas de los alumnos sobre las clases.</p>
+      </div>
+
+      <div className="admin-card">
+        <div className="admin-card-header">
+          <h3 className="admin-card-titulo admin-dash-card-titulo">
+            {vista === 'pendientes' ? 'Sin responder' : 'Respondidas'} <span className="admin-dash-card-titulo-extra">({datos?.total ?? 0})</span>
+          </h3>
+          <FiltroSegmentado
+            etiqueta="Preguntas"
+            className="admin-segmentado"
+            opciones={[{ id: 'pendientes', etiqueta: 'Sin responder' }, { id: 'respondidas', etiqueta: 'Respondidas' }]}
+            valor={vista}
+            onCambiar={(v) => { setVista(v); setPagina(1); }}
           />
         </div>
 
-        <div>
-          <label>Opción B</label>
-          <input type="text" value={opcionB} onChange={(e) => setOpcionB(e.target.value)} required />
-          <input
-            type="text"
-            placeholder="Explicación para esta opción (opcional)"
-            value={explicacionB}
-            onChange={(e) => setExplicacionB(e.target.value)}
-          />
-        </div>
-
-        <div>
-          <label>Opción C</label>
-          <input type="text" value={opcionC} onChange={(e) => setOpcionC(e.target.value)} required />
-          <input
-            type="text"
-            placeholder="Explicación para esta opción (opcional)"
-            value={explicacionC}
-            onChange={(e) => setExplicacionC(e.target.value)}
-          />
-        </div>
-
-        <div>
-          <label>Opción D</label>
-          <input type="text" value={opcionD} onChange={(e) => setOpcionD(e.target.value)} required />
-          <input
-            type="text"
-            placeholder="Explicación para esta opción (opcional)"
-            value={explicacionD}
-            onChange={(e) => setExplicacionD(e.target.value)}
-          />
-        </div>
-
-        <div>
-          <label>Respuesta correcta</label>
-          <select value={respuestaCorrecta} onChange={(e) => setRespuestaCorrecta(e.target.value)}>
-            <option value="A">A</option>
-            <option value="B">B</option>
-            <option value="C">C</option>
-            <option value="D">D</option>
-          </select>
-        </div>
-
-        <button type="submit">Agregar pregunta</button>
-      </form>
-    </div>
+        {!datos ? (
+          <p className="admin-dash-vacio admin-dash-vacio--izq">Cargando…</p>
+        ) : datos.items.length === 0 ? (
+          <p className="admin-dash-vacio admin-dash-vacio--izq">
+            {vista === 'pendientes' ? 'No hay preguntas sin responder.' : 'Todavía no respondiste ninguna pregunta.'}
+          </p>
+        ) : (
+          <ul className="admin-preguntas-lista">
+            {datos.items.map((c) => <ItemPregunta key={`${c.id}-${vista}`} consulta={c} idUsuario={usuario?.id} onRespondida={alResponder} onRecargar={cargar} />)}
+          </ul>
+        )}
+        {datos && <Paginacion pagina={datos.pagina} porPagina={datos.porPagina} total={datos.total} onCambiar={setPagina} />}
+      </div>
+    </>
   );
 }
 

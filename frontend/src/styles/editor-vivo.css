@@ -1,0 +1,1315 @@
+/* ============================================================
+ * Editor "en vivo" del curso (EditorCursoVivo.jsx)
+ * Copia la disposición y los tamaños de la cursada (aprender.css) y de la
+ * página de venta (curso-detalle.css). Usa --ui-* / --ed-* para claro y oscuro.
+ * ============================================================ */
+
+.vivo {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Link del editor clásico al nuevo */
+.editor-probar-nuevo {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ui-gold-text);
+  text-decoration: none;
+  padding: 0 4px;
+}
+.editor-probar-nuevo:hover { text-decoration: underline; }
+
+/* ============================================================
+ * Texto editable con lápiz
+ * ============================================================ */
+.vivo-editable {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  max-width: 100%;
+}
+.vivo-editable-texto {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.vivo-editable-texto.vacio {
+  color: var(--ui-text-2);
+  opacity: 0.75;
+  font-style: italic;
+  font-weight: 400;
+}
+.vivo-lapiz {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: var(--ui-fill);
+  color: var(--ui-text-2);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  align-self: center;
+}
+.vivo-lapiz:hover,
+.vivo-lapiz:focus-visible { background: var(--ui-gold-tint); color: var(--ui-gold-text); }
+.vivo-editable.editando { display: block; width: 100%; }
+.vivo .vivo-editable-input {
+  display: block;
+  box-sizing: border-box;
+  width: calc(100% + 22px);
+  margin: -6px -11px;
+  padding: 4px 10px;
+  border: 1.5px solid var(--ui-gold);
+  border-radius: 10px;
+  background: var(--ed-canvas);
+  box-shadow: 0 0 0 4px var(--ui-gold-tint);
+  color: var(--ui-ink);
+  font: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+  outline: none;
+}
+.vivo textarea.vivo-editable-input {
+  resize: none;
+  field-sizing: content;
+  min-height: 5.5em;
+}
+.vivo input.vivo-editable-input[type='number'] { -moz-appearance: textfield; }
+.vivo input.vivo-editable-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+/* ============================================================
+ * Barra superior
+ * ============================================================ */
+.vivo-barra {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 24px;
+  flex-wrap: wrap;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--ed-border);
+}
+.vivo-barra-titulo { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.vivo-migas { display: flex; gap: 8px; font-size: 13px; color: var(--ui-text-2); min-width: 0; }
+.vivo-migas a { color: var(--ui-text-2); text-decoration: none; }
+.vivo-migas a:hover { color: var(--ui-ink); }
+.vivo-migas span:last-child { color: var(--ui-ink); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vivo-barra-fila { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.vivo-barra-acciones { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.vivo-boton {
+  height: 40px;
+  padding: 0 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.vivo-link-suave { font-size: 13px; color: var(--ui-text-2); text-decoration: none; padding: 0 6px; }
+.vivo-link-suave:hover { color: var(--ui-ink); text-decoration: underline; }
+.vivo-guardado {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  min-width: 128px;
+  font-size: 12.5px;
+  color: var(--ui-text-2);
+}
+.vivo-guardado--guardado { color: var(--ui-success); }
+.vivo-guardado--error { color: var(--ui-danger); font-weight: 600; }
+.vivo-error { margin: 0; }
+
+/* Mensajes del administrador */
+.vivo-mensajes { position: relative; }
+.vivo-mensajes-boton {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--ed-border);
+  border-radius: 50%;
+  background: var(--ed-canvas);
+  color: var(--ui-text-2);
+  cursor: pointer;
+}
+.vivo-mensajes-boton:hover,
+.vivo-mensajes-boton.activo { color: var(--ui-ink); background: var(--ui-fill-hover); }
+.vivo-mensajes-punto {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--ui-gold);
+  box-shadow: 0 0 0 2px var(--ed-canvas);
+}
+.vivo-mensajes-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 60;
+  width: min(380px, 90vw);
+  background: var(--ed-canvas);
+  border: 1px solid var(--ed-border);
+  border-radius: var(--ui-r-lg);
+  box-shadow: var(--ui-shadow-pop);
+  overflow: hidden;
+}
+.vivo-mensajes-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 10px 10px 16px;
+  border-bottom: 1px solid var(--ed-border);
+}
+.vivo-mensajes-cabecera p { margin: 0; font-size: 14px; font-weight: 700; color: var(--ui-ink); }
+.vivo-mensajes-vacio { margin: 0; padding: 22px 16px; font-size: 13px; color: var(--ui-text-2); text-align: center; }
+.vivo-mensajes-lista { list-style: none; margin: 0; padding: 6px; max-height: 360px; overflow-y: auto; }
+.vivo-mensajes-lista li { padding: 10px 12px; border-radius: 10px; }
+.vivo-mensajes-lista li + li { margin-top: 2px; }
+.vivo-mensajes-lista li.pendiente.no-leido { background: var(--ui-gold-tint); }
+.vivo-mensajes-lista li.resuelto p { color: var(--ui-text-2); }
+.vivo-mensajes-etiqueta--ok {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--ui-success-tint);
+  color: var(--ui-success);
+}
+.admin-tema-oscuro .vivo .vivo-mensajes-etiqueta.vivo-mensajes-etiqueta--ok { color: var(--ui-success); }
+.vivo-mensajes-pie-item { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 2px; }
+.vivo-mensajes-visto { display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; color: var(--ui-text-2); }
+.vivo-mensajes-accion {
+  margin-left: auto;
+  border: none;
+  background: none;
+  padding: 3px 6px;
+  border-radius: 6px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ui-gold-text);
+  cursor: pointer;
+}
+.vivo-mensajes-accion:hover { background: var(--ui-gold-tint); }
+.vivo-mensajes-accion--suave { margin-left: 0; color: var(--ui-text-2); }
+.vivo-mensajes-accion--suave + .vivo-mensajes-accion { margin-left: auto; }
+.vivo-mensajes-cabecera .vivo-mensajes-accion { margin-left: auto; margin-right: 4px; }
+.vivo-mensajes-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 11.5px; color: var(--ui-text-2); }
+.vivo-mensajes-etiqueta {
+  padding: 2px 8px;
+  border-radius: var(--ui-r-pill);
+  background: var(--ui-gold);
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+}
+.vivo-mensajes-lista p { margin: 5px 0 3px; font-size: 13.5px; line-height: 1.5; color: var(--ui-ink); overflow-wrap: anywhere; }
+.vivo-mensajes-autor { font-size: 11.5px; color: var(--ui-text-2); }
+.vivo-mensajes-pie { margin: 0; padding: 10px 16px 12px; font-size: 12px; color: var(--ui-text-2); border-top: 1px solid var(--ed-border); }
+
+/* ============================================================
+ * Vista "Clases" (igual que la cursada)
+ * ============================================================ */
+.vivo-cursada {
+  display: grid;
+  grid-template-columns: 480px minmax(0, 1fr);
+  align-items: start;
+  margin-top: -18px;
+}
+
+/* Columna izquierda */
+.vivo-lateral {
+  position: sticky;
+  top: 80px;
+  height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 1px 0 0 var(--ed-border);
+}
+.vivo-lateral-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 24px 24px 24px 0;
+}
+.vivo-lateral-curso {
+  margin: 0 0 22px;
+  font-family: var(--ui-font);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--ui-ink);
+}
+.vivo-lateral-fila {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-size: 12.5px;
+  color: var(--ui-text-2);
+}
+.vivo-modulos { display: flex; flex-direction: column; gap: 16px; }
+
+/* Cada módulo es una tarjeta que contiene a sus clases: arriba la cabecera
+   del módulo (fondo propio, número oscuro con dorado) y adentro, con sangría,
+   las clases como filas livianas. */
+.vivo-modulo {
+  background: var(--ed-canvas);
+  border: 1px solid var(--ed-border);
+  border-radius: 16px;
+  box-shadow: var(--ui-shadow-card);
+  overflow: hidden;
+}
+.vivo-modulo-tarjeta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 12px 14px 8px;
+  background: var(--ed-surface);
+  border-bottom: 1px solid var(--ed-border);
+}
+.vivo-modulo-numero {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 11px;
+  background: linear-gradient(145deg, #1c1c20, #0e0e10);
+  box-shadow: 0 0 0 1px rgba(201, 162, 39, 0.55), 0 6px 14px -6px rgba(201, 162, 39, 0.5);
+  color: #e2bb4a;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.vivo-modulo-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.vivo-modulo-etiqueta {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ui-gold-text);
+}
+.vivo-modulo-titulo { font-size: 15.5px; font-weight: 700; color: var(--ui-ink); line-height: 1.3; letter-spacing: -0.01em; }
+.vivo-modulo-titulo .vivo-lapiz { width: 24px; height: 24px; }
+.vivo-modulo-cuerpo { padding: 8px 10px 8px 22px; display: flex; flex-direction: column; gap: 4px; }
+
+.vivo-mini-acciones { display: flex; gap: 2px; opacity: 0; transition: opacity 0.15s; }
+.vivo-modulo-tarjeta:hover .vivo-mini-acciones,
+.vivo-modulo-tarjeta:focus-within .vivo-mini-acciones,
+.vivo-clase:hover .vivo-mini-acciones,
+.vivo-clase:focus-within .vivo-mini-acciones,
+.vivo-bloque-barra .vivo-mini-acciones,
+.vivo-mini-acciones--visibles { opacity: 1; }
+@media (hover: none) { .vivo-mini-acciones { opacity: 1; } }
+.vivo-mini-acciones button {
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ui-text-2);
+  cursor: pointer;
+}
+.vivo-mini-acciones button:hover:not(:disabled) { background: var(--ui-fill-hover); color: var(--ui-ink); }
+.vivo-mini-acciones button:disabled { opacity: 0.3; cursor: default; }
+.vivo-mini-acciones button.vivo-peligro:hover,
+.vivo-icono-boton.vivo-peligro:hover { color: var(--ui-danger); background: var(--ui-danger-tint); }
+
+.vivo-clases { list-style: none; margin: 0; padding: 0 0 0 12px; display: flex; flex-direction: column; gap: 2px; border-left: 2px solid var(--ed-border); }
+.vivo-clase {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 46px;
+  box-sizing: border-box;
+  padding: 6px 10px 6px 4px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ui-text);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+.vivo-clase:hover { background: var(--ui-fill); }
+.vivo-clase:focus-visible { outline: none; box-shadow: var(--ui-focus); }
+.vivo-clase.activa {
+  background: var(--ui-gold-tint);
+  color: var(--ui-ink);
+  font-weight: 600;
+}
+.vivo-clase.activa::before {
+  content: '';
+  position: absolute;
+  left: -14px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--ui-gold);
+}
+.vivo-clase.oculta .vivo-clase-titulo .vivo-editable-texto { opacity: 0.55; }
+.vivo-clase-icono {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ui-fill);
+  color: var(--ui-text-2);
+}
+.vivo-clase.activa .vivo-clase-icono { background: var(--ui-gold-tint); color: var(--ui-gold-text); }
+.vivo-clase-numero { flex: 0 0 auto; margin-right: -6px; color: var(--ui-text-2); font-weight: 600; }
+.vivo-clase-titulo { flex: 1; min-width: 0; }
+.vivo-clase-titulo .vivo-lapiz { width: 24px; height: 24px; }
+.vivo-clase-oculta { color: var(--ui-text-2); display: inline-flex; }
+.vivo-clases-vacio {
+  padding: 14px;
+  border: 1.5px dashed var(--ed-border);
+  border-radius: 10px;
+  font-size: 12.5px;
+  color: var(--ui-text-2);
+  text-align: center;
+}
+
+/* Arrastrar y soltar */
+.vivo-agarrar {
+  flex: 0 0 auto;
+  width: 14px;
+  display: inline-flex;
+  justify-content: center;
+  color: var(--ui-text-2);
+  opacity: 0.35;
+  cursor: grab;
+  transition: opacity 0.15s;
+}
+.vivo-modulo-tarjeta:hover .vivo-agarrar,
+.vivo-clase:hover .vivo-agarrar { opacity: 0.9; }
+.vivo-modulo-tarjeta { cursor: grab; touch-action: manipulation; }
+.vivo-modulo-tarjeta:focus-visible { outline: none; box-shadow: var(--ui-focus); }
+.vivo-modulo-eliminar { opacity: 0; transition: opacity 0.15s; }
+.vivo-modulo-tarjeta:hover .vivo-modulo-eliminar,
+.vivo-modulo-tarjeta:focus-within .vivo-modulo-eliminar { opacity: 1; }
+@media (hover: none) { .vivo-modulo-eliminar, .vivo-agarrar { opacity: 0.8; } }
+.vivo-modulos.arrastrando,
+.vivo-modulos.arrastrando * { cursor: grabbing !important; }
+.vivo-modulo.arrastrado,
+.vivo-clase.arrastrado { position: relative; z-index: 5; }
+.vivo-modulo.arrastrado {
+  box-shadow: var(--ui-shadow-pop);
+  border-color: var(--ui-gold);
+}
+.vivo-clase.arrastrado {
+  background: var(--ed-canvas);
+  box-shadow: var(--ui-shadow-pop), 0 0 0 1px var(--ui-gold);
+}
+
+.vivo-agregar-clase {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ui-gold-text);
+  cursor: pointer;
+}
+.vivo-agregar-clase:hover { background: var(--ui-gold-tint); }
+
+.vivo-nueva-clase {
+  padding: 10px;
+  border: 1px solid var(--ed-border);
+  border-radius: 10px;
+  background: var(--ed-surface);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.vivo-nueva-clase input,
+.vivo-nuevo-modulo input {
+  width: 100%;
+  box-sizing: border-box;
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--ed-border);
+  border-radius: 10px;
+  background: var(--ed-canvas);
+  color: var(--ui-ink);
+  font: inherit;
+  font-size: 13.5px;
+}
+.vivo-nueva-clase input:focus,
+.vivo-nuevo-modulo input:focus { outline: none; border-color: var(--ui-gold); }
+.vivo-nueva-clase-tipos { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.vivo-nueva-clase-tipos button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 34px;
+  border: 1px solid var(--ed-border);
+  border-radius: 8px;
+  background: var(--ed-canvas);
+  color: var(--ui-text-2);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.vivo-nueva-clase-tipos button.activo { border-color: var(--ui-gold); background: var(--ui-gold-tint); color: var(--ui-gold-text); }
+.vivo-nueva-clase-acciones { display: flex; justify-content: flex-end; gap: 6px; }
+.vivo-nueva-clase-acciones button { height: 32px; padding: 0 12px; font-size: 12.5px; }
+
+.vivo-nuevo-modulo {
+  display: flex;
+  gap: 8px;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px dashed var(--ed-border);
+}
+.vivo-nuevo-modulo button {
+  flex: 0 0 auto;
+  height: 38px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+}
+
+/* Pie de la columna: Anterior / Siguiente (como en la cursada) */
+.vivo-lateral-pie {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 16px 24px 16px 0;
+  box-shadow: 0 -1px 0 var(--ed-border);
+}
+.vivo-nav {
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: var(--ui-r-pill);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.vivo-nav--anterior { border: 1px solid var(--ed-border); background: var(--ed-canvas); color: var(--ui-text); }
+.vivo-nav--siguiente { border: none; background: var(--ui-btn-bg, #121214); color: var(--ui-btn-text, #fff); }
+.vivo-nav:disabled { opacity: 0.4; cursor: default; }
+
+/* Centro */
+.vivo-centro { min-width: 0; padding: 32px 0 40px 40px; }
+.vivo-clase-vista { display: flex; flex-direction: column; }
+.vivo-clase-arriba { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+.vivo-breadcrumb { margin: 0; display: flex; gap: 8px; font-size: 12px; font-weight: 500; color: var(--ui-text-2); }
+.vivo-breadcrumb-modulo { color: var(--ui-gold-text); font-weight: 600; }
+.vivo-clase-opciones { display: flex; gap: 8px; flex-wrap: wrap; }
+.vivo-titulo-clase {
+  margin-bottom: 20px;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--ui-ink);
+}
+
+.vivo-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--ed-border);
+  border-radius: var(--ui-r-pill);
+  background: var(--ed-canvas);
+  color: var(--ui-text);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.vivo-chip:hover:not(:disabled) { background: var(--ui-fill-hover); }
+.vivo-chip:disabled { opacity: 0.6; cursor: default; }
+.vivo-chip--ok { color: var(--ui-success); border-color: color-mix(in srgb, var(--ui-success) 35%, transparent); background: var(--ui-success-tint); }
+.vivo-chip--activo { color: var(--ui-gold-text); border-color: var(--ui-gold); background: var(--ui-gold-tint); }
+.vivo-chip--peligro { color: var(--ui-text-2); }
+.vivo-chip--peligro:hover:not(:disabled) { color: var(--ui-danger); background: var(--ui-danger-tint); border-color: transparent; }
+
+/* Video + panel lateral (Archivos / Preguntas) */
+.vivo-video-fila {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+  gap: 20px;
+  margin-bottom: 24px;
+  align-items: stretch;
+}
+.vivo-video {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--ui-r-xl);
+  overflow: hidden;
+  background: #000;
+  box-shadow: var(--ui-shadow-card);
+}
+.vivo-video iframe { width: 100%; height: 100%; border: 0; display: block; }
+.vivo-video-cambiar {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  height: 32px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  border-radius: var(--ui-r-pill);
+  background: rgba(0, 0, 0, 0.65);
+  color: #fff;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+}
+.vivo-video-cambiar:hover { background: rgba(0, 0, 0, 0.85); }
+.vivo-video-vacio {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px;
+  text-align: center;
+  color: #ececee;
+  background: radial-gradient(circle at 50% 35%, #26262b, #0b0b0d 70%);
+}
+.vivo-video-vacio p { margin: 4px 0 0; font-size: 18px; font-weight: 700; }
+.vivo-video-icono {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(201, 162, 39, 0.18);
+  color: #e2bb4a;
+}
+.vivo-video-icono svg { width: 18px; height: 18px; }
+.vivo-video-ayuda { font-size: 12.5px; color: #a1a1aa; }
+.vivo-video-campo { display: flex; gap: 8px; width: min(520px, 100%); margin-top: 8px; }
+.vivo .vivo-video-campo input {
+  flex: 1;
+  min-width: 0;
+  height: 42px;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--ui-r-pill);
+  background: rgba(255, 255, 255, 0.07);
+  color: #fff;
+  font: inherit;
+  font-size: 13.5px;
+}
+.vivo-video-campo input::placeholder { color: #8b8b93; }
+.vivo-video-campo input:focus { outline: none; border-color: #c9a227; }
+.vivo-video-campo button { height: 42px; padding: 0 18px; white-space: nowrap; }
+.vivo-video-vacio .admin-filtro-quitar { color: #a1a1aa; }
+
+.vivo-video-lateral { min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+.vivo-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  border-radius: var(--ui-r-pill);
+  background: var(--ui-fill);
+  border: 1px solid var(--ed-border);
+}
+.vivo-tabs button {
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: none;
+  border-radius: var(--ui-r-pill);
+  background: transparent;
+  color: var(--ui-text-2);
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.vivo-tabs button.activa { background: var(--ed-canvas); color: var(--ui-ink); box-shadow: var(--ui-shadow-card); }
+.vivo-tab-cantidad {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: var(--ui-gold-tint);
+  color: var(--ui-gold-text);
+  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.vivo-tab-panel {
+  flex: 1;
+  min-height: 0;
+  padding: 20px;
+  background: var(--ed-canvas);
+  border: 1px solid var(--ed-border);
+  border-radius: var(--ui-r-xl);
+  box-shadow: var(--ui-shadow-card);
+  overflow-y: auto;
+}
+
+.vivo-archivos-panel { display: flex; flex-direction: column; gap: 12px; }
+.vivo-archivos { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.vivo-archivo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 8px 8px 10px;
+  border: 1px solid var(--ed-border);
+  border-radius: 11px;
+}
+.vivo-archivo-icono {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ui-gold-tint);
+  color: var(--ui-gold-text);
+}
+.vivo-archivo-nombre { flex: 1; font-size: 13.5px; font-weight: 600; color: var(--ui-ink); }
+.vivo-archivo-nombre .vivo-lapiz { width: 24px; height: 24px; }
+.vivo-icono-boton {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--ui-text-2);
+  cursor: pointer;
+}
+.vivo-icono-boton:hover { background: var(--ui-fill-hover); color: var(--ui-ink); }
+.vivo-subir {
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1.5px dashed var(--ed-border);
+  border-radius: 11px;
+  background: transparent;
+  color: var(--ui-text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.vivo-subir:hover:not(:disabled) { border-color: var(--ui-gold); color: var(--ui-gold-text); background: var(--ui-gold-tint); }
+
+.vivo-preguntas-info { display: flex; flex-direction: column; gap: 12px; }
+.vivo-preguntas-texto { margin: 0; font-size: 15px; line-height: 1.55; color: var(--ui-ink); }
+.vivo-preguntas-caja {
+  min-height: 90px;
+  padding: 12px 14px;
+  border: 1px solid var(--ed-border);
+  border-radius: 12px;
+  background: var(--ed-surface);
+  font-size: 14px;
+  color: var(--ui-text-2);
+}
+.vivo-nota { margin: 0; font-size: 13px; line-height: 1.5; color: var(--ui-text-2); }
+.vivo-nota a { color: var(--ui-gold-text); font-weight: 600; }
+.vivo-nota--aviso { padding: 10px 12px; border-radius: 9px; background: var(--ui-gold-tint); color: var(--ui-gold-text); }
+
+/* Secciones (Notas de la lección, bloques…) */
+.vivo-seccion { display: flex; flex-direction: column; gap: 12px; }
+.vivo-seccion-cabecera { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.vivo-seccion-titulo {
+  margin: 0;
+  font-family: var(--ui-font);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: var(--ui-ink);
+}
+.vivo-tarjeta {
+  background: var(--ed-canvas);
+  border: 1px solid var(--ed-border);
+  border-radius: var(--ui-r-xl);
+  box-shadow: var(--ui-shadow-card);
+}
+.vivo-tarjeta--editor { overflow: hidden; border-radius: var(--ui-r-lg); }
+.vivo-tarjeta--editor .editor-rte { border: none; border-radius: 0; }
+.vivo-notas {
+  padding: 24px 28px;
+  font-size: 14.5px;
+  line-height: 1.75;
+  color: var(--ui-text);
+  overflow-wrap: anywhere;
+}
+.vivo-notas > :first-child { margin-top: 0; }
+.vivo-notas > :last-child { margin-bottom: 0; }
+.vivo-notas p { margin: 0 0 14px; }
+.vivo-notas a { color: var(--ui-gold-text); }
+.vivo-notas--vacio {
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  font-size: 14px;
+  color: var(--ui-text-2);
+  border-style: dashed;
+  box-shadow: none;
+  cursor: pointer;
+}
+.vivo-notas--vacio:hover { border-color: var(--ui-gold); color: var(--ui-gold-text); }
+
+/* Bloques (clases de texto y quiz) */
+.vivo-bloques { display: flex; flex-direction: column; gap: 18px; margin-bottom: 28px; }
+.vivo-bloque { display: flex; flex-direction: column; gap: 8px; }
+.vivo-bloque-barra { display: flex; align-items: center; justify-content: space-between; }
+.vivo-bloque-tipo { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ui-text-2); }
+.vivo-bloque-tipo--quiz { color: var(--ui-gold-text); }
+.vivo-bloque .vivo-seccion { gap: 8px; }
+.vivo-bloque .vivo-seccion-cabecera { justify-content: flex-end; margin-top: -40px; margin-right: 92px; min-height: 32px; }
+.vivo-agregar-bloque {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px;
+  border: 1.5px dashed var(--ed-border);
+  border-radius: var(--ui-r-lg);
+  font-size: 13px;
+  color: var(--ui-text-2);
+}
+.vivo-bloques-extra { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+.vivo-quiz { padding: 24px 28px; display: flex; flex-direction: column; gap: 14px; }
+.vivo-pregunta + .vivo-pregunta { padding-top: 14px; border-top: 1px solid var(--ed-border); }
+.vivo-pregunta-cabecera { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.vivo-pregunta-enunciado { margin: 0 0 10px; font-size: 15px; font-weight: 600; color: var(--ui-ink); }
+.vivo-opciones { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.vivo-opciones li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border: 1px solid var(--ed-border);
+  border-radius: 12px;
+  font-size: 14px;
+  color: var(--ui-text);
+}
+.vivo-opciones li.correcta { border-color: color-mix(in srgb, var(--ui-success) 45%, transparent); background: var(--ui-success-tint); }
+.vivo-opcion-letra {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ui-fill);
+  font-size: 11.5px;
+  font-weight: 700;
+}
+.vivo-opcion-ok { margin-left: auto; display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; color: var(--ui-success); }
+
+/* Estado vacío */
+.vivo-vacio {
+  padding: 56px 32px;
+  text-align: center;
+  border: 1.5px dashed var(--ed-border);
+  border-radius: var(--ui-r-xl);
+  color: var(--ui-text-2);
+  font-size: 14px;
+}
+.vivo-vacio p { margin: 0 auto; max-width: 440px; }
+.vivo-vacio-titulo { font-size: 17px; font-weight: 700; color: var(--ui-ink); margin-bottom: 8px !important; }
+.vivo-vacio--chico { padding: 28px 24px; }
+
+/* ============================================================
+ * Vista "Página del curso" (igual que la página de venta)
+ * ============================================================ */
+.vivo-pagina {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 400px;
+  gap: clamp(32px, 4vw, 64px);
+  align-items: start;
+  max-width: 1680px;
+  padding-top: 24px;
+}
+.vivo-pagina-principal { min-width: 0; }
+.vivo-pagina-migas { font-size: 13px; color: var(--ui-text-2); margin-bottom: 16px; }
+.vivo-pagina-migas span { margin: 0 6px; }
+
+.vivo-chips { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.vivo-chip-editable {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 4px 3px 12px;
+  border-radius: var(--ui-r-pill);
+  background: var(--ed-canvas);
+  box-shadow: 0 0 0 1px var(--ed-border);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ui-text-2);
+}
+.vivo-chip-editable--dorado { background: var(--ui-gold-tint); box-shadow: none; color: var(--ui-gold-text); }
+.vivo-chip-editable .vivo-lapiz { width: 20px; height: 20px; background: transparent; }
+.vivo-chip-editable .vivo-lapiz svg { width: 11px; height: 11px; }
+.vivo-chip-editable .vivo-editable.editando { min-width: 160px; }
+.vivo-chip-editable .vivo-editable-input { margin: -4px 0 -4px -8px; width: calc(100% + 8px); padding: 3px 8px; }
+.vivo-niveles { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
+.vivo-pagina-titulo {
+  margin-bottom: 16px;
+  font-size: clamp(30px, 3.6vw, 44px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--ui-ink);
+}
+.vivo-pagina-titulo .vivo-lapiz { width: 32px; height: 32px; }
+.vivo-pagina-descripcion {
+  max-width: 760px;
+  margin-bottom: 32px;
+  align-items: flex-start;
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--ui-text-2);
+  white-space: pre-line;
+}
+.vivo-pagina-descripcion .vivo-lapiz { margin-top: 2px; }
+
+/* Datos destacados */
+.vivo-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 48px;
+}
+.vivo-stat {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 76px;
+  box-sizing: border-box;
+  padding: 18px 20px;
+  background: var(--ed-canvas);
+  border: 1px solid var(--ed-border);
+  border-radius: var(--ui-r-lg);
+  box-shadow: var(--ui-shadow-card);
+}
+.vivo-stat-icono {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--stat-color, var(--ui-text-2));
+  background: color-mix(in srgb, var(--stat-color, var(--ui-text-2)) 12%, transparent);
+}
+.vivo-stat-icono--boton { border: none; cursor: pointer; padding: 0; }
+.vivo-stat-icono--boton:hover { box-shadow: 0 0 0 2px color-mix(in srgb, var(--stat-color) 40%, transparent); }
+.vivo-stat--modulos { --stat-color: #6d4fc2; }
+.vivo-stat--clases { --stat-color: #2f6fd6; }
+.vivo-stat--duracion { --stat-color: #0f8a7a; }
+.vivo-stat--software { --stat-color: #d0643a; }
+.vivo-stat--certificacion { --stat-color: #a67c12; }
+.vivo-stat--practicas { --stat-color: #c2416b; }
+.vivo-stat--general { --stat-color: #2f8a4c; }
+.vivo-stat-texto { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.vivo-stat-texto--inline { flex-direction: row; align-items: baseline; gap: 6px; }
+.vivo-stat-valor { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; color: var(--ui-ink); }
+.vivo-stat-valor-chica { font-size: 16px; font-weight: 700; line-height: 1.3; color: var(--ui-ink); }
+.vivo-stat-label { font-size: 13px; color: var(--ui-text-2); }
+.vivo-stat-texto .vivo-lapiz { width: 20px; height: 20px; }
+.vivo-stat-texto .vivo-lapiz svg { width: 11px; height: 11px; }
+.vivo-stat-quitar { position: absolute; top: 6px; right: 6px; width: 24px; height: 24px; opacity: 0; }
+.vivo-stat:hover .vivo-stat-quitar,
+.vivo-stat:focus-within .vivo-stat-quitar { opacity: 1; }
+.vivo-stat--agregar {
+  justify-content: center;
+  gap: 6px;
+  border: 1.5px dashed var(--ed-border);
+  background: transparent;
+  box-shadow: none;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ui-text-2);
+  cursor: pointer;
+}
+.vivo-stat--agregar:hover { border-color: var(--ui-gold); color: var(--ui-gold-text); background: var(--ui-gold-tint); }
+
+/* Programa */
+.vivo-programa-cabecera { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
+.vivo-pagina-seccion {
+  margin: 0;
+  font-family: var(--ui-font);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: var(--ui-tracking-titulo);
+  color: var(--ui-ink);
+}
+.vivo-programa { overflow: hidden; }
+.vivo-programa-modulo + .vivo-programa-modulo { border-top: 1px solid var(--ed-border); }
+.vivo-programa-boton {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 28px;
+  border: none;
+  background: none;
+  font: inherit;
+  color: var(--ui-text);
+  text-align: left;
+  cursor: pointer;
+}
+.vivo-programa-boton > svg { color: var(--ui-text-2); transition: transform 0.2s; }
+.vivo-programa-modulo.abierto .vivo-programa-boton > svg { transform: rotate(180deg); }
+.vivo-programa-numero {
+  flex: 0 0 auto;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ed-canvas);
+  box-shadow: 0 0 0 1px var(--ed-border), var(--ui-shadow-card);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ui-ink);
+}
+.vivo-programa-modulo.abierto .vivo-programa-numero {
+  background: linear-gradient(145deg, #1c1c20, #0e0e10);
+  box-shadow: 0 0 0 1px rgba(201, 162, 39, 0.55), 0 6px 18px -4px rgba(201, 162, 39, 0.45);
+  color: #e2bb4a;
+}
+.vivo-programa-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.vivo-programa-titulo { font-size: 16px; font-weight: 600; color: var(--ui-ink); }
+.vivo-programa-meta { font-size: 13px; color: var(--ui-text-2); }
+.vivo-programa-clases { list-style: none; margin: 0; padding: 0 0 10px; }
+.vivo-programa-clases button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 28px;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 14.5px;
+  color: var(--ui-text);
+  text-align: left;
+  cursor: pointer;
+}
+.vivo-programa-clases button:hover { background: var(--ui-fill); }
+.vivo-programa-clases button > span:nth-child(2) { flex: 1; }
+.vivo-programa-clases button > svg { color: var(--ui-success); }
+.vivo-programa-clases .oculta { opacity: 0.5; }
+.vivo-programa-clase-icono { color: var(--ui-success); display: inline-flex; }
+
+/* Tarjeta de compra */
+.vivo-pagina-compra { position: sticky; top: 100px; display: flex; flex-direction: column; gap: 16px; }
+.vivo-compra { overflow: hidden; }
+.vivo-portada {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: none;
+  padding: 0;
+  background: linear-gradient(145deg, #24202e, #3a3150);
+  cursor: pointer;
+  overflow: hidden;
+}
+.vivo-portada img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.vivo-portada-vacia {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #e2bb4a;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+}
+.vivo-portada-cambiar {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--ui-r-pill);
+  background: rgba(0, 0, 0, 0.65);
+  color: #fff;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.vivo-compra-cuerpo { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+.vivo-precio-fila { display: flex; align-items: center; gap: 6px 12px; flex-wrap: wrap; }
+.vivo-precio { font-size: 32px; font-weight: 700; letter-spacing: -0.02em; color: var(--ui-ink); }
+.vivo-precio .vivo-editable.editando,
+.vivo-precio.editando { width: 170px; }
+.vivo-precio-original { font-size: 15px; font-weight: 500; color: var(--ui-text-2); }
+.vivo-precio-original:not(.editando) .vivo-editable-texto:not(.vacio) { text-decoration: line-through; }
+.vivo-precio-original.editando { width: 130px; }
+.vivo-precio-original .vivo-lapiz { width: 22px; height: 22px; }
+.vivo-ahorro {
+  padding: 3px 10px;
+  border-radius: var(--ui-r-pill);
+  background: var(--ui-success-tint);
+  color: var(--ui-success);
+  font-size: 12px;
+  font-weight: 700;
+}
+.vivo-incluye { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.vivo-incluye li { display: flex; align-items: center; gap: 10px; font-size: 14.5px; color: var(--ui-text); }
+.vivo-incluye li > .vivo-editable { flex: 1; }
+.vivo-incluye li .vivo-lapiz { width: 22px; height: 22px; }
+.vivo-incluye li .vivo-icono-boton { width: 24px; height: 24px; opacity: 0; }
+.vivo-incluye li:hover .vivo-icono-boton,
+.vivo-incluye li:focus-within .vivo-icono-boton { opacity: 1; }
+.vivo-incluye-check { color: var(--ui-gold-text); display: inline-flex; flex: 0 0 auto; }
+.vivo-agregar-incluye { margin: -6px 0 0 -10px; }
+.vivo-boton-comprar {
+  height: 46px;
+  border-radius: var(--ui-r-pill);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ui-btn-bg, #121214);
+  color: var(--ui-btn-text, #fff);
+  font-size: 14.5px;
+  font-weight: 700;
+  opacity: 0.6;
+  user-select: none;
+}
+.vivo-certificado {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: none;
+  background: transparent;
+  padding: 2px 0;
+  font: inherit;
+  font-size: 13px;
+  color: var(--ui-text-2);
+  cursor: pointer;
+  text-align: left;
+}
+.vivo-certificado-perilla {
+  flex: 0 0 auto;
+  position: relative;
+  width: 34px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--ui-fill-hover);
+  transition: background 0.15s;
+}
+.vivo-certificado-perilla::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  transition: transform 0.15s;
+}
+.vivo-certificado.activo { color: var(--ui-ink); }
+.vivo-certificado.activo .vivo-certificado-perilla { background: var(--ui-success); }
+.vivo-certificado.activo .vivo-certificado-perilla::after { transform: translateX(14px); }
+
+.vivo-checklist { padding: 16px 20px; font-size: 13px; color: var(--ui-text-2); border-radius: var(--ui-r-lg); }
+.vivo-checklist p { margin: 0; font-weight: 600; color: var(--ui-ink); display: flex; align-items: center; gap: 6px; }
+.vivo-checklist.listo p { color: var(--ui-success); }
+.vivo-checklist ul { margin: 8px 0 0; padding-left: 18px; }
+.vivo-checklist li { margin: 3px 0; }
+.vivo-checklist button,
+.vivo-faltantes button {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  color: var(--ui-gold-text);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Ventanas */
+.vivo-modal-texto { margin: 0 0 12px; font-size: 14px; color: var(--ui-text-2); line-height: 1.5; }
+.vivo-modal-texto--fuerte { color: var(--ui-ink); font-weight: 600; font-size: 15px; margin-bottom: 18px; }
+.vivo-faltantes { margin: 0 0 14px; padding-left: 20px; font-size: 14px; }
+.vivo-faltantes li { margin: 4px 0; }
+.vivo-boton-peligro { background: var(--ui-danger) !important; color: #fff !important; }
+
+/* Modo oscuro: lo que en claro es blanco fijo */
+.admin-tema-oscuro .vivo .vivo-mensajes-etiqueta { color: #121214; }
+
+/* ============================================================
+ * Pantallas más chicas
+ * ============================================================ */
+@media (max-width: 1500px) {
+  .vivo-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 1300px) {
+  .vivo-cursada { grid-template-columns: 380px minmax(0, 1fr); }
+  .vivo-centro { padding-left: 28px; }
+  .vivo-video-fila { grid-template-columns: 1fr; }
+  .vivo-pagina { grid-template-columns: minmax(0, 1fr) 340px; }
+  .vivo-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 1000px) {
+  .vivo-cursada { grid-template-columns: 1fr; margin-top: 0; }
+  .vivo-lateral { position: static; height: auto; box-shadow: none; }
+  .vivo-lateral-scroll, .vivo-lateral-pie { padding-right: 0; }
+  .vivo-centro { padding: 24px 0 0; }
+  .vivo-pagina { grid-template-columns: 1fr; }
+  .vivo-pagina-compra { position: static; max-width: 440px; }
+  .vivo-bloques-extra { grid-template-columns: 1fr; }
+  .vivo-bloque .vivo-seccion-cabecera { margin: 0; justify-content: flex-start; }
+}
+.admin-tema-oscuro .vivo .vivo-nav--siguiente,
+.admin-tema-oscuro .vivo .vivo-boton-comprar { background: var(--ui-gold); color: #121214; }
+
+/* Instructores (columna derecha de "Página del curso") */
+.vivo-instructores { padding: 18px 20px; border-radius: var(--ui-r-lg); display: flex; flex-direction: column; gap: 12px; }
+.vivo-instructores-cabecera { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.vivo-instructores-cabecera p { margin: 0; font-size: 15px; font-weight: 700; color: var(--ui-ink); }
+.vivo-instructores-cabecera span { font-size: 12px; color: var(--ui-text-2); }
+.vivo-instructores-lista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.vivo-instructor {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 6px 8px 4px;
+  border-radius: 12px;
+  background: var(--ed-canvas);
+  cursor: grab;
+}
+.vivo-instructor:hover { background: var(--ui-fill); }
+.vivo-instructor:focus-visible { outline: none; box-shadow: var(--ui-focus); }
+.vivo-instructor.arrastrado { position: relative; z-index: 5; box-shadow: var(--ui-shadow-pop), 0 0 0 1px var(--ui-gold); }
+.vivo-instructor.oculto .vivo-instructor-foto,
+.vivo-instructor.oculto .vivo-instructor-datos { opacity: 0.5; }
+.vivo-instructor:hover .vivo-agarrar { opacity: 0.9; }
+.vivo-instructor-foto {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #121214;
+  color: #e2bb4a;
+  font-size: 15px;
+  font-weight: 700;
+}
+.vivo-instructor-datos { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.vivo-instructor-nombre { font-size: 14px; font-weight: 700; color: var(--ui-ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vivo-instructor-creador { font-weight: 500; color: var(--ui-text-2); font-size: 12px; }
+.vivo-instructor-rol { font-size: 12.5px; font-weight: 600; color: var(--ui-gold-text); }
+.vivo-instructor-rol .vivo-lapiz { width: 20px; height: 20px; }
+.vivo-instructor-rol .vivo-lapiz svg { width: 11px; height: 11px; }
+.vivo-instructor-visible { color: var(--ui-success); }
+.vivo-instructores-agregar { display: flex; gap: 8px; padding-top: 4px; border-top: 1px dashed var(--ed-border); padding-top: 12px; }
+.vivo-instructores-agregar select { flex: 1; min-width: 0; height: 38px; }
+.vivo-instructores-agregar button { flex: 0 0 auto; height: 38px; padding: 0 14px; display: inline-flex; align-items: center; gap: 5px; font-size: 13px; }
+
+/* Mover un módulo: la cabecera sigue al cursor y en la lista queda el hueco */
+.vivo-modulo--flotante {
+  box-shadow: var(--ui-shadow-pop);
+  border-color: var(--ui-gold);
+  cursor: grabbing;
+}
+.vivo-modulo--flotante .vivo-modulo-tarjeta { border-bottom: none; cursor: grabbing; }
+.vivo-modulo--flotante .vivo-agarrar { opacity: 0.9; }
+.vivo-modulo--flotante .vivo-modulo-numero { display: inline-flex; align-items: center; justify-content: center; }
+.vivo-modulo--lugar {
+  opacity: 0.45;
+  border-style: dashed;
+  border-color: var(--ui-gold);
+  box-shadow: none;
+}
+
+/* Estado de los mensajes del admin: Pendiente en amarillo, Realizado en verde */
+.vivo .vivo-mensajes-etiqueta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #f3c94a;
+  color: #3d2e00;
+}
+.vivo .vivo-mensajes-etiqueta.vivo-mensajes-etiqueta--ok {
+  background: #1f9d55;
+  color: #fff;
+}
+.admin-tema-oscuro .vivo .vivo-mensajes-etiqueta { background: #e2bb4a; color: #241b00; }
+.admin-tema-oscuro .vivo .vivo-mensajes-etiqueta.vivo-mensajes-etiqueta--ok { background: #22a35a; color: #fff; }
+
+/* Cancelar / Quitar video, debajo del campo del link */
+.vivo-video-acciones {
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+}
+.vivo-video-vacio .admin-filtro-quitar.vivo-video-quitar { color: #f87171; }

@@ -1,0 +1,131 @@
+/* ============================================================
+ * Esqueletos de carga (skeleton placeholders)
+ * Usan los tokens --ui-* (ui-variables.css). El brillo se apaga con
+ * prefers-reduced-motion. Componentes: components/Skeleton.jsx
+ * ============================================================ */
+
+.skel-envoltorio {
+  --skel-fill: var(--ui-fill-hover);
+  --skel-brillo: rgba(255, 255, 255, 0.7);
+  width: 100%;
+}
+/* Portal de aprendizaje en modo oscuro */
+.skel-envoltorio.skel-oscuro {
+  --skel-fill: rgba(255, 255, 255, 0.08);
+  --skel-brillo: rgba(255, 255, 255, 0.1);
+}
+
+/* Texto solo para lectores de pantalla */
+.skel-solo-lectores {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Pieza básica */
+.skel {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  max-width: 100%;
+  background: var(--skel-fill, var(--ui-fill-hover));
+  border-radius: var(--ui-r-md);
+}
+.skel--circulo { border-radius: 50%; }
+.skel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, var(--skel-brillo, rgba(255, 255, 255, 0.7)), transparent);
+  animation: skel-brillo 1.5s var(--ui-ease) infinite;
+}
+@keyframes skel-brillo {
+  to { transform: translateX(100%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skel::after { animation: none; display: none; }
+}
+
+/* Utilidades de layout */
+.skel-pila { display: flex; flex-direction: column; gap: var(--ui-s-2); min-width: 0; }
+.skel-pila--amplia { gap: var(--ui-s-4); }
+.skel-pila--crece { flex: 1; }
+.skel-fila { display: flex; align-items: center; gap: var(--ui-s-4); flex-wrap: wrap; }
+.skel-margen-abajo { margin-bottom: var(--ui-s-4); }
+.skel-margen-arriba { margin-top: var(--ui-s-4); }
+.skel-no-encoge { flex-shrink: 0; }
+.skel-contenedor-simple { max-width: 640px; margin: var(--ui-s-8) auto; padding: 0 var(--ui-s-4); }
+
+/* Tarjetas y cabeceras del admin */
+.skel-cabecera-tarjeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-s-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--ui-s-5);
+}
+.skel-cabecera-acciones { display: flex; align-items: center; gap: var(--ui-s-3); flex-wrap: wrap; }
+
+/* Tabla */
+.skel-tabla { display: flex; flex-direction: column; }
+.skel-tabla-fila {
+  display: grid;
+  grid-template-columns: repeat(var(--skel-cols, 4), minmax(0, 1fr));
+  gap: var(--ui-s-4);
+  align-items: center;
+  padding: var(--ui-s-4) 0;
+  border-bottom: 1px solid var(--ui-line);
+}
+.skel-tabla-fila:last-child { border-bottom: 0; }
+.skel-tabla-fila--cabecera { padding-top: 0; }
+
+/* Dashboard */
+.skel-fila-rank { display: flex; align-items: center; gap: var(--ui-s-3); }
+
+/* Ventas por curso */
+.skel-tile-venta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-s-3);
+  padding: var(--ui-s-6);
+  border-radius: var(--ui-r-lg);
+  background: var(--ui-fill);
+}
+.skel-tile-cifras { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--ui-s-3); margin-top: var(--ui-s-2); }
+
+/* Editor de curso y de landing */
+.skel-editor-encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-s-4);
+  margin-bottom: var(--ui-s-6);
+}
+.skel-tabs { display: flex; gap: var(--ui-s-8); padding-bottom: var(--ui-s-4); margin-bottom: var(--ui-s-6); border-bottom: 1px solid var(--ui-line); }
+.skel-tarjeta-editor { display: flex; flex-direction: column; gap: var(--ui-s-5); margin-bottom: var(--ui-s-6); }
+.skel-dos-col { display: flex; gap: var(--ui-s-6); align-items: flex-start; }
+.skel-dos-col--tarjetas > * { flex: 1; min-width: 0; }
+.skel-dos-col--lateral > :first-child { width: 260px; }
+@media (max-width: 900px) {
+  .skel-dos-col { flex-direction: column; align-items: stretch; }
+  .skel-dos-col--lateral > :first-child { width: auto; }
+  .skel-no-encoge { width: 100% !important; }
+}
+
+/* Catálogo y Mis cursos */
+.skel-tarjeta-curso:hover { transform: none; box-shadow: none; }
+.skel-tarjeta-curso .course-card-body { display: flex; flex-direction: column; gap: var(--ui-s-3); }
+.skel-tarjeta-curso-pie { display: flex; align-items: center; justify-content: space-between; margin-top: var(--ui-s-2); }
+.skel-acciones-curso { display: flex; gap: var(--ui-s-2); }
+.skel-acciones-curso > :first-child { flex: 1; }
+
+/* Portal de aprendizaje */
+.skel-video { width: 100%; aspect-ratio: 16 / 9; }

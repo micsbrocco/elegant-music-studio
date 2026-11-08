@@ -1,0 +1,1429 @@
+/* ============================================================
+ * Landing: Hero, producciones, equipo, productor destacado
+ * (parte de index.css, separado para que sea más fácil de ubicar)
+ * ============================================================ */
+
+/* ---------- HERO (rediseño fiel al mockup) ---------- */
+.hero-section {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-hero);
+  color: var(--color-warm-white);
+  padding: 64px 0;
+  /* El hero ocupa toda la pantalla principal: el resto es lo que mide
+     el navbar (ver .navbar-inner), así hero + navbar llenan un viewport. */
+  min-height: calc(100vh - 84px);
+  display: flex;
+  align-items: center;
+}
+@media (min-width: 1024px) {
+  .hero-section {
+    /* Más espacio abajo que arriba: el contenido sube y deja ver el
+       ecualizador de rombos del fondo (components/HeroRombos.jsx) */
+    padding: 56px 0 200px;
+  }
+}
+
+/* Como .hero-section ahora es flex (para centrar verticalmente), el
+   .container de adentro necesita ancho explícito: si no, un hijo flex
+   se achica al tamaño de su contenido en vez de ocupar todo el ancho. */
+.hero-section > .container {
+  width: 100%;
+}
+
+.hero-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  background: var(--color-gold);
+}
+.hero-glow-1 {
+  width: 320px;
+  height: 320px;
+  top: -120px;
+  left: -120px;
+  opacity: 0.15;
+  animation: hero-glow-flotar-1 10s ease-in-out infinite;
+}
+.hero-glow-2 {
+  width: 380px;
+  height: 380px;
+  bottom: -160px;
+  right: -140px;
+  opacity: 0.1;
+  animation: hero-glow-flotar-2 12s ease-in-out infinite;
+}
+.hero-glow-3 {
+  width: 220px;
+  height: 220px;
+  top: 30%;
+  right: 8%;
+  opacity: 0.08;
+  animation: hero-glow-flotar-3 14s ease-in-out infinite;
+}
+.hero-glow-4 {
+  width: 260px;
+  height: 260px;
+  bottom: 10%;
+  left: 12%;
+  opacity: 0.07;
+  animation: hero-glow-flotar-4 16s ease-in-out infinite;
+}
+.hero-glow-5 {
+  width: 200px;
+  height: 200px;
+  bottom: -60px;
+  left: 2%;
+  opacity: 0.025;
+  animation: hero-glow-flotar-5 13s ease-in-out infinite;
+}
+@keyframes hero-glow-flotar-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(30px, 24px) scale(1.1); }
+}
+@keyframes hero-glow-flotar-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-26px, -20px) scale(1.12); }
+}
+@keyframes hero-glow-flotar-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-22px, 20px) scale(1.15); }
+}
+@keyframes hero-glow-flotar-4 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(20px, -18px) scale(1.1); }
+}
+@keyframes hero-glow-flotar-5 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(16px, -14px) scale(1.08); }
+}
+/* Canvas animado del fondo del hero (components/HeroRombos.jsx) */
+.hero-ondas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  /* Aparece suave al cargar la página */
+  animation: hero-ondas-entrar 1.6s ease-out both;
+}
+@keyframes hero-ondas-entrar {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ---------- Animación de entrada del hero (texto, etiquetas, carrusel) ---------- */
+@keyframes hero-fade-up {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.hero-anim {
+  opacity: 0;
+  animation: hero-fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.hero-anim-1 { animation-delay: 0.05s; }
+.hero-anim-2 { animation-delay: 0.15s; }
+.hero-anim-3 { animation-delay: 0.25s; }
+.hero-anim-4 { animation-delay: 0.35s; }
+.hero-anim-5 { animation-delay: 0.45s; }
+
+@keyframes hero-pop-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.92); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.hero-etiqueta-anim {
+  opacity: 0;
+  animation: hero-pop-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Si el sistema del usuario pide menos movimiento, dejamos todo quieto */
+@media (prefers-reduced-motion: reduce) {
+  .hero-glow-1, .hero-glow-2, .hero-glow-3, .hero-glow-4, .hero-glow-5, .hero-anim, .hero-etiqueta-anim {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.hero-inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 48px;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+@media (min-width: 1024px) {
+  .hero-inner {
+    grid-template-columns: 6fr 6fr;
+    gap: 40px;
+  }
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  margin-bottom: 24px;
+  padding: 7px 16px 7px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+}
+
+.hero-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-gold);
+  animation: hero-pulse 2s ease-in-out infinite;
+}
+
+@keyframes hero-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.hero-title {
+  font-size: clamp(40px, 6vw, 72px);
+  font-weight: 600;
+  line-height: 1.14;
+  color: var(--color-warm-white);
+  margin-bottom: 24px;
+}
+
+.hero-title-gold {
+  color: var(--color-gold);
+}
+
+.hero-tagline {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 700;
+  font-size: clamp(30px, 2.1vw, 25px);
+  color: var(--color-warm-white);
+  opacity: 0.92;
+  margin-bottom: 28px;
+}
+
+.hero-subtitle {
+  font-size: 18px;
+  color: #cbc6bc;
+  line-height: 1.7;
+  max-width: 480px;
+  margin-bottom: 40px;
+}
+
+/* ---------- Etiquetas de servicios (hero) ---------- */
+.hero-etiquetas-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 40px;
+  max-width: 540px;
+}
+
+.hero-etiqueta {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--color-gold-light);
+  background: rgba(201, 162, 39, 0.08);
+  border: 1px solid rgba(201, 162, 39, 0.3);
+  padding: 8px 16px;
+  border-radius: 999px;
+  transition: background 0.45s ease, border-color 0.45s ease, box-shadow 0.45s ease, color 0.45s ease;
+}
+.hero-etiqueta:hover,
+.hero-etiqueta--activa {
+  background: rgba(201, 162, 39, 0.16);
+  border-color: rgba(201, 162, 39, 0.5);
+}
+/* Iluminada por la animación (una a una): además del brillo del hover, un halo suave */
+.hero-etiqueta--activa {
+  color: var(--color-gold);
+  box-shadow: 0 0 18px rgba(201, 162, 39, 0.28);
+}
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.hero-btn-primary {
+  padding: 16px 32px;
+  font-size: 15px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+}
+
+.hero-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 24px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  color: var(--color-warm-white);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  transition: color 0.2s, border-color 0.2s;
+}
+.hero-btn-secondary:hover {
+  color: var(--color-gold);
+  border-color: rgba(201, 162, 39, 0.5);
+}
+
+.hero-btn-arrow {
+  display: inline-block;
+  transition: transform 0.2s;
+}
+.btn:hover .hero-btn-arrow,
+.hero-btn-secondary:hover .hero-btn-arrow {
+  transform: translateX(3px);
+}
+
+.hero-media-frame {
+  position: relative;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 12px;
+}
+
+.hero-carousel {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+}
+.hero-carousel img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out;
+}
+.hero-carousel img.activa {
+  opacity: 1;
+}
+
+.hero-carousel-controls {
+  margin-top: 12px;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.hero-dots {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hero-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  padding: 0;
+  transition: width 0.25s, background 0.25s;
+}
+.hero-dot.activo {
+  width: 24px;
+  background: var(--color-gold);
+}
+
+.hero-arrows {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hero-arrow {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
+}
+.hero-arrow:hover {
+  background: var(--color-gold);
+  color: var(--color-ink);
+}
+
+/* Video embebido responsive */
+.video-embed-wrap {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%; /* 16:9 */
+  border-radius: 10px;
+  overflow: hidden;
+  background: #000;
+}
+.video-embed-wrap iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* Íconos redes sociales */
+.social-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-warm-gray);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-ink);
+  transition: border 0.2s, background 0.2s;
+  text-decoration: none;
+}
+.social-icon:hover {
+  border-color: var(--color-gold);
+  background: #c9a2271a;
+}
+
+.nav-mobile-menu.open {
+  background: #0e0e10 !important;
+  border-top: 1px solid rgba(255,255,255,0.1) !important;
+}
+.nav-mobile-menu.open a,
+.nav-mobile-menu.open button:not(.btn) {
+  color: var(--color-warm-white) !important;
+}
+
+.courses-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+.courses-grid > .course-card {
+  flex: 0 1 340px;
+  max-width: 100%;
+}
+
+/* ---------- Tarjeta de curso ----------
+ * Estilo limpio y moderno: borde fino, imagen con esquinas redondeadas adentro de la
+ * tarjeta, categoría arriba del título, y datos secundarios en gris. */
+.course-card {
+  font-family: var(--font-card);
+  background: #fff;
+  border: 1px solid #dae1ed;
+  border-radius: 12px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.course-card:hover {
+  border-color: #b8c3d6;
+  box-shadow: 0 8px 24px rgba(18, 18, 20, 0.08);
+}
+
+.course-card-image {
+  position: relative;
+  aspect-ratio: 2 / 1;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #e9edf3;
+}
+.course-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.course-card-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 40px;
+  color: #c9a22755;
+}
+
+.course-card-badge {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--color-ink);
+  background: var(--color-gold);
+  padding: 5px 12px;
+  border-radius: 999px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.course-card-tag-overlay {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1;
+  margin-bottom: 0;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(18, 18, 20, 0.12);
+}
+
+.course-card-body {
+  padding: 14px 8px 8px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.course-card-categoria {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: #5b6270;
+  margin: 0 0 6px;
+}
+
+.course-card-title {
+  font-family: var(--font-card);
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 0;
+  margin: 0 0 6px;
+  color: #0f1114;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.course-card-meta {
+  font-size: 12px;
+  line-height: 1.4;
+  color: #5b6270;
+  margin: 0 0 10px;
+}
+
+.course-card-desc {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #5b6270;
+  margin: 0 0 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.course-card-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: auto;
+  margin-bottom: 14px;
+}
+/* Si hay etiqueta, ella toma el espacio sobrante y el pie queda pegado debajo */
+.course-card-pills + .course-card-footer {
+  margin-top: 0;
+}
+.course-card-pill {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 5px 9px;
+  border-radius: 6px;
+  color: #7a5f10;
+  background: rgba(201, 162, 39, 0.14);
+}
+.course-card-pill--oferta {
+  color: #15693a;
+  background: rgba(21, 128, 61, 0.1);
+}
+
+.course-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid #e6ebf2;
+  padding-top: 12px;
+  margin-top: auto;
+  margin-bottom: 12px;
+}
+
+.course-card-price-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-muted);
+  margin-bottom: 3px;
+}
+
+.course-card-price {
+  font-family: var(--font-card);
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f1114;
+}
+.course-card-price-original {
+  margin-left: 8px;
+  font-size: 13px;
+  font-weight: 400;
+  color: #8a92a0;
+  text-decoration: line-through;
+}
+
+.course-card-cta {
+  font-family: var(--font-card);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  background: none;
+  color: #0f1114;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.course-card-cta:hover {
+  color: var(--ui-gold-text, #8a6d16);
+}
+
+.course-card-actions {
+  display: flex;
+  gap: 8px;
+}
+.course-card-actions .btn {
+  font-family: var(--font-card);
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+  border-radius: 8px;
+}
+
+.course-card-tag {
+  font-family: var(--font-card);
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  line-height: 1;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-gold-dim);
+  background: var(--color-cream);
+  padding: 6px 14px;
+  border-radius: 999px;
+  margin-bottom: 14px;
+}
+
+/* ---------- Nuestras producciones ---------- */
+.producciones-section {
+  position: relative;
+  overflow: hidden;
+  /* Mismo negro del hero/navbar, no el --color-ink (un poco más gris) */
+  background: var(--color-hero);
+  color: var(--color-warm-white);
+  padding: 64px 0;
+}
+
+/* El glow dorado de arriba-izquierda quedaba justo pegado a la nueva
+   diagonal de "Cursos destacados" y se notaba como un corte entre
+   secciones. Lo alejamos del borde superior y lo atenuamos. */
+.producciones-section .hero-glow-1 {
+  top: 40px;
+  opacity: 0.08;
+}
+
+/* Cards más modernas: fondo degradé sutil, borde dorado apenas visible
+   que se enciende en hover, una esquina "cortada" para que no sea un
+   rectángulo prolijo más, y un lift + glow al pasar el mouse. */
+.producciones-card {
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.015));
+  border: 1px solid rgba(201, 162, 39, 0.18);
+  border-radius: 4px 20px 20px 20px;
+  padding: 22px;
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.producciones-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(201, 162, 39, 0.5);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.35);
+}
+
+/* Layout: reproductor grande a la izquierda + miniaturas a la derecha.
+ * Las miniaturas siempre son apaisadas (16:9); lo que cambia según cuántos
+ * videos haya es el ancho de cada columna, para que las dos queden de una
+ * altura parecida:
+ *   1 o 2 videos extra -> una columna de miniaturas apiladas, angosta
+ *   3 o 4 videos extra -> grilla de 2 x 2, columnas más parejas */
+.producciones-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+.producciones-layout--0 {
+  grid-template-columns: minmax(0, 900px);
+  justify-content: center;
+}
+.producciones-layout--2 {
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+}
+.producciones-layout--3,
+.producciones-layout--4 {
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+}
+.producciones-featured {
+  margin: 0;
+}
+
+.producciones-card .video-embed-wrap {
+  position: relative;
+  border-radius: 2px 14px 14px 14px;
+}
+
+.producciones-card-info {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 14px;
+}
+
+.producciones-card-titulo {
+  font-family: var(--font-body);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-warm-white);
+  margin: 0 0 6px;
+}
+
+.producciones-card-desc {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-warm-white);
+  opacity: 0.65;
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* Insignia sobre el video principal */
+.producciones-badge-destacado {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+  font-family: var(--ui-font);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-ink);
+  background: #fff;
+  padding: 5px 11px;
+  border-radius: 999px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+.producciones-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--ui-font);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-ink);
+  background: var(--color-gold);
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding: 10px 18px;
+  border-radius: 999px;
+  transition: background 0.2s, transform 0.15s;
+}
+.producciones-card-link:hover {
+  background: var(--color-gold-light);
+  transform: translateY(-2px);
+}
+
+/* Grilla de miniaturas: 2 columnas. Con 1 video ocupa todo; con 3, el último
+   se estira a lo ancho para que no quede un hueco. */
+.producciones-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.producciones-grid--1,
+.producciones-grid--2 {
+  grid-template-columns: 1fr;
+}
+.producciones-grid--3 > :last-child {
+  grid-column: 1 / -1;
+}
+
+.producciones-mini {
+  display: flex;
+  min-height: 0;
+}
+.producciones-mini-boton {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 10px 14px;
+  border: 1px solid rgba(201, 162, 39, 0.16);
+  border-radius: 4px 16px 16px 16px;
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.015));
+  color: var(--color-warm-white);
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.producciones-mini-boton:hover {
+  transform: translateY(-3px);
+  border-color: rgba(201, 162, 39, 0.5);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.35);
+}
+.producciones-mini-boton:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+.producciones-mini-thumb {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 9;
+  border-radius: 2px 10px 10px 10px;
+  overflow: hidden;
+  background: #000;
+}
+.producciones-mini-thumb img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+.producciones-mini-boton:hover .producciones-mini-thumb img {
+  transform: scale(1.05);
+}
+.producciones-mini-play {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(201, 162, 39, 0.92);
+  color: var(--color-ink);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s ease;
+}
+.producciones-mini-boton:hover .producciones-mini-play {
+  transform: translate(-50%, -50%) scale(1.08);
+}
+.producciones-mini-titulo {
+  font-family: var(--ui-font);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@media (max-width: 960px) {
+  .producciones-layout,
+  .producciones-layout--2,
+  .producciones-layout--3,
+  .producciones-layout--4 {
+    grid-template-columns: 1fr;
+  }
+  .producciones-grid--2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+
+/* ---------- Nuestro equipo ----------
+ * Tarjetas sencillas: foto chica y redonda a la izquierda, nombre, rol y bio. */
+.equipo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+.equipo-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 1px 2px rgba(26, 21, 16, 0.04), 0 10px 28px -14px rgba(26, 21, 16, 0.14);
+  transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.3s cubic-bezier(0.2, 0, 0, 1);
+}
+.equipo-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 2px 4px rgba(26, 21, 16, 0.05), 0 16px 36px -14px rgba(26, 21, 16, 0.2);
+}
+.equipo-card-foto {
+  position: relative;
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(145deg, #1c1a17, #3a2f17);
+  box-shadow: 0 0 0 2px #fff, 0 0 0 3px rgba(201, 162, 39, 0.5);
+}
+.equipo-card-foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.equipo-card-info {
+  min-width: 0;
+}
+.equipo-card-nombre {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 2px 0 2px;
+}
+.equipo-card-rol {
+  font-family: var(--ui-font);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ui-gold-text);
+  margin: 0 0 8px;
+}
+.equipo-card-bio {
+  margin: 0;
+  font-family: var(--ui-font);
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--ui-text-2);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Inicial cuando no hay foto cargada */
+.foto-inicial {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 26px;
+  color: rgba(226, 187, 74, 0.6);
+}
+
+.equipo-cta-telefono {
+  margin-top: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-gold);
+  letter-spacing: 0.02em;
+}
+
+/* ---------- Visita al estudio ----------
+ * Tarjeta con una foto del estudio de fondo que se oscurece hacia la izquierda;
+ * ahí van el título (Playfair + dorado), los datos y el botón de WhatsApp. */
+.visita-cta {
+  position: relative;
+  margin-top: 88px; /* separación clara de las tarjetas del equipo */
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  border-radius: 28px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #121214, #2a2213);
+  box-shadow: 0 24px 60px -24px rgba(26, 21, 16, 0.5);
+  scroll-margin-top: 100px;
+}
+.visita-cta-foto {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s cubic-bezier(0.2, 0, 0, 1);
+}
+.visita-cta:hover .visita-cta-foto {
+  transform: scale(1.03);
+}
+.visita-cta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(90deg, rgba(12, 11, 10, 0.96) 0%, rgba(12, 11, 10, 0.85) 40%, rgba(12, 11, 10, 0.25) 100%),
+    radial-gradient(circle at 15% 100%, rgba(201, 162, 39, 0.25), transparent 50%);
+}
+.visita-cta-contenido {
+  position: relative;
+  z-index: 2;
+  max-width: 560px;
+  padding: 44px 48px;
+  color: #fff;
+}
+.visita-cta-titulo {
+  font-size: clamp(26px, 2.8vw, 36px);
+  font-weight: 600;
+  line-height: 1.15;
+  color: #fff;
+  margin: 0 0 12px;
+}
+.visita-cta-texto {
+  font-family: var(--ui-font);
+  font-size: 15px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.72);
+  margin: 0 0 18px;
+}
+.visita-cta-datos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 26px;
+}
+.visita-cta-datos span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-family: var(--ui-font);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+}
+.visita-cta-datos svg {
+  color: var(--color-gold);
+}
+.visita-cta-boton {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 24px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #f3d27a, var(--color-gold));
+  color: var(--color-ink);
+  font-family: var(--ui-font);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 10px 24px -8px rgba(201, 162, 39, 0.6);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.visita-cta-boton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px -8px rgba(201, 162, 39, 0.75);
+}
+
+@media (max-width: 640px) {
+  .visita-cta-contenido {
+    padding: 32px 24px;
+  }
+  .visita-cta::before {
+    background: linear-gradient(180deg, rgba(12, 11, 10, 0.75), rgba(12, 11, 10, 0.95));
+  }
+}
+
+/* ---------- CTA final ("¿Listo para empezar tu próximo curso?") ----------
+ * Centrado sobre el fondo claro, con un ecualizador dorado animado a cada
+ * lado (el mismo motivo del logo) y los beneficios abajo. */
+.cta-final {
+  position: relative;
+  overflow: hidden;
+  padding: 52px 0;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(201, 162, 39, 0.12), transparent 60%),
+    var(--color-warm-white);
+  text-align: center;
+}
+.cta-final-contenido {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+}
+.cta-final-titulo {
+  font-size: clamp(24px, 2.6vw, 34px);
+  font-weight: 600;
+  line-height: 1.15;
+  margin: 0 0 14px;
+}
+.cta-final-texto {
+  font-family: var(--ui-font);
+  font-size: 15px;
+  color: var(--color-muted);
+  margin: 0 0 22px;
+}
+.cta-final-botones {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.cta-final-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 24px;
+  border-radius: 999px;
+  font-family: var(--ui-font);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+.cta-final-btn:hover {
+  transform: translateY(-2px);
+}
+.cta-final-btn--principal {
+  background: var(--color-ink);
+  color: #fff;
+  box-shadow: 0 12px 28px -12px rgba(18, 18, 20, 0.6);
+}
+.cta-final-btn--principal:hover {
+  background: #2a2a2e;
+}
+.cta-final-btn--secundario {
+  background: #fff;
+  color: var(--color-ink);
+  box-shadow: inset 0 0 0 1px rgba(18, 18, 20, 0.15);
+}
+.cta-final-btn--secundario:hover {
+  box-shadow: inset 0 0 0 1px var(--color-gold);
+}
+.cta-final-beneficios {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-family: var(--ui-font);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-muted);
+}
+.cta-final-beneficios li::before {
+  content: '✓';
+  margin-right: 6px;
+  color: var(--color-gold);
+}
+
+/* Ecualizadores decorativos a los costados */
+.cta-final-eq {
+  position: absolute;
+  bottom: 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 100px;
+  opacity: 0.55;
+}
+.cta-final-eq--izq {
+  left: 6%;
+}
+.cta-final-eq--der {
+  right: 6%;
+}
+.cta-final-eq span {
+  width: 7px;
+  border-radius: 4px 4px 0 0;
+  background: linear-gradient(180deg, var(--color-gold), rgba(201, 162, 39, 0.1));
+  transform-origin: bottom;
+  animation: cta-eq 2s ease-in-out infinite alternate;
+}
+@keyframes cta-eq {
+  0% { transform: scaleY(0.4); }
+  50% { transform: scaleY(1); }
+  100% { transform: scaleY(0.6); }
+}
+@media (max-width: 900px) {
+  .cta-final-eq {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cta-final-eq span {
+    animation: none;
+  }
+  .visita-cta-foto,
+  .visita-cta-boton,
+  .cta-final-btn {
+    transition: none;
+  }
+}
+
+/* ---------- Productor principal (destacado) ----------
+ * Tarjeta oscura a todo el ancho: foto grande a la izquierda (de borde a borde)
+ * y la info a la derecha sobre un fondo negro con brillo dorado. */
+.productor-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(200px, 26%) minmax(0, 1fr);
+  min-height: 260px;
+  border-radius: 28px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 90% 10%, rgba(226, 187, 74, 0.22), transparent 45%),
+    linear-gradient(135deg, #121214 0%, #1c1a17 60%, #2a2213 100%);
+  box-shadow: 0 24px 60px -20px rgba(26, 21, 16, 0.45);
+}
+/* Filo dorado finito arriba */
+.productor-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+  opacity: 0.8;
+  z-index: 1;
+}
+
+.productor-card-foto {
+  position: relative;
+  background: linear-gradient(145deg, #1c1a17, #3a2f17);
+}
+.productor-card-foto img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* La foto se funde con el fondo oscuro hacia la derecha */
+.productor-card-foto::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 60%, rgba(18, 18, 20, 0.9));
+  pointer-events: none;
+}
+
+.productor-card-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 32px 44px;
+}
+
+.productor-card-badge {
+  align-self: flex-start;
+  font-family: var(--ui-font);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-ink);
+  background: linear-gradient(135deg, #f3d27a, var(--color-gold));
+  padding: 5px 14px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+
+.productor-card-nombre {
+  font-size: clamp(24px, 2.4vw, 32px);
+  font-weight: 600;
+  line-height: 1.1;
+  color: #fff;
+  margin: 0 0 8px;
+}
+
+.productor-card-rol {
+  font-family: var(--ui-font);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ui-gold-hover);
+  margin: 0 0 12px;
+}
+
+.productor-card-bio {
+  font-family: var(--ui-font);
+  font-size: 14.5px;
+  line-height: 1.75;
+  color: rgba(255, 255, 255, 0.72);
+  max-width: 620px;
+  margin: 0;
+}
+
+@media (max-width: 800px) {
+  .productor-card {
+    grid-template-columns: 1fr;
+  }
+  .productor-card-foto {
+    aspect-ratio: 4 / 3;
+  }
+  .productor-card-foto::after {
+    background: linear-gradient(180deg, transparent 55%, rgba(18, 18, 20, 0.9));
+  }
+  .productor-card-info {
+    padding: 28px 24px 32px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .equipo-card,
+  .producciones-mini-boton,
+  .producciones-mini-thumb img {
+    transition: none;
+  }
+  .equipo-card:hover,
+  .producciones-mini-boton:hover,
+  .producciones-mini-boton:hover .producciones-mini-thumb img {
+    transform: none;
+  }
+}
+
+/* ---------- Aparición al scrollear (componente Revelar) ---------- */
+/* Antes de entrar en pantalla el elemento está invisible; al entrar, sube un poco
+ * y se desvanece hacia adentro. Se usa "animation" (no "transition") para no pisar
+ * los efectos de hover de las tarjetas, y fill-mode "backwards" para que al terminar
+ * el elemento vuelva a sus estilos normales. */
+@keyframes revelar-subir {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.revelar:not(.visible) {
+  opacity: 0;
+}
+.revelar.visible {
+  animation: revelar-subir 0.8s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  animation-delay: var(--retraso, 0ms);
+}
+
+/* Al saltar a una sección (Cursos, Producciones…), que la barra fija no la tape */
+section[id],
+[id='contacto'] {
+  scroll-margin-top: 84px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .revelar:not(.visible) {
+    opacity: 1;
+  }
+  .revelar.visible {
+    animation: none;
+  }
+}
+
+/* ---------- Profundidad al scrollear (hero) ----------
+ * Home.jsx actualiza --hero-scroll (px scrolleados). Cada capa se mueve a distinta
+ * velocidad con la propiedad "translate", que se suma sin pisar los "transform" de
+ * las animaciones que ya tienen estos elementos. Las luces del fondo (lejos) se
+ * quedan más atrás que el contenido; la foto (cerca) se adelanta un poco. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-glow-1 { translate: 0 calc(var(--hero-scroll, 0) * 0.38px); will-change: translate; }
+  .hero-glow-2 { translate: 0 calc(var(--hero-scroll, 0) * 0.22px); will-change: translate; }
+  .hero-glow-3 { translate: 0 calc(var(--hero-scroll, 0) * 0.5px); will-change: translate; }
+  .hero-glow-4 { translate: 0 calc(var(--hero-scroll, 0) * 0.3px); will-change: translate; }
+  .hero-glow-5 { translate: 0 calc(var(--hero-scroll, 0) * 0.16px); will-change: translate; }
+  .hero-inner > div:first-child { translate: 0 calc(var(--hero-scroll, 0) * 0.1px); }
+  .hero-media-frame { translate: 0 calc(var(--hero-scroll, 0) * -0.07px); will-change: translate; }
+}
+
+@media (max-width: 860px) {
+  .courses-grid > .course-card {
+    flex-basis: 100%;
+  }
+}
+
+/* Las ondas del fondo pasan por detrás: las etiquetas, el botón secundario y el
+   marco de las fotos llevan fondo sólido para que no se vean a través. */
+.hero-section .hero-etiqueta {
+  background-color: var(--color-hero);
+  background-image: linear-gradient(rgba(201, 162, 39, 0.08), rgba(201, 162, 39, 0.08));
+}
+.hero-section .hero-etiqueta--activa {
+  background-color: var(--color-hero);
+  background-image: linear-gradient(rgba(201, 162, 39, 0.16), rgba(201, 162, 39, 0.16));
+}
+.hero-section .hero-btn-secondary {
+  background-color: var(--color-hero);
+}
+.hero-section .hero-media-frame {
+  background-color: #0f0f0f;
+}
+
+/* "Cursos destacados" en modo Próximamente: un aviso en lugar de los cursos */
+.landing-cursos-proximamente {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 260px;
+  padding: 48px 24px;
+  border: 1px dashed rgba(201, 162, 39, 0.55);
+  border-radius: 20px;
+  background: rgba(201, 162, 39, 0.05);
+  text-align: center;
+}
+.landing-cursos-proximamente-titulo {
+  margin: 0;
+  font-size: clamp(30px, 4vw, 48px);
+  font-style: italic;
+  color: var(--color-gold);
+}
+.landing-cursos-proximamente-texto {
+  margin: 0;
+  font-size: 16px;
+  color: var(--color-text-muted, #6b6b73);
+}

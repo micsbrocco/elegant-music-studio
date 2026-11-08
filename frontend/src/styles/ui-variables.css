@@ -1,0 +1,123 @@
+/* ============================================================
+ * Variables del sistema "ui" (panel admin, catálogo, mis cursos,
+ * detalle de curso y portal de aprendizaje).
+ *
+ * Todo lleva el prefijo --ui-: no pisa ni redefine ninguno de los
+ * tokens de la landing (--color-*, --font-*), que siguen en base.css.
+ * Espaciado en múltiplos de 4.
+ * ============================================================ */
+
+:root {
+  /* ---- Tipografía: una sola familia ---- */
+  --ui-font: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Escala 12 / 14 / 16 / 20 / 24 / 32 / 40 */
+  --ui-fs-12: 12px;
+  --ui-fs-14: 14px;
+  --ui-fs-16: 16px;
+  --ui-fs-20: 20px;
+  --ui-fs-24: 24px;
+  --ui-fs-32: 32px;
+  --ui-fs-40: 40px;
+
+  --ui-fw-regular: 400;
+  --ui-fw-medium: 500;
+  --ui-fw-semibold: 600;
+  --ui-fw-bold: 700;
+  --ui-tracking-titulo: -0.02em;
+
+  /* ---- Marca ---- */
+  --ui-ink: #121214;
+  --ui-gold: #c9a227;
+  --ui-gold-hover: #e2bb4a;
+  /* Dorado para texto sobre fondo claro (contraste AA) */
+  --ui-gold-text: #8a6d16;
+  --ui-gold-tint: rgba(201, 162, 39, 0.1);
+
+  /* ---- Texto (contraste AA sobre fondo frío y sobre vidrio) ---- */
+  --ui-text: #121214;
+  --ui-text-2: #5b6270;
+  --ui-text-on-dark: #ffffff;
+  --ui-text-2-on-dark: #a1a1aa;
+
+  /* ---- Estados: un único verde y un único rojo ---- */
+  --ui-success: #15803d;
+  --ui-success-tint: rgba(21, 128, 61, 0.05);
+  --ui-danger: #c0392b;
+  --ui-danger-tint: rgba(192, 57, 43, 0.07);
+
+  /* ---- Fondos ---- */
+  --ui-bg: #f5f6f8;
+  --ui-halo-gold: rgba(201, 162, 39, 0.14);
+  --ui-halo-cool: rgba(110, 130, 165, 0.14);
+  --ui-bg-dark: #0f1115;
+
+  /* ---- Líneas y rellenos neutros ---- */
+  --ui-line: rgba(18, 18, 20, 0.07);
+  --ui-fill: rgba(18, 18, 20, 0.05);
+  --ui-fill-hover: rgba(18, 18, 20, 0.08);
+
+  /* ---- Vidrio claro ---- */
+  --ui-glass-bg: rgba(255, 255, 255, 0.72);
+  --ui-glass-bg-fuerte: rgba(255, 255, 255, 0.88);
+  --ui-glass-blur: blur(12px);
+  --ui-glass-border: 1px solid rgba(255, 255, 255, 0.8);
+
+  /* ---- Vidrio ahumado (modo oscuro del portal) ---- */
+  --ui-glass-dark-bg: rgba(255, 255, 255, 0.06);
+  --ui-glass-dark-border: 1px solid rgba(255, 255, 255, 0.09);
+
+  /* ---- Radios: 10 / 16 / 24 + píldora ---- */
+  --ui-r-md: 10px;
+  --ui-r-lg: 16px;
+  --ui-r-xl: 24px;
+  --ui-r-pill: 999px;
+
+  /* ---- Sombras en capas: una corta y nítida + una larga y difusa ---- */
+  --ui-shadow-card:
+    0 1px 2px rgba(18, 18, 20, 0.04),
+    0 12px 32px -8px rgba(18, 18, 20, 0.1);
+  --ui-shadow-card-hover:
+    0 2px 4px rgba(18, 18, 20, 0.05),
+    0 20px 44px -10px rgba(18, 18, 20, 0.16);
+  --ui-shadow-pop:
+    0 2px 6px rgba(18, 18, 20, 0.06),
+    0 24px 48px -12px rgba(18, 18, 20, 0.22);
+
+  /* ---- Espaciado (múltiplos de 4) ---- */
+  --ui-s-1: 4px;
+  --ui-s-2: 8px;
+  --ui-s-3: 12px;
+  --ui-s-4: 16px;
+  --ui-s-5: 20px;
+  --ui-s-6: 24px;
+  --ui-s-8: 32px;
+  --ui-s-10: 40px;
+
+  /* ---- Movimiento ---- */
+  --ui-ease: cubic-bezier(0.2, 0, 0, 1);
+  --ui-t-fast: 150ms;
+  --ui-t-med: 220ms;
+
+  /* ---- Margen lateral de las páginas a todo el ancho (detalle de curso,
+   * y navbar/footer en esas páginas para que queden alineados) ---- */
+  --ui-margen-lateral: clamp(32px, 7vw, 128px);
+
+  /* ---- Botón principal de la app (Mis cursos, ventanas de cuenta) ----
+   * Para volver al botón dorado alcanza con cambiar estas tres líneas:
+   * fondo var(--ui-gold), hover var(--ui-gold-hover) y texto var(--ui-ink). */
+  --ui-btn-bg: var(--ui-ink);
+  --ui-btn-bg-hover: #2c2c31;
+  --ui-btn-text: #ffffff;
+
+  /* ---- Foco ---- */
+  --ui-focus: 0 0 0 2px #fff, 0 0 0 4px var(--ui-gold);
+}
+
+/* Respeta la preferencia de menos movimiento en todo el alcance del sistema */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --ui-t-fast: 0ms;
+    --ui-t-med: 0ms;
+  }
+}

@@ -1,0 +1,540 @@
+/* ============================================================
+ * Ventanas "Mi cuenta" y "Mis compras" (se abren sobre la página,
+ * igual que el login). Sistema "ui": Manrope, dorado solo como acento.
+ * ============================================================ */
+
+.modal-pagina-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  justify-content: center;
+  padding: 32px 16px;
+  background: rgba(18, 18, 20, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  overflow-y: auto;
+}
+
+.modal-pagina {
+  width: 100%;
+  /* Centrada en la pantalla; si es más alta que la ventana, se puede scrollear */
+  margin: auto 0;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.45);
+  font-family: var(--ui-font);
+  color: var(--ui-text);
+}
+
+.modal-pagina-cab {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 28px 0;
+}
+.modal-pagina-titulo {
+  margin: 0;
+  font-family: var(--ui-font);
+  font-size: var(--ui-fs-20);
+  font-weight: var(--ui-fw-semibold);
+  letter-spacing: var(--ui-tracking-titulo);
+}
+.modal-pagina-cerrar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: var(--ui-fill);
+  color: var(--ui-text);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.modal-pagina-cerrar:hover {
+  background: var(--ui-fill-hover);
+}
+.modal-pagina-cuerpo {
+  padding: 20px 28px 28px;
+}
+
+.modal-texto-suave {
+  margin: 0;
+  font-size: var(--ui-fs-14);
+  color: var(--ui-text-2);
+}
+.modal-ayuda {
+  margin: 6px 0 0;
+  font-size: 12.5px;
+  color: var(--ui-text-2);
+  line-height: 1.5;
+}
+.modal-link {
+  color: var(--ui-gold-text);
+  font-weight: var(--ui-fw-semibold);
+}
+
+.modal-fila-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.modal-boton-secundario {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 14px;
+  border: 1px solid var(--ui-line);
+  border-radius: 999px;
+  background: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.modal-boton-secundario:hover {
+  border-color: var(--ui-gold);
+  background: var(--ui-gold-tint);
+}
+.modal-boton-ancho {
+  width: 100%;
+  margin-top: 4px;
+}
+.modal-acciones {
+  display: flex;
+  gap: 10px;
+}
+
+/* ---------- Mi cuenta: identidad ---------- */
+.cuenta-identidad {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+.cuenta-avatar-btn {
+  position: relative;
+  flex-shrink: 0;
+  width: 76px;
+  height: 76px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+}
+.cuenta-avatar-btn:focus-visible {
+  outline: 2px solid var(--ui-gold);
+  outline-offset: 3px;
+}
+.cuenta-avatar {
+  display: flex;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--ui-gold);
+}
+.cuenta-avatar-inicial {
+  align-items: center;
+  justify-content: center;
+  background: var(--ui-gold-tint);
+  color: var(--ui-gold-text);
+  font-size: 28px;
+  font-weight: var(--ui-fw-semibold);
+}
+/* Capa que aparece al pasar el mouse (o mientras sube) para indicar que la foto se puede cambiar */
+.cuenta-avatar-capa {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(18, 18, 20, 0.5);
+  color: #fff;
+  font-size: 11px;
+  font-weight: var(--ui-fw-semibold);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.cuenta-avatar-btn:hover .cuenta-avatar-capa,
+.cuenta-avatar-btn:focus-visible .cuenta-avatar-capa,
+.cuenta-avatar-capa.activa {
+  opacity: 1;
+}
+.cuenta-identidad-texto {
+  min-width: 0;
+}
+.cuenta-identidad-nombre {
+  margin: 0;
+  font-size: var(--ui-fs-20);
+  font-weight: var(--ui-fw-semibold);
+  letter-spacing: var(--ui-tracking-titulo);
+}
+.cuenta-identidad-email {
+  margin: 2px 0 0;
+  font-size: var(--ui-fs-14);
+  color: var(--ui-text-2);
+  overflow-wrap: anywhere;
+}
+.cuenta-rol {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--ui-gold-tint);
+  color: var(--ui-gold-text);
+  font-size: var(--ui-fs-12);
+  font-weight: var(--ui-fw-semibold);
+}
+.cuenta-error-chico {
+  margin: 6px 0 0;
+  font-size: 12.5px;
+  color: var(--ui-danger);
+}
+
+/* ---------- Mi cuenta: acordeón (una sección abierta a la vez) ---------- */
+.acordeon {
+  border: 1px solid var(--ui-line);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.acordeon-item + .acordeon-item {
+  border-top: 1px solid var(--ui-line);
+}
+.acordeon-cab {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 16px 18px;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  text-align: left;
+  color: var(--ui-text);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.acordeon-cab:hover {
+  background: var(--ui-fill);
+}
+.acordeon-cab:focus-visible {
+  outline: 2px solid var(--ui-gold);
+  outline-offset: -2px;
+}
+.acordeon-icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--ui-fill);
+  color: var(--ui-text-2);
+  transition: background 0.2s, color 0.2s;
+}
+.acordeon-item.abierto .acordeon-icono {
+  background: var(--ui-gold-tint);
+  color: var(--ui-gold-text);
+}
+.acordeon-textos {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.acordeon-titulo {
+  font-size: var(--ui-fs-14);
+  font-weight: var(--ui-fw-semibold);
+}
+.acordeon-resumen {
+  font-size: 13px;
+  color: var(--ui-text-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.acordeon-resumen--ok {
+  color: var(--ui-success);
+  font-weight: var(--ui-fw-semibold);
+}
+.acordeon-flecha {
+  flex-shrink: 0;
+  color: var(--ui-text-2);
+  transition: transform 0.25s ease;
+}
+.acordeon-item.abierto .acordeon-flecha {
+  transform: rotate(180deg);
+}
+
+/* Animación de apertura: la fila pasa de 0fr a 1fr */
+.acordeon-cuerpo {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.25s ease;
+}
+.acordeon-item.abierto .acordeon-cuerpo {
+  grid-template-rows: 1fr;
+}
+.acordeon-cuerpo-interno {
+  overflow: hidden;
+  min-height: 0;
+}
+.acordeon-contenido {
+  padding: 4px 18px 18px 66px;
+}
+
+.acordeon-nota {
+  margin: 0 0 12px;
+}
+.acordeon-bio-pie {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.acordeon-pw-extras {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: -4px 0 14px;
+}
+.acordeon-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--ui-text-2);
+  cursor: pointer;
+}
+.input-con-error {
+  border-color: var(--ui-danger) !important;
+}
+.acordeon-acciones {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.modal-boton-texto {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text-2);
+  cursor: pointer;
+}
+.modal-boton-texto:hover {
+  background: var(--ui-fill);
+  color: var(--ui-text);
+}
+
+.cuenta-cerrar-sesion {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 8px 10px;
+  margin-left: -10px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-danger);
+  cursor: pointer;
+}
+.cuenta-cerrar-sesion:hover {
+  background: var(--ui-danger-tint);
+}
+
+/* Modo lectura de cada sección: datos a la izquierda, lápiz a la derecha */
+.acordeon-vista {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.acordeon-datos {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.acordeon-dato dt {
+  font-size: var(--ui-fs-12);
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text-2);
+  margin-bottom: 2px;
+}
+.acordeon-dato dd {
+  margin: 0;
+  font-size: var(--ui-fs-14);
+  color: var(--ui-text);
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+.acordeon-dato-vacio {
+  color: var(--ui-text-2) !important;
+}
+.acordeon-lapiz {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--ui-line);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--ui-text);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+.acordeon-lapiz:hover {
+  border-color: var(--ui-gold);
+  background: var(--ui-gold-tint);
+  color: var(--ui-gold-text);
+}
+.acordeon-lapiz:focus-visible {
+  outline: 2px solid var(--ui-gold);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acordeon-cuerpo,
+  .acordeon-flecha {
+    transition: none;
+  }
+}
+
+/* ---------- Mis compras ---------- */
+.modal-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+.modal-compras-resumen {
+  margin-bottom: 16px;
+}
+.modal-compras-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.modal-compra {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0;
+  border-top: 1px solid var(--ui-line);
+}
+.modal-compra:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+.modal-compra-thumb {
+  flex-shrink: 0;
+  width: 64px;
+  height: 44px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--ui-fill);
+}
+.modal-compra-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.modal-compra-info {
+  flex: 1;
+  min-width: 0;
+}
+.modal-compra-titulo {
+  display: block;
+  font-size: var(--ui-fs-14);
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text);
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.modal-compra-titulo:hover {
+  color: var(--ui-gold-text);
+}
+.modal-compra-meta {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+  color: var(--ui-text-2);
+}
+.modal-compra-lado {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+.modal-compra-monto {
+  font-size: var(--ui-fs-14);
+  font-weight: var(--ui-fw-bold);
+}
+.modal-compra-estado {
+  font-size: 11px;
+  font-weight: var(--ui-fw-semibold);
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--ui-fill);
+  color: var(--ui-text-2);
+}
+.modal-compra-estado--ok {
+  background: var(--ui-success-tint);
+  color: var(--ui-success);
+}
+
+@media (max-width: 520px) {
+  .acordeon-contenido {
+    padding: 4px 18px 18px;
+  }
+  .modal-pagina-overlay {
+    padding: 16px 8px;
+  }
+  .modal-pagina-cab {
+    padding: 20px 20px 0;
+  }
+  .modal-pagina-cuerpo {
+    padding: 16px 20px 24px;
+  }
+  .modal-fila-2 {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+
+/* Botón principal con los colores de la app (ver --ui-btn-* en ui-variables.css) */
+.modal-pagina .btn-primary {
+  background: var(--ui-btn-bg);
+  color: var(--ui-btn-text);
+  border-radius: var(--ui-r-pill);
+}
+.modal-pagina .btn-primary:hover:not(:disabled) {
+  background: var(--ui-btn-bg-hover);
+}

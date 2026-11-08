@@ -1,0 +1,575 @@
+/* ============================================================
+ * Detalle de curso (página de venta + sidebar de compra e instructor)
+ * Sistema "ui": Manrope, fondo frío, tarjetas blancas que flotan con
+ * sombra suave y dorado solo como acento (mismo lenguaje que Mis cursos).
+ * ============================================================ */
+
+.curso-detalle-page {
+  background: var(--ui-bg);
+  font-family: var(--ui-font);
+  color: var(--ui-text);
+  padding: 40px 0 80px;
+}
+.curso-detalle-page h1,
+.curso-detalle-page h2,
+.curso-detalle-page h3 {
+  font-family: var(--ui-font);
+}
+
+/* Botones de la página: principal con los colores de la app y secundarios en píldora */
+.curso-detalle-page .btn {
+  font-family: var(--ui-font);
+  border-radius: var(--ui-r-pill);
+  gap: 8px;
+}
+.curso-detalle-page .btn-primary {
+  background: var(--ui-btn-bg);
+  color: var(--ui-btn-text);
+}
+.curso-detalle-page .btn-primary:hover:not(:disabled) {
+  background: var(--ui-btn-bg-hover);
+}
+.curso-detalle-page .btn-outline {
+  background: #fff;
+  border: 1px solid var(--ui-line);
+  color: var(--ui-text);
+}
+.curso-detalle-page .btn-outline:hover:not(:disabled) {
+  border-color: var(--ui-gold);
+  background: var(--ui-gold-tint);
+}
+
+/* El contenido usa todo el ancho (con margen lateral) en vez de quedar
+   centrado en una columna angosta */
+.curso-detalle-page .container.curso-detalle-grid {
+  max-width: none;
+  padding: 0 var(--ui-margen-lateral);
+}
+.curso-detalle-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 400px;
+  gap: clamp(32px, 4vw, 64px);
+  align-items: start;
+}
+
+/* ---------- Encabezado ---------- */
+.curso-breadcrumb {
+  font-size: 13px;
+  color: var(--ui-text-2);
+  margin-bottom: 16px;
+}
+.curso-breadcrumb a {
+  color: var(--ui-text-2);
+  text-decoration: none;
+}
+.curso-breadcrumb a:hover {
+  color: var(--ui-gold-text);
+}
+.curso-breadcrumb span {
+  margin: 0 6px;
+}
+
+.curso-badges-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.cd-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: var(--ui-r-pill);
+  background: #fff;
+  box-shadow: 0 0 0 1px var(--ui-line);
+  font-size: var(--ui-fs-12);
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text-2);
+}
+.cd-chip--dorado {
+  background: var(--ui-gold-tint);
+  box-shadow: none;
+  color: var(--ui-gold-text);
+}
+
+.curso-detalle-titulo {
+  font-size: clamp(30px, 3.6vw, 44px);
+  font-weight: var(--ui-fw-bold);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin: 0 0 16px;
+}
+/* La descripción ocupa el mismo ancho que el título */
+.curso-detalle-desc-wrap {
+  max-width: none;
+  margin: 0 0 32px;
+}
+.curso-detalle-desc {
+  font-size: var(--ui-fs-16);
+  line-height: 1.7;
+  color: var(--ui-text-2);
+  margin: 0;
+  white-space: pre-line;
+}
+.curso-detalle-desc.recortada {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.curso-leer-mas {
+  margin-top: 6px;
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: var(--ui-font);
+  font-size: var(--ui-fs-14);
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-gold-text);
+  cursor: pointer;
+}
+.curso-leer-mas:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Estadísticas: grilla de 4 por fila ----------
+ * El valor manda (grande y oscuro); el ícono va arriba, fino y en tinta suave. */
+.curso-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 48px;
+}
+.curso-stat {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+  background: #fff;
+  border-radius: var(--ui-r-lg);
+  box-shadow: var(--ui-shadow-card);
+}
+/* Cada tipo de dato tiene su color: el ícono va en un cuadrado con un tinte
+   suave del mismo color. Se cambian acá abajo (--stat-color). */
+.curso-stat-icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  color: var(--stat-color, var(--ui-text-2));
+  background: color-mix(in srgb, var(--stat-color, var(--ui-text-2)) 12%, transparent);
+}
+.curso-stat--modulos { --stat-color: #6d4fc2; }       /* violeta */
+.curso-stat--clases { --stat-color: #2f6fd6; }        /* azul */
+.curso-stat--duracion { --stat-color: #0f8a7a; }      /* verde azulado */
+.curso-stat--software { --stat-color: #d0643a; }      /* coral */
+.curso-stat--certificacion { --stat-color: #a67c12; } /* dorado */
+.curso-stat--practicas { --stat-color: #c2416b; }     /* rosa */
+.curso-stat--general { --stat-color: #2f8a4c; }       /* verde */
+.curso-stat-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.curso-stat-texto--inline {
+  flex-direction: row;
+  align-items: baseline;
+  gap: 6px;
+}
+.curso-stat-texto--inline .curso-stat-label {
+  font-size: var(--ui-fs-14);
+  font-weight: var(--ui-fw-medium);
+  color: var(--ui-text-2);
+}
+.curso-stat-valor {
+  font-size: 20px;
+  font-weight: var(--ui-fw-bold);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--ui-text);
+}
+.curso-stat-valor-chica {
+  font-size: var(--ui-fs-16);
+  font-weight: var(--ui-fw-bold);
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+.curso-stat-label {
+  font-size: 13px;
+  color: var(--ui-text-2);
+}
+
+/* ---------- Estructura del programa (acordeón) ---------- */
+.curso-seccion-titulo {
+  font-size: var(--ui-fs-24);
+  font-weight: var(--ui-fw-bold);
+  letter-spacing: var(--ui-tracking-titulo);
+  margin: 0 0 20px;
+}
+.curso-modulos {
+  background: #fff;
+  border-radius: var(--ui-r-xl);
+  box-shadow: var(--ui-shadow-card);
+  overflow: hidden;
+}
+.modulo-acordeon + .modulo-acordeon {
+  border-top: 1px solid var(--ui-line);
+}
+.modulo-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 28px;
+  background: none;
+  border: none;
+  font-family: var(--ui-font);
+  color: var(--ui-text);
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--ui-t-fast) var(--ui-ease);
+}
+.modulo-header:hover {
+  background: var(--ui-fill);
+}
+.modulo-header:focus-visible {
+  outline: 2px solid var(--ui-gold);
+  outline-offset: -2px;
+}
+/* Número de módulo: "01", "02"… en un cuadrado redondeado. Cerrado es claro
+   con el número en tinta; abierto pasa a negro con el número en degradé dorado
+   y un halo dorado suave alrededor. */
+.modulo-numero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #ffffff, #f1f2f5);
+  box-shadow: inset 0 0 0 1px var(--ui-line), 0 1px 2px rgba(18, 18, 20, 0.06);
+  font-size: 15px;
+  font-weight: var(--ui-fw-bold);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  color: var(--ui-text);
+  transition: background var(--ui-t-med) var(--ui-ease), box-shadow var(--ui-t-med) var(--ui-ease);
+}
+.modulo-acordeon.abierto .modulo-numero {
+  background: linear-gradient(145deg, #1c1c20, #0e0e10);
+  box-shadow: 0 0 0 1px rgba(201, 162, 39, 0.55), 0 6px 18px -4px rgba(201, 162, 39, 0.45);
+}
+.modulo-acordeon.abierto .modulo-numero span {
+  background: linear-gradient(160deg, #f3d27a, #c9a227 55%, #9c7a14);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.modulo-header-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.modulo-titulo {
+  font-weight: var(--ui-fw-semibold);
+  font-size: var(--ui-fs-16);
+}
+.modulo-meta {
+  font-size: 13px;
+  color: var(--ui-text-2);
+}
+.modulo-chevron {
+  color: var(--ui-text-2);
+  transition: transform 250ms var(--ui-ease);
+  flex-shrink: 0;
+}
+.modulo-acordeon.abierto .modulo-chevron {
+  transform: rotate(180deg);
+}
+
+/* Apertura animada: la fila pasa de 0fr a 1fr */
+.modulo-cuerpo {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 280ms var(--ui-ease);
+}
+.modulo-acordeon.abierto .modulo-cuerpo {
+  grid-template-rows: 1fr;
+}
+.modulo-contenidos {
+  overflow: hidden;
+  min-height: 0;
+}
+
+.contenido-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 28px;
+  font-size: var(--ui-fs-14);
+  color: var(--ui-text);
+}
+.contenido-item:last-child {
+  padding-bottom: 18px;
+}
+.contenido-icono {
+  display: flex;
+  color: var(--ui-gold-text);
+}
+.contenido-titulo {
+  flex: 1;
+}
+.contenido-candado {
+  display: flex;
+  color: var(--ui-text-2);
+}
+.contenido-item.bloqueado {
+  color: var(--ui-text-2);
+}
+.contenido-item.desbloqueado {
+  cursor: pointer;
+  transition: background var(--ui-t-fast);
+}
+.contenido-item.desbloqueado:hover {
+  background: var(--ui-fill);
+}
+.contenido-item.desbloqueado .contenido-candado {
+  color: var(--ui-success);
+}
+
+/* ---------- Sidebar de compra ---------- */
+.curso-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.curso-sidebar-card {
+  background: #fff;
+  border-radius: var(--ui-r-xl);
+  box-shadow: var(--ui-shadow-card);
+  overflow: hidden;
+}
+.curso-sidebar-portada {
+  aspect-ratio: 16 / 9;
+}
+.curso-sidebar-body {
+  padding: 24px;
+}
+.curso-sidebar-body .success-box,
+.curso-sidebar-body .error-box {
+  margin-bottom: 16px;
+}
+
+.curso-sidebar-precio-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.curso-sidebar-precio {
+  font-size: 32px;
+  font-weight: var(--ui-fw-bold);
+  letter-spacing: -0.02em;
+  color: var(--ui-text);
+}
+.curso-sidebar-precio-original {
+  font-size: 15px;
+  font-weight: var(--ui-fw-medium);
+  color: var(--ui-text-2);
+  text-decoration: line-through;
+}
+.curso-sidebar-ahorro {
+  font-size: var(--ui-fs-12);
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-success);
+  background: rgba(21, 128, 61, 0.08);
+  padding: 3px 10px;
+  border-radius: var(--ui-r-pill);
+  white-space: nowrap;
+}
+
+.curso-incluye-separador {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--ui-line);
+}
+.curso-incluye-titulo {
+  font-size: 13px;
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text-2);
+  margin: 0 0 12px;
+}
+.curso-incluye-checklist {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.curso-incluye-separador .curso-incluye-checklist {
+  margin-bottom: 0;
+}
+.curso-incluye-checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: var(--ui-fs-14);
+  color: var(--ui-text);
+  line-height: 1.45;
+}
+.curso-incluye-checklist svg {
+  color: var(--ui-gold-text);
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+.curso-cta-row {
+  display: flex;
+  gap: 10px;
+}
+.curso-cta-row .btn {
+  flex: 1;
+}
+.curso-sidebar-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* Progreso (alumno ya inscripto) */
+.curso-progreso-header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.curso-progreso-pct {
+  font-size: 30px;
+  font-weight: var(--ui-fw-bold);
+  letter-spacing: -0.02em;
+  color: var(--ui-text);
+}
+.curso-progreso-label {
+  font-size: 13px;
+  color: var(--ui-text-2);
+}
+.curso-progreso-track {
+  width: 100%;
+  height: 6px;
+  background: var(--ui-fill);
+  border-radius: var(--ui-r-pill);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.curso-progreso-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #b8901f, var(--ui-gold-hover));
+  border-radius: inherit;
+  transition: width 600ms var(--ui-ease);
+}
+
+/* ---------- Instructor ---------- */
+.curso-instructores-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.curso-instructor-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: #fff;
+  border-radius: var(--ui-r-lg);
+  box-shadow: var(--ui-shadow-card);
+  padding: 18px;
+}
+.curso-instructor-foto {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--ui-ink);
+  color: var(--ui-gold-hover);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--ui-fw-bold);
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.curso-instructor-foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.curso-instructor-label {
+  display: flex;
+  align-items: center;
+  font-size: var(--ui-fs-12);
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-gold-text);
+  margin: 0 0 2px;
+}
+.curso-instructor-verificado {
+  display: inline-flex;
+  align-items: center;
+  color: var(--ui-success);
+  margin-left: 6px;
+}
+.curso-instructor-nombre {
+  font-size: 15px;
+  font-weight: var(--ui-fw-bold);
+  margin: 0 0 2px;
+}
+/* El "título" corto que se carga en el editor (ej: "Productor musical"), debajo
+   del nombre. Distinto del rótulo de arriba, que siempre dice "Instructor". */
+.curso-instructor-rol {
+  font-size: 13px;
+  font-weight: var(--ui-fw-semibold);
+  color: var(--ui-text-2);
+  margin: 0 0 4px;
+}
+.curso-instructor-bio {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--ui-text-2);
+  margin: 0;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 960px) {
+  .curso-detalle-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+@media (max-width: 1100px) {
+  .curso-stats-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 560px) {
+  .modulo-header,
+  .contenido-item {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modulo-cuerpo,
+  .modulo-chevron,
+  .curso-progreso-fill {
+    transition: none;
+  }
+}

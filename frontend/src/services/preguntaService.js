@@ -1,17 +1,17 @@
 import api from './api';
 
-export async function listarPreguntasRequest(contenidoId) {
-  const response = await api.get(`/contenidos/${contenidoId}/preguntas`);
+export async function listarPreguntasRequest(bloqueId) {
+  const response = await api.get(`/bloques/${bloqueId}/preguntas`);
   return response.data;
 }
 
-export async function listarPreguntasAdminRequest(contenidoId) {
-  const response = await api.get(`/contenidos/${contenidoId}/preguntas/admin`);
+export async function listarPreguntasAdminRequest(bloqueId) {
+  const response = await api.get(`/bloques/${bloqueId}/preguntas/admin`);
   return response.data;
 }
 
-export async function crearPreguntaRequest(contenidoId, datosPregunta) {
-  const response = await api.post(`/contenidos/${contenidoId}/preguntas`, datosPregunta);
+export async function crearPreguntaRequest(bloqueId, datosPregunta) {
+  const response = await api.post(`/bloques/${bloqueId}/preguntas`, datosPregunta);
   return response.data;
 }
 
