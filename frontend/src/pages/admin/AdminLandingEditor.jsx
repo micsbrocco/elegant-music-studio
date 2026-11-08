@@ -194,10 +194,25 @@ function InterruptorProximamente() {
   const { proximamente, cambiarProximamente } = useSitio();
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState('');
+  // Antes de cambiar se pide confirmación, para no abrir o cerrar los cursos sin querer
+  const [pendiente, setPendiente] = useState(null); // true = Próximamente, false = Abiertos
 
-  async function cambiar(id) {
+  useEffect(() => {
+    if (pendiente === null) return undefined;
+    const esc = (e) => { if (e.key === 'Escape') setPendiente(null); };
+    document.addEventListener('keydown', esc);
+    return () => document.removeEventListener('keydown', esc);
+  }, [pendiente]);
+
+  function pedirCambio(id) {
     const valor = id === 'proximamente';
     if (valor === proximamente || guardando) return;
+    setPendiente(valor);
+  }
+
+  async function confirmar() {
+    const valor = pendiente;
+    setPendiente(null);
     setGuardando(true);
     setError('');
     try {
@@ -217,9 +232,42 @@ function InterruptorProximamente() {
         etiqueta="Cursos en el sitio"
         opciones={[{ id: 'abiertos', etiqueta: 'Abiertos' }, { id: 'proximamente', etiqueta: 'Próximamente' }]}
         valor={proximamente ? 'proximamente' : 'abiertos'}
-        onCambiar={cambiar}
+        onCambiar={pedirCambio}
       />
       {error && <span className="landing-interruptor-error">{error}</span>}
+
+      {pendiente !== null && (
+        <div className="admin-modal-fondo" onClick={() => setPendiente(null)}>
+          <div
+            className="admin-modal admin-modal--confirmar"
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="landing-interruptor-titulo"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 id="landing-interruptor-titulo" className="admin-modal-titulo">
+              {pendiente ? '¿Pasar los cursos a Próximamente?' : '¿Abrir los cursos al público?'}
+            </h3>
+            <p className="admin-modal-texto">
+              {pendiente
+                ? 'El público solo va a ver la página de inicio. Quienes ya compraron siguen cursando.'
+                : 'Cualquiera va a poder ver el catálogo, registrarse y comprar.'}
+            </p>
+            <div className="admin-modal-acciones">
+              <button type="button" className="admin-tabla-accion" autoFocus onClick={() => setPendiente(null)}>
+                Cancelar
+              </button>
+              <button
+                type="button"
+                className={`landing-interruptor-confirmar landing-interruptor-confirmar--${pendiente ? 'proximamente' : 'abiertos'}`}
+                onClick={confirmar}
+              >
+                {pendiente ? 'Pasar a Próximamente' : 'Abrir cursos'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

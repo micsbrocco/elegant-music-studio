@@ -3166,3 +3166,21 @@
   background: #188a49;
   border-color: #188a49;
 }
+
+/* ---- Notificaciones en el celular: el panel ocupa el ancho de la pantalla
+   (antes se abría hacia la izquierda desde la campana y quedaba cortado) ---- */
+@media (max-width: 640px) {
+  .admin-topbar-dropdown.admin-notif {
+    position: fixed;
+    top: 72px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-height: calc(100dvh - 96px);
+    overflow-y: auto;
+    background: var(--ui-bg);
+  }
+  .admin-notif-filtros {
+    justify-content: space-between;
+  }
+}

@@ -906,7 +906,7 @@ textarea.admin-input {
 }
 .landing-guardar--activo {
   border-color: transparent;
-  background: var(--ui-ink, #111);
+  background: #1f9d55;
   color: #fff;
   cursor: pointer;
 }
@@ -978,3 +978,62 @@ textarea.admin-input {
   font-weight: var(--ui-fw-semibold);
   white-space: nowrap;
 }
+
+/* ---- Celular: encabezado alineado a la izquierda y pestañas que entran enteras ---- */
+@media (max-width: 640px) {
+  .landing-editor .editor-encabezado {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+  .landing-encabezado-derecha {
+    align-items: stretch;
+  }
+  .landing-editor .landing-interruptor-seg {
+    flex: 1;
+  }
+  .landing-editor .landing-interruptor-seg .portal-segmento {
+    flex: 1;
+    justify-content: center;
+  }
+  .landing-editor .editor-encabezado-acciones {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    gap: 8px;
+  }
+  .landing-editor .editor-encabezado-acciones > * {
+    justify-content: center;
+    width: 100%;
+  }
+  .landing-editor .editor-curso-tabs-top {
+    justify-content: space-between;
+    gap: 0;
+  }
+  .landing-editor .editor-curso-tab-top + .editor-curso-tab-top {
+    margin-left: 0;
+  }
+  .landing-editor .landing-seccion-cabecera .landing-boton {
+    white-space: nowrap;
+  }
+  /* El tacho queda arriba, al lado de la foto: los campos usan todo el ancho */
+  .landing-editor .landing-video .landing-video-campos,
+  .landing-editor .landing-persona .landing-persona-campos {
+    padding-right: 0;
+  }
+}
+
+/* Confirmación del interruptor: el botón toma el color de la opción elegida */
+.landing-interruptor-confirmar {
+  height: 38px;
+  padding: 0 18px;
+  border: none;
+  border-radius: var(--ui-r-pill, 999px);
+  font-family: var(--ui-font);
+  font-size: 14px;
+  font-weight: var(--ui-fw-semibold, 600);
+  cursor: pointer;
+}
+.landing-interruptor-confirmar--abiertos { background: #1f9d55; color: #fff; }
+.landing-interruptor-confirmar--proximamente { background: #f3c94a; color: #2a2104; }
+.landing-interruptor-confirmar:hover { filter: brightness(1.08); }
