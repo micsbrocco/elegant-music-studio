@@ -393,37 +393,52 @@ function Navbar() {
 
       {/* Menú mobile (todo plano, sin dropdown anidado) */}
       <div className={`nav-mobile-menu ${menuMobileAbierto ? 'open' : ''}`}>
-        <Link to="/" onClick={cerrarMenus}>Inicio</Link>
-        {!navReducida && <Link to={destinoCursos} onClick={cerrarMenus}>Cursos</Link>}
-        {!navReducida && <Link to="/#producciones" onClick={cerrarMenus}>Nuestras producciones</Link>}
-        {!navReducida && <Link to="/#nosotros" onClick={cerrarMenus}>Conócenos</Link>}
-        {!modoAprendizaje && !cursosCerrados && (
-          <Link to="/carrito" onClick={cerrarMenus}>
-            🛒 Carrito{carritoItems.length > 0 ? ` (${carritoItems.length})` : ''}
-          </Link>
-        )}
-        {!navReducida && (
-          <Link to="/#contacto" onClick={cerrarMenus} className="btn btn-outline-gold btn-sm" style={{ marginTop: 4 }}>
-            Contáctanos
-          </Link>
-        )}
+        {/* Menú del celular: filas separadas por líneas, sin links subrayados */}
+        <nav className="menu-movil-lista" aria-label="Menú">
+          <FilaMenu to="/" onClick={cerrarMenus}>Inicio</FilaMenu>
+          {!navReducida && <FilaMenu to={destinoCursos} onClick={cerrarMenus}>Cursos</FilaMenu>}
+          {!navReducida && <FilaMenu to="/#producciones" onClick={cerrarMenus}>Nuestras producciones</FilaMenu>}
+          {!navReducida && <FilaMenu to="/#nosotros" onClick={cerrarMenus}>Conócenos</FilaMenu>}
+          {!navReducida && <FilaMenu to="/#contacto" onClick={cerrarMenus}>Contáctanos</FilaMenu>}
+          {!modoAprendizaje && !cursosCerrados && (
+            <FilaMenu to="/carrito" onClick={cerrarMenus} extra={carritoItems.length > 0 ? carritoItems.length : null}>Carrito</FilaMenu>
+          )}
+        </nav>
         {usuario ? (
           <>
-            <Link to="/mis-cursos" onClick={cerrarMenus}>Mis cursos</Link>
-            <Link to="/perfil" state={{ backgroundLocation: fondo }} onClick={cerrarMenus}>Mi cuenta ({usuario.nombre})</Link>
-            <Link to="/mis-compras" state={{ backgroundLocation: fondo }} onClick={cerrarMenus}>Mis compras</Link>
-            {!navReducida && usuario.rol === 'admin' && <Link to="/admin" onClick={cerrarMenus}>Panel Admin</Link>}
-            {!navReducida && usuario.rol === 'profesor' && <Link to="/panel-instructor" onClick={cerrarMenus}>Editar cursos</Link>}
-            <button onClick={handleLogout} className="btn btn-outline btn-sm" style={{ marginTop: 8 }}>Cerrar sesión</button>
+            <p className="menu-movil-titulo">{usuario.nombre}</p>
+            <nav className="menu-movil-lista" aria-label="Tu cuenta">
+              <FilaMenu to="/mis-cursos" onClick={cerrarMenus}>Mis cursos</FilaMenu>
+              <FilaMenu to="/perfil" state={{ backgroundLocation: fondo }} onClick={cerrarMenus}>Mi cuenta</FilaMenu>
+              <FilaMenu to="/mis-compras" state={{ backgroundLocation: fondo }} onClick={cerrarMenus}>Mis compras</FilaMenu>
+              {!navReducida && usuario.rol === 'admin' && <FilaMenu to="/admin" onClick={cerrarMenus}>Panel de administrador</FilaMenu>}
+              {!navReducida && usuario.rol === 'profesor' && <FilaMenu to="/panel-instructor" onClick={cerrarMenus}>Editar cursos</FilaMenu>}
+            </nav>
+            <button type="button" onClick={handleLogout} className="menu-movil-salir">Cerrar sesión</button>
           </>
         ) : (
-          <>
-            <Link to="/login" onClick={cerrarMenus}>Ingresar</Link>
-            {!cursosCerrados && <Link to="/registro" onClick={cerrarMenus}>Registrarme</Link>}
-          </>
+          <div className="menu-movil-acciones">
+            <Link to="/login" state={{ backgroundLocation: location }} onClick={cerrarMenus} className="menu-movil-boton menu-movil-boton--dorado">Ingresar</Link>
+            {!cursosCerrados && (
+              <Link to="/registro" state={{ backgroundLocation: location }} onClick={cerrarMenus} className="menu-movil-boton">Registrarme</Link>
+            )}
+          </div>
         )}
       </div>
     </nav>
+  );
+}
+
+// Una fila del menú del celular: texto a la izquierda y flechita a la derecha
+function FilaMenu({ children, extra, ...props }) {
+  return (
+    <Link className="menu-movil-fila" {...props}>
+      <span>{children}</span>
+      {extra != null && <span className="menu-movil-cantidad">{extra}</span>}
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <polyline points="9 6 15 12 9 18" />
+      </svg>
+    </Link>
   );
 }
 

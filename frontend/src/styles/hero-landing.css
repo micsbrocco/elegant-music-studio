@@ -431,6 +431,108 @@
   color: var(--color-warm-white) !important;
 }
 
+/* ---------- Menú del celular ----------
+ * Filas separadas por líneas finas, sin subrayado, con flechita a la derecha.
+ * La cuenta va en un bloque aparte y "Cerrar sesión" al final. */
+.nav-mobile-menu.open {
+  gap: 0;
+  padding: 8px 20px 24px;
+  max-height: calc(100dvh - 84px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.menu-movil-lista {
+  display: flex;
+  flex-direction: column;
+}
+.nav-mobile-menu .menu-movil-fila {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 15px 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  font-family: var(--ui-font, inherit);
+  font-size: 16px;
+  font-weight: 500;
+  text-decoration: none;
+}
+.nav-mobile-menu .menu-movil-fila:last-child {
+  border-bottom: none;
+}
+.nav-mobile-menu .menu-movil-fila > span:first-child {
+  flex: 1;
+}
+.nav-mobile-menu .menu-movil-fila svg {
+  flex-shrink: 0;
+  opacity: 0.4;
+}
+.nav-mobile-menu .menu-movil-fila:active {
+  background: rgba(255, 255, 255, 0.04);
+}
+.menu-movil-cantidad {
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: var(--color-gold);
+  color: #141414;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 22px;
+  text-align: center;
+}
+.menu-movil-titulo {
+  margin: 18px 4px 2px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  font-family: var(--ui-font, inherit);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+}
+.nav-mobile-menu.open .menu-movil-salir {
+  width: 100%;
+  margin-top: 16px;
+  padding: 13px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  font-family: var(--ui-font, inherit);
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
+  color: #f2f2f2 !important;
+  cursor: pointer;
+}
+.menu-movil-acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+.nav-mobile-menu.open .menu-movil-boton {
+  display: block;
+  width: 100%;
+  padding: 13px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 12px;
+  font-family: var(--ui-font, inherit);
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+}
+.nav-mobile-menu.open .menu-movil-boton--dorado {
+  border-color: var(--color-gold);
+  background: var(--color-gold);
+  color: #141414 !important;
+}
+
 .courses-grid {
   display: flex;
   flex-wrap: wrap;

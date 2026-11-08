@@ -425,6 +425,13 @@
   .admin-sidebar.abierto {
     transform: translateX(0);
   }
+  /* El alto es el de la pantalla visible (sin la barra del navegador), así
+     "Volver al sitio" siempre queda a la vista sin scrollear */
+  .admin-sidebar {
+    height: auto;
+    max-height: 100dvh;
+    background: var(--ui-bg);
+  }
   .admin-backdrop {
     display: block;
     position: fixed;
@@ -3183,4 +3190,12 @@
   .admin-notif-filtros {
     justify-content: space-between;
   }
+}
+
+/* ---- Menú lateral en celulares bajitos: más compacto para que entre todo ---- */
+@media (max-width: 1024px) and (max-height: 760px) {
+  .admin-sidebar-marca { height: 64px; }
+  .admin-sidebar-grupo { margin-bottom: var(--ui-s-3); }
+  .admin-sidebar-link { padding-top: 8px; padding-bottom: 8px; }
+  .admin-sidebar-footer { padding-top: var(--ui-s-2); padding-bottom: var(--ui-s-3); }
 }
