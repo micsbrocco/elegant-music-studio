@@ -573,3 +573,69 @@
     transition: none;
   }
 }
+
+/* Botones del alumno inscripto (Continuar / Repasar y Ver certificado) */
+.curso-acciones-inscripto {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.curso-boton-certificado { width: 100%; }
+
+/* ---------- Celular y tablet: compra/progreso e instructor arriba ----------
+ * La columna principal se "desarma" (display: contents) para poder intercalar la
+ * tarjeta de compra y el instructor justo debajo de la descripción, antes de los datos
+ * y del programa. Todo más compacto: sin portada, descripción más corta y datos en
+ * tarjetas bajas. */
+@media (max-width: 960px) {
+  .curso-detalle-grid { display: flex; flex-direction: column; align-items: stretch; gap: 0; }
+  .curso-detalle-principal { display: contents; }
+  .curso-sidebar { order: 1; gap: 10px; margin-bottom: 20px; }
+  .curso-stats-row { order: 2; }
+  .curso-seccion-programa { order: 3; }
+  .curso-modulos { order: 4; }
+
+  .curso-detalle-titulo { font-size: clamp(26px, 7vw, 34px); margin-bottom: 10px; }
+  .curso-detalle-desc-wrap { margin-bottom: 20px; }
+  .curso-detalle-desc { font-size: 15px; line-height: 1.55; }
+  .curso-detalle-desc.recortada { -webkit-line-clamp: 2; }
+  .curso-leer-mas { margin-top: 2px; font-size: 13px; }
+
+  .curso-sidebar-portada { display: none; }
+  .curso-sidebar-card { border-radius: var(--ui-r-lg); }
+  .curso-sidebar-body { padding: 16px 18px; }
+  .curso-sidebar-body .success-box,
+  .curso-sidebar-body .error-box { margin-bottom: 12px; padding: 8px 12px; font-size: 13px; }
+  .curso-progreso-header { margin-bottom: 8px; }
+  .curso-progreso-pct { font-size: 24px; }
+  .curso-progreso-track { margin-bottom: 14px; }
+  .curso-acciones-inscripto { flex-direction: row; }
+  .curso-acciones-inscripto > * { flex: 1 1 0; min-width: 0; padding: 11px 12px; font-size: 14px; }
+  .curso-incluye--inscripto { display: none; }
+  .curso-sidebar-precio-row { margin-bottom: 12px; }
+  .curso-sidebar-precio { font-size: 26px; }
+
+  .curso-instructor-card { align-items: center; gap: 12px; padding: 12px 14px; }
+  .curso-instructor-foto { width: 40px; height: 40px; font-size: 16px; }
+  .curso-instructor-label { font-size: 11px; margin: 0; }
+  .curso-instructor-nombre { font-size: 14px; margin: 0; }
+  .curso-instructor-rol { font-size: 12px; margin: 0; }
+  .curso-instructor-bio {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-top: 2px;
+    font-size: 12.5px;
+    line-height: 1.45;
+  }
+
+  .curso-stats-row { gap: 10px; margin-bottom: 32px; }
+  .curso-stat { gap: 10px; padding: 12px; align-items: center; }
+  .curso-stat-icono { width: 32px; height: 32px; border-radius: 10px; }
+  .curso-stat-icono svg { width: 17px; height: 17px; }
+  .curso-stat-valor { font-size: 17px; }
+  .curso-stat-valor-chica { font-size: 13.5px; line-height: 1.25; }
+  .curso-stat-texto--inline .curso-stat-label { font-size: 13px; }
+  .curso-stat-label { font-size: 12px; line-height: 1.3; }
+}

@@ -289,7 +289,7 @@ function CursoDetalle() {
     <div className="curso-detalle-page">
       <div className="container curso-detalle-grid">
         {/* Columna principal */}
-        <div>
+        <div className="curso-detalle-principal">
           <nav className="curso-breadcrumb">
             <Link to="/cursos">Cursos</Link> <span>/</span> <span>{curso.categoria}</span>
           </nav>
@@ -328,7 +328,7 @@ function CursoDetalle() {
             ))}
           </div>
 
-          <h2 className="curso-seccion-titulo">Programa</h2>
+          <h2 className="curso-seccion-titulo curso-seccion-programa">Programa</h2>
 
           <div className="curso-modulos">
             {curso.modulos.map((modulo, i) => {
@@ -410,23 +410,24 @@ function CursoDetalle() {
 
                   {error && <div className="error-box">{error}</div>}
 
-                  <Link to={`/cursos/${id}/aprender`} className="btn btn-primary auth-submit" style={{ textDecoration: 'none' }}>
-                    {progreso?.completado ? 'Repasar el curso' : 'Continuar donde lo dejaste'}
-                  </Link>
+                  <div className="curso-acciones-inscripto">
+                    <Link to={`/cursos/${id}/aprender`} className="btn btn-primary auth-submit" style={{ textDecoration: 'none' }}>
+                      {progreso?.completado ? 'Repasar el curso' : 'Continuar donde lo dejaste'}
+                    </Link>
 
-                  {progreso?.completado && (
-                    <button
-                      onClick={handleVerCertificado}
-                      disabled={generandoCertificado}
-                      className="btn btn-outline"
-                      style={{ width: '100%', marginTop: 10 }}
-                    >
-                      {generandoCertificado ? 'Generando...' : 'Ver certificado'}
-                    </button>
-                  )}
+                    {progreso?.completado && (
+                      <button
+                        onClick={handleVerCertificado}
+                        disabled={generandoCertificado}
+                        className="btn btn-outline curso-boton-certificado"
+                      >
+                        {generandoCertificado ? 'Generando...' : 'Ver certificado'}
+                      </button>
+                    )}
+                  </div>
 
                   {curso.incluye && curso.incluye.length > 0 && (
-                    <div className="curso-incluye-separador">
+                    <div className="curso-incluye-separador curso-incluye--inscripto">
                       <p className="curso-incluye-titulo">Tu inscripción incluye</p>
                       <ul className="curso-incluye-checklist">
                         {curso.incluye.map((item, i) => (
